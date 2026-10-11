@@ -1,0 +1,84 @@
+name: Docs
+
+# Builds the docs site after CI is green on main and puts it on GitHub Pages.
+#
+# The build always runs, so a docs build that broke shows up here on the push that broke it. The deploy only runs
+# when the repository variable PAGES_DEPLOY is "true" (Settings > Secrets and variables > Actions > Variables),
+# which keeps main green until Pages is switched on (Settings > Pages > Source: GitHub Actions).
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+  # For the first deploy after PAGES_DEPLOY is switched on.
+  workflow_dispatch:
+
+# Pages serves one site, so only one deploy runs at a time. A deploy in flight is never cancelled halfway.
+concurrency:
+  group: docs
+  cancel-in-progress: false
+
+# See ci.yml: Nx plugin workers time out on cold runners unless they load in-process.
+env:
+  NX_ISOLATE_PLUGINS: "false"
+
+jobs:
+  build:
+    name: Build the site
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push')
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # The commit CI verified, not whatever main points at by the time this job starts.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: "pnpm"
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      # The site imports the packages as a consumer would, from their built output.
+      - name: Build the packages
+        run: pnpm --filter "./packages/*" build
+      # Every route is rendered to an HTML file, then the sitemap, llms.txt and the Markdown twins are written.
+      - name: Build the docs
+        run: pnpm --filter @react-cards-opening/docs build
+      - name: Check the site is there
+        run: |
+          test -f apps/docs/dist/client/index.html
+          test -f apps/docs/dist/client/404.html
+          echo "$(find apps/docs/dist/client -type f | wc -l | tr -d ' ') files in apps/docs/dist/client"
+      - name: Upload the Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/docs/dist/client
+
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: build
+    if: vars.PAGES_DEPLOY == 'true'
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      # deploy-pages proves to Pages that the artifact came from this workflow.
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+# A pull request only needs its newest push checked. A push to main is never cancelled: the release and the docs
+# deploy both wait for this workflow to finish green on main.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# Nx runs every plugin in a detached worker process, and that worker kills itself if the parent has not connected
+# to its socket within 5 seconds. On a cold runner the parent is often busy for longer, every worker exits, and the
+# command dies with "Failed to start plugin worker". Loading the plugins in-process removes the race. They are all
+# first-party @nx plugins, so there is nothing here to isolate them from.
+env:
+  NX_ISOLATE_PLUGINS: "false"
+
+jobs:
+  checks:
+    name: Build, lint, typecheck, test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      # Reads the pnpm version from `packageManager` in package.json.
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: "pnpm"
+          cache-dependency-path: pnpm-lock.yaml
+      # Before the install on purpose: it needs nothing but Node, and a version that drifted should fail in seconds.
+      - name: Published packages share one version
+        run: node .github/scripts/packages.mjs check
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build
+        run: pnpm build
+      - name: Lint
+        run: pnpm lint
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Test
+        run: pnpm test
+      - name: Format
+        run: pnpm format:check
+      # The tarballs as a registry and a type checker would read them.
+      - name: Check the packed packages
+        run: pnpm check:packages
