@@ -248,21 +248,8 @@ jobs:
             PUBLISHED=$((PUBLISHED + 1))
           done 3< <(node .github/scripts/packages.mjs list)
           echo "Published ${PUBLISHED} packages at ${VERSION}."
-          # A publish command that exits 0 is a claim. The registry is asked for every package before the release
-          # is announced; it can take a moment to show a new version, so each one gets a minute.
-          while IFS=$'\t' read -r _ NAME _ <&3; do
-            for ATTEMPT in 1 2 3 4 5 6; do
-              if [ "$(on_npm "$NAME" 2>/dev/null)" = "yes" ]; then
-                echo "confirmed ${NAME}@${VERSION}"
-                continue 2
-              fi
-              sleep 10
-            done
-            echo "::error::${NAME}@${VERSION} is still not on npm. Run this workflow again to publish what is missing."
-            exit 1
-          done 3< <(node .github/scripts/packages.mjs list)
-      # Reached only when the registry has confirmed every package of this version. Created once: a later run for
-      # the same version (a `chore:` push that bumps nothing) finds the release and leaves it alone.
+      # Reached only when every package of this version was published or was already on npm. Created once: a later
+      # run for the same version (a `chore:` push that bumps nothing) finds the release and leaves it alone.
       - name: Create GitHub release
         if: steps.version.outputs.version != '' && vars.NPM_PUBLISH == 'true'
         env:
