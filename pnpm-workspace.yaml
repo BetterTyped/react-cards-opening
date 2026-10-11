@@ -1,0 +1,22 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# No public hoisting here, on purpose. A library that reaches a dependency it never declared works in this
+# workspace and breaks in everyone else's, so undeclared imports have to fail at home first.
+
+# pnpm 12 turns an undeclared build script into a hard install error, so every package that wants to run one
+# gets an explicit answer. None of these need theirs.
+allowBuilds:
+  esbuild: false
+  nx: false
+  unrs-resolver: false
+
+minimumReleaseAgeExclude:
+  - "@vitest/coverage-v8@5.0.0"
+  - "@vitest/mocker@5.0.0"
+  - "@vitest/pretty-format@5.0.0"
+  - "@vitest/spy@5.0.0"
+  - "@vitest/ui@5.0.0"
+  - "@vitest/utils@5.0.0"
+  - vitest@5.0.0

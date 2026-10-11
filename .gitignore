@@ -1,0 +1,34 @@
+# compiled output
+dist
+.output
+tmp
+out-tsc
+
+# dependencies
+node_modules
+
+# editors
+/.idea
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# misc
+/coverage
+npm-debug.log
+.DS_Store
+Thumbs.db
+.pnpm-store
+.nx/cache
+.nx/workspace-data
+.tanstack
+
+vite.config.*.timestamp*
+vitest.config.*.timestamp*
+test-output
+.env
+# vitest 5 default artifact directory
+.vitest/
+# Playwright
+playwright-report
+test-results

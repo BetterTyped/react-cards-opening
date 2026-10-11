@@ -1,0 +1,52 @@
+{
+  "name": "@react-cards-opening/core",
+  "version": "0.0.1",
+  "description": "Headless card opening for React: the queue, the click rules, rarity tiers, seeded rolls and opened-card storage. Bring your own animation.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "react",
+    "cards",
+    "card opening",
+    "pack opening",
+    "loot",
+    "gacha",
+    "rarity",
+    "reveal",
+    "headless"
+  ],
+  "homepage": "https://bettertyped.github.io/react-cards-opening/",
+  "bugs": "https://github.com/BetterTyped/react-cards-opening/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BetterTyped/react-cards-opening.git",
+    "directory": "packages/core"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run",
+    "format": "pnpm --dir ../.. exec oxfmt --write packages/core",
+    "typecheck": "pnpm --dir ../.. exec tsgo -p packages/core/tsconfig.json --noEmit",
+    "lint": "pnpm --dir ../.. exec oxlint packages/core"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  }
+}

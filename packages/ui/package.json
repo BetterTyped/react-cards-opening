@@ -1,0 +1,63 @@
+{
+  "name": "@react-cards-opening/ui",
+  "version": "0.0.1",
+  "description": "Card opening components for React: a card that flies out, hums, flips and lands, a scan that hunts a grid for it, and rarity effects up to a legendary foil. GSAP inside, one stylesheet, no CSS framework.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "react",
+    "cards",
+    "card opening",
+    "pack opening",
+    "card flip",
+    "loot",
+    "gacha",
+    "rarity",
+    "reveal",
+    "gsap",
+    "animation"
+  ],
+  "homepage": "https://bettertyped.github.io/react-cards-opening/",
+  "bugs": "https://github.com/BetterTyped/react-cards-opening/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BetterTyped/react-cards-opening.git",
+    "directory": "packages/ui"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run",
+    "format": "pnpm --dir ../.. exec oxfmt --write packages/ui",
+    "typecheck": "pnpm --dir ../.. exec tsgo -p packages/ui/tsconfig.json --noEmit",
+    "lint": "pnpm --dir ../.. exec oxlint packages/ui"
+  },
+  "peerDependencies": {
+    "@react-cards-opening/core": "workspace:*",
+    "gsap": "^3.13.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@react-cards-opening/core": "workspace:*"
+  }
+}
