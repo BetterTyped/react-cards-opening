@@ -1,0 +1,859 @@
+/*
+ * @react-cards-opening/ui
+ *
+ * Every class starts with `rco-`. Colours come from custom properties the components set on their own root from the
+ * `theme` prop, so nothing here names a colour of its own:
+ *
+ *   --rco-bg  --rco-card  --rco-fg  --rco-muted     surfaces and text
+ *   --rco-l0 to --rco-l4                            the grid's ramp, quietest to loudest
+ *   --rco-accent                                    the loudest step, for the main button and the beam
+ *   --rco-tone                                      the colour of the card being opened
+ *
+ * Yours to set, on any ancestor:
+ *
+ *   --rco-font          the typeface (inherits the page's by default)
+ *   --rco-z             where the overlay stacks (80)
+ *   --rco-radius        the corner of a card (28px)
+ *   --rco-card-shadow   the shadow under a card
+ *
+ * Sizes are in pixels on purpose: the pieces look the same whatever the page does with its root font size.
+ *
+ * One more, set by the library and there to be read: `--rco-u` is one design pixel of a card. In the reveal it is a
+ * pixel. On a `Card` standing still it is a three-hundredth of the card's width, so everything on a card (type,
+ * padding, corners, the glyph) scales with it. Size a face of your own in `calc(n * var(--rco-u, 1px))` and it
+ * scales too.
+ */
+
+/* ---------- ground rules ---------- */
+
+/*
+ * One class of specificity: enough to beat a page's `button { ... }`, `p { ... }` or `* { ... }`, and still below
+ * every rule further down this file. Only elements this library renders carry an `rco-` class, so what you pass
+ * in (a face of your own, extra header buttons) is left alone.
+ */
+:where(.rco-root),
+:where(.rco-root) [class^="rco-"],
+:where(.rco-root) [class*=" rco-"] {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0 solid;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  font: inherit;
+  font-style: normal;
+  letter-spacing: inherit;
+  color: inherit;
+  text-align: inherit;
+  text-decoration: none;
+  text-transform: none;
+  text-shadow: none;
+  list-style: none;
+  max-width: none;
+  transition: none;
+  animation: none;
+  appearance: none;
+}
+
+.rco-root {
+  box-sizing: border-box;
+  font-family: var(--rco-font, inherit);
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-align: start;
+  color: var(--rco-fg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* What you pass in keeps the page's own styles, and takes no part in the layout around it. */
+.rco-slot {
+  display: contents;
+}
+
+.rco-icon {
+  display: block;
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------- pixel glyph ---------- */
+
+.rco-glyph {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: calc(var(--rco-glyph-gap) * var(--rco-u, 1px));
+}
+
+.rco-glyph-pixel {
+  display: block;
+  width: calc(var(--rco-glyph-cell) * var(--rco-u, 1px));
+  height: calc(var(--rco-glyph-cell) * var(--rco-u, 1px));
+  border-radius: calc(2 * var(--rco-u, 1px));
+  background: var(--rco-glyph-off, rgb(255 255 255 / 0.06));
+}
+
+.rco-glyph-pixel[data-on="1"] {
+  background: color-mix(in oklch, var(--rco-glyph) 50%, transparent);
+}
+
+.rco-glyph-pixel[data-on="2"] {
+  background: var(--rco-glyph);
+}
+
+/* ---------- the hunt panel ---------- */
+
+.rco-hunt {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  padding: 16px;
+  background: var(--rco-bg);
+  color: var(--rco-fg);
+}
+
+.rco-hunt[data-hero] {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.rco-hunt-flash {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 60%, var(--rco-tone), transparent 70%);
+}
+
+.rco-hunt-head {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.rco-hunt-words {
+  min-width: 0;
+}
+
+.rco-hunt-headline {
+  font-size: clamp(20px, 1.8vw, 26px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.rco-hunt[data-hero] .rco-hunt-headline {
+  font-size: clamp(28px, 3vw, 44px);
+  letter-spacing: -0.04em;
+}
+
+.rco-hunt-subline {
+  margin-top: 4px;
+  font-size: 14.5px;
+  color: var(--rco-muted);
+}
+
+.rco-hunt[data-hero] .rco-hunt-subline {
+  font-size: 16px;
+}
+
+.rco-hunt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (min-width: 768px) {
+  .rco-hunt {
+    padding: 24px;
+  }
+
+  .rco-hunt[data-hero] {
+    padding: 40px;
+  }
+
+  .rco-hunt[data-hero] .rco-hunt-subline {
+    margin-top: 8px;
+    font-size: 17px;
+  }
+}
+
+/* ---------- buttons ---------- */
+
+.rco-button {
+  display: inline-flex;
+  height: 44px;
+  align-items: center;
+  gap: 8px;
+  border-radius: 9999px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.rco-button-main {
+  flex-shrink: 0;
+  padding: 0 24px;
+  font-size: 15px;
+  background: var(--rco-accent);
+  color: var(--rco-bg);
+  transition: translate 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rco-button-skip,
+.rco-button-again {
+  font-size: 14px;
+  box-shadow: 0 0 0 1px color-mix(in oklab, currentColor 25%, transparent);
+}
+
+.rco-button-skip {
+  padding: 0 16px;
+}
+
+.rco-button-again {
+  padding: 0 20px;
+  transition: translate 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (hover: hover) {
+  .rco-button-main:hover,
+  .rco-button-again:hover,
+  button.rco-badge:hover {
+    translate: 0 -1px;
+  }
+}
+
+/* ---------- the scan grid ---------- */
+
+.rco-scan {
+  position: relative;
+}
+
+.rco-scan-flash {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 60%, var(--rco-tone), transparent 70%);
+}
+
+.rco-grid {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  gap: 3px;
+}
+
+.rco-cell {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  border-radius: 22%;
+  background: var(--rco-l0);
+  transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rco-cell[data-level="1"] {
+  background: var(--rco-l1);
+}
+
+.rco-cell[data-level="2"] {
+  background: var(--rco-l2);
+}
+
+.rco-cell[data-level="3"] {
+  background: var(--rco-l3);
+}
+
+.rco-cell[data-level="4"] {
+  background: var(--rco-l4);
+}
+
+/* Blank until the beam has passed over it. */
+.rco-grid[data-veiled] .rco-cell[data-cell]:not([data-lit]) {
+  background: var(--rco-l0);
+}
+
+.rco-cell[data-hit] {
+  z-index: 10;
+  box-shadow:
+    0 0 0 2px var(--rco-hit),
+    0 0 18px 3px var(--rco-hit);
+}
+
+/* Found tiles keep breathing in their colour. Box-shadow only, on a handful of cells. */
+.rco-cell[data-found] {
+  z-index: 5;
+  box-shadow:
+    0 0 0 2px var(--rco-found),
+    0 0 14px 2px var(--rco-found);
+  animation: rco-found-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes rco-found-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px var(--rco-found),
+      0 0 8px 1px var(--rco-found);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 2px var(--rco-found),
+      0 0 22px 6px var(--rco-found);
+  }
+}
+
+.rco-cell-press {
+  position: absolute;
+  inset: 0;
+  display: block;
+  border-radius: inherit;
+  outline: none;
+  cursor: pointer;
+}
+
+.rco-cell-press:disabled,
+.rco-badge:disabled {
+  cursor: default;
+}
+
+.rco-cell-press:focus-visible,
+.rco-flyer-press:focus-visible {
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 0.7);
+}
+
+.rco-band {
+  position: absolute;
+  right: 0;
+  left: 0;
+  display: block;
+  border-radius: 9999px;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklch, var(--rco-tone) 30%, transparent) 50%,
+    transparent
+  );
+}
+
+.rco-reticle {
+  position: absolute;
+  z-index: 20;
+  display: block;
+  width: 28px;
+  height: 28px;
+  translate: -50% -50%;
+  border-radius: 7px;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 0 0 2px var(--rco-tone);
+}
+
+.rco-ring {
+  position: absolute;
+  z-index: 20;
+  display: block;
+  width: 160px;
+  height: 160px;
+  translate: -50% -50%;
+  border-radius: 9999px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rco-crack {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: block;
+  pointer-events: none;
+}
+
+.rco-crack-bit {
+  position: absolute;
+  display: block;
+  width: 8px;
+  height: 8px;
+  margin: -4px;
+  border-radius: 2px;
+  opacity: 0;
+  background: var(--rco-tone);
+}
+
+.rco-beam {
+  position: absolute;
+  top: -8px;
+  bottom: -8px;
+  left: 0;
+  display: block;
+  width: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rco-beam-glow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -20px;
+  display: block;
+  width: 40px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklch, var(--rco-accent) 22%, transparent) 50%,
+    transparent
+  );
+}
+
+.rco-beam-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -1px;
+  display: block;
+  width: 2px;
+  border-radius: 9999px;
+  background: var(--rco-fg);
+  box-shadow: 0 0 10px 1px var(--rco-accent);
+}
+
+/* ---------- the finds ---------- */
+
+.rco-finds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.rco-find {
+  display: block;
+}
+
+.rco-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 14px;
+  padding: 6px 14px 6px 6px;
+  background: var(--rco-card);
+  color: var(--rco-muted);
+}
+
+button.rco-badge {
+  background: color-mix(in oklch, var(--rco-tone) 14%, var(--rco-card));
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--rco-tone) 40%, transparent);
+  color: var(--rco-fg);
+  text-align: left;
+  cursor: pointer;
+  transition: translate 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rco-badge-art {
+  display: block;
+  border-radius: 9px;
+  padding: 6px;
+  background: var(--rco-bg);
+}
+
+button.rco-badge .rco-badge-art {
+  background: color-mix(in oklch, var(--rco-tone) 10%, var(--rco-bg));
+}
+
+.rco-badge-words {
+  display: block;
+  min-width: 0;
+}
+
+.rco-badge-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+button.rco-badge .rco-badge-name {
+  line-height: 1.25;
+}
+
+.rco-badge-where {
+  display: block;
+  font-size: 11.5px;
+  color: var(--rco-muted);
+}
+
+/* ---------- the overlay ---------- */
+
+.rco-stage {
+  position: fixed;
+  inset: 0;
+  z-index: var(--rco-z, 80);
+  pointer-events: none;
+}
+
+.rco-backdrop {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background:
+    radial-gradient(circle at 50% 50%, color-mix(in oklch, var(--rco-tone) 28%, transparent), transparent 55%),
+    rgb(8 8 10 / 0.62);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+.rco-rays {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 90vmin;
+  height: 90vmin;
+  margin-top: -45vmin;
+  margin-left: -45vmin;
+  border-radius: 9999px;
+  opacity: 0;
+  background: repeating-conic-gradient(
+    from 0deg,
+    color-mix(in oklch, var(--rco-tone) 30%, transparent) 0deg 8deg,
+    transparent 8deg 24deg
+  );
+  -webkit-mask-image: radial-gradient(circle, black 20%, transparent 70%);
+  mask-image: radial-gradient(circle, black 20%, transparent 70%);
+}
+
+.rco-stage .rco-legend-rays {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120vmin;
+  height: 120vmin;
+  margin-top: -60vmin;
+  margin-left: -60vmin;
+  border-radius: 9999px;
+  opacity: 0;
+  background: repeating-conic-gradient(
+    from 6deg,
+    color-mix(in oklch, var(--rco-tone) 28%, transparent) 0deg 3deg,
+    transparent 3deg 15deg
+  );
+  -webkit-mask-image: radial-gradient(circle, black 15%, transparent 68%);
+  mask-image: radial-gradient(circle, black 15%, transparent 68%);
+}
+
+.rco-legend-flash {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    color-mix(in oklch, var(--rco-tone) 55%, white),
+    color-mix(in oklch, var(--rco-tone) 25%, transparent) 45%,
+    transparent 75%
+  );
+}
+
+.rco-flyer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  opacity: 0;
+  perspective: 1100px;
+}
+
+.rco-legend-wave {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  margin-top: -50%;
+  margin-left: -50%;
+  border-radius: 9999px;
+  opacity: 0;
+  box-shadow:
+    0 0 0 3px var(--rco-tone),
+    0 0 40px 6px color-mix(in oklch, var(--rco-tone) 60%, transparent);
+}
+
+.rco-sparkles {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.rco-sparkle {
+  position: absolute;
+  display: block;
+  width: 12px;
+  height: 12px;
+  margin: -6px;
+  rotate: 45deg;
+  border-radius: 2px;
+  opacity: 0;
+  background: color-mix(in oklch, var(--rco-tone) 30%, white);
+  box-shadow: 0 0 12px 3px var(--rco-tone);
+}
+
+/* The legendary card's turning foil border, in the theme's own legendary colour: it, its lighter tint and white. */
+.rco-legend-border {
+  position: absolute;
+  inset: calc(-4 * var(--rco-u, 1px));
+  overflow: hidden;
+  border-radius: calc(var(--rco-radius, calc(28 * var(--rco-u, 1px))) + 4 * var(--rco-u, 1px));
+  opacity: 0;
+  box-shadow: 0 0 calc(50 * var(--rco-u, 1px)) calc(4 * var(--rco-u, 1px))
+    color-mix(in oklch, var(--rco-tone) 55%, transparent);
+}
+
+.rco-legend-spin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: 200%;
+  height: 200%;
+  margin-top: -100%;
+  margin-left: -100%;
+  background: conic-gradient(
+    from 0deg,
+    var(--rco-tone),
+    color-mix(in oklch, var(--rco-tone) 35%, white),
+    var(--rco-tone),
+    color-mix(in oklch, var(--rco-tone) 60%, white),
+    white,
+    var(--rco-tone)
+  );
+}
+
+.rco-burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+}
+
+.rco-burst-bit {
+  position: absolute;
+  display: block;
+  width: 12px;
+  height: 12px;
+  margin: -6px;
+  border-radius: 3px;
+  opacity: 0;
+  background: var(--rco-tone);
+}
+
+.rco-flyer-press {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: block;
+  border-radius: var(--rco-radius, calc(28 * var(--rco-u, 1px)));
+  outline: none;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* ---------- the card ---------- */
+
+.rco-flyer-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.rco-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--rco-radius, calc(28 * var(--rco-u, 1px)));
+  padding: calc(24 * var(--rco-u, 1px));
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  background: linear-gradient(165deg, color-mix(in oklch, var(--rco-tone) 26%, var(--rco-card)), var(--rco-card) 62%);
+  box-shadow:
+    inset 0 0 0 calc(2 * var(--rco-u, 1px)) var(--rco-tone),
+    var(--rco-card-shadow, 0 40px 90px -20px black);
+  color: var(--rco-fg);
+}
+
+.rco-back {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: var(--rco-radius, calc(28 * var(--rco-u, 1px)));
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: rotateY(180deg);
+  background: radial-gradient(
+    circle at 50% 40%,
+    color-mix(in oklch, var(--rco-accent) 18%, var(--rco-card)),
+    var(--rco-bg) 75%
+  );
+}
+
+/* One band, one pass: a repeated gradient brings a second band in behind the first. */
+.rco-foil {
+  position: absolute;
+  inset: 0;
+  display: block;
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  background: linear-gradient(
+    115deg,
+    transparent 35%,
+    color-mix(in oklch, var(--rco-tone) 50%, transparent) 46%,
+    rgb(255 255 255 / 0.85) 50%,
+    color-mix(in oklch, var(--rco-tone) 45%, transparent) 54%,
+    transparent 65%
+  );
+  background-size: 300% 100%;
+  background-repeat: no-repeat;
+}
+
+.rco-card-art {
+  display: grid;
+  flex: 1 1 0%;
+  place-items: center;
+}
+
+.rco-card-name {
+  font-size: calc(25 * var(--rco-u, 1px));
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+}
+
+.rco-card-rarity {
+  margin-top: calc(6 * var(--rco-u, 1px));
+  font-size: calc(14 * var(--rco-u, 1px));
+  font-weight: 600;
+  color: var(--rco-tone);
+}
+
+.rco-card-text {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: calc(8 * var(--rco-u, 1px));
+  font-size: calc(14 * var(--rco-u, 1px));
+  line-height: 1.4;
+  color: var(--rco-muted);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+.rco-card-note {
+  margin-top: calc(12 * var(--rco-u, 1px));
+  font-size: calc(12.5 * var(--rco-u, 1px));
+  font-weight: 600;
+  color: var(--rco-muted);
+}
+
+/* ---------- a card standing still ---------- */
+
+/*
+ * The card is its own measure: one unit is a three-hundredth of its width, and everything on it is sized in units.
+ * A card 150 pixels wide is the same picture at half size, which is also why a revealed card can shrink into one.
+ */
+.rco-card {
+  position: relative;
+  container-type: inline-size;
+  --rco-u: calc(100cqw / 300);
+  perspective: 1100px;
+}
+
+/* A card on a shelf casts a shorter shadow than one held up over a dimmed page. */
+.rco-card .rco-face {
+  box-shadow:
+    inset 0 0 0 calc(2 * var(--rco-u, 1px)) var(--rco-tone),
+    var(
+      --rco-card-shadow,
+      0 calc(22 * var(--rco-u, 1px)) calc(44 * var(--rco-u, 1px)) calc(-24 * var(--rco-u, 1px)) rgb(0 0 0 / 0.75)
+    );
+}
+
+.rco-card .rco-back {
+  box-shadow: inset 0 0 0 calc(2 * var(--rco-u, 1px)) color-mix(in oklch, var(--rco-fg) 14%, transparent);
+}
+
+.rco-card .rco-flyer-inner {
+  transition: transform 600ms cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.rco-card[data-down] .rco-flyer-inner {
+  transform: rotateY(180deg);
+}
+
+.rco-card .rco-legend-border {
+  opacity: 1;
+  transition: opacity 300ms ease;
+}
+
+/* Face down, a legendary looks like any other card: the foil is part of the face. */
+.rco-card[data-down] .rco-legend-border {
+  opacity: 0;
+}
+
+.rco-card .rco-legend-spin {
+  animation: rco-spin 2.4s linear infinite;
+}
+
+.rco-card .rco-foil {
+  opacity: 1;
+  background-position: 115% 0;
+  animation: rco-shine 2.1s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes rco-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* The band crosses in the first 0.9 seconds and rests off the card for the other 1.2. */
+@keyframes rco-shine {
+  0% {
+    background-position: 115% 0;
+  }
+
+  43%,
+  100% {
+    background-position: -15% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rco-cell[data-found],
+  .rco-card .rco-legend-spin,
+  .rco-card .rco-foil {
+    animation: none;
+  }
+
+  .rco-card .rco-flyer-inner {
+    transition: none;
+  }
+}

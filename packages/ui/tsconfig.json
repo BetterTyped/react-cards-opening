@@ -7,6 +7,6 @@
     "noEmit": true,
     "types": ["node", "vite/client", "vitest/globals", "@testing-library/jest-dom/vitest"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "testing/**/*.ts", "vite.config.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "testing/**/*.ts", "vite.config.ts", "../../tools/*.ts"],
   "exclude": ["node_modules", "dist", "out-tsc"]
 }

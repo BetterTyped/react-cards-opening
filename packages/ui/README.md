@@ -1,0 +1,21 @@
+# @react-cards-opening/ui
+
+The look of a card opening: the reveal, the scan grid, the whole hunt, a card that stands still, ten themes and one
+stylesheet. GSAP inside, no CSS framework needed.
+
+Part of [react-cards-opening](https://github.com/BetterTyped/react-cards-opening), card opening for React. A free tool
+from [Hype Stack](https://www.hype-stack.dev/?utm_source=react-cards-opening&utm_medium=referral&utm_campaign=npm).
+
+```bash
+pnpm add @react-cards-opening/ui @react-cards-opening/core gsap
+```
+
+- [Documentation](https://bettertyped.github.io/react-cards-opening/)
+- [Components](https://bettertyped.github.io/react-cards-opening/docs/components/)
+- [Examples](https://bettertyped.github.io/react-cards-opening/docs/examples/)
+
+Both packages are released together under one version number. Install the same version of each.
+
+## License
+
+MIT
