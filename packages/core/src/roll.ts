@@ -49,3 +49,27 @@ export function rollCards<C extends OpeningCard>({
   }
   return dealt;
 }
+
+/**
+ * One card from a pool, rarer tiers coming up less often. Unlike a deal, the card stays in the pool: call it again
+ * and the same card can come up twice. It is what fills a reel with what could have been.
+ */
+export function pickCard<C extends OpeningCard>(
+  pool: readonly C[],
+  {
+    rarities = DEFAULT_RARITIES,
+    random = Math.random,
+  }: { rarities?: readonly RarityTier[]; random?: () => number } = {},
+): C | undefined {
+  if (pool.length === 0) return undefined;
+  const weights = pool.map((card) => Math.max(0, tierOf(rarities, card.rarity).weight));
+  const total = weights.reduce((sum, weight) => sum + weight, 0);
+  // A pool of unknown tiers has no weights to go by: any card, evenly.
+  if (total <= 0) return pool[Math.floor(random() * pool.length)];
+  let mark = random() * total;
+  const at = weights.findIndex((weight) => {
+    mark -= weight;
+    return mark < 0;
+  });
+  return pool[at === -1 ? pool.length - 1 : at];
+}

@@ -5,6 +5,7 @@ import { CORE } from "./pages/core";
 import { EXAMPLES } from "./pages/examples";
 import { GET_STARTED } from "./pages/get-started";
 import { GUIDES } from "./pages/guides";
+import { EFFECT_LIBRARY } from "./pages/library";
 
 /*
  * Every page of the docs. The sidebar, the routes, the sitemap, the Markdown twins and llms.txt all read this one
@@ -63,6 +64,23 @@ const effectsOverview: DocPage = {
     "Every effect in a card reveal, one page each: flight, hum, flip, burst, rays, flash, shockwaves, foil border, shine, sparkles and the scan's three.",
   lead: "A reveal is thirteen small effects in a fixed order. Every card gets the first four. Loud tiers add rays. A legendary adds five more. The last three belong to the scan. Each has its own page with a live preview, the numbers behind it and what changes it.",
   blocks: [
+    {
+      kind: "cards",
+      items: [
+        {
+          path: "/docs/effects/library/",
+          title: "Effects library",
+          text: "Dozens more to play on top: particles, light, shockwaves, screen effects.",
+          tier: "legendary",
+        },
+        {
+          path: "/docs/effects/plans/",
+          title: "Effect plans",
+          text: "Which tier gets which of them, on any opener.",
+          tier: "epic",
+        },
+      ],
+    },
     {
       kind: "preview",
       demo: { type: "open", tier: "legendary" },
@@ -133,7 +151,7 @@ export const SECTIONS: readonly Section[] = [
   { id: "get-started", title: "Get started", pages: GET_STARTED },
   { id: "core", title: "Core", pages: CORE },
   { id: "components", title: "Components", pages: COMPONENTS },
-  { id: "effects", title: "Effects", pages: [effectsOverview, ...EFFECTS.map(effectPage)] },
+  { id: "effects", title: "Effects", pages: [effectsOverview, ...EFFECT_LIBRARY, ...EFFECTS.map(effectPage)] },
   { id: "guides", title: "Guides", pages: GUIDES },
   { id: "examples", title: "Examples", pages: EXAMPLES },
 ];

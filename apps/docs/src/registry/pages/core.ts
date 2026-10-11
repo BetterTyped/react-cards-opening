@@ -23,6 +23,11 @@ const overview: DocPage = {
           text: "The queue and the rules of a press, as a hook.",
         },
         {
+          path: "/docs/core/use-card-pack/",
+          title: "useCardPack",
+          text: "A pack's rules: sealed, dealt, turned in any order, done.",
+        },
+        {
           path: "/docs/core/use-opened-cards/",
           title: "useOpenedCards",
           text: "Which cards are opened, remembered on the device.",
@@ -288,6 +293,19 @@ const label = \`\${(odds.get("ash-phoenix")! * 100).toFixed(1)}%\`;`,
       kind: "p",
       text: "A card's chance is its tier's weight over the weights of every card in the pool. The numbers are for the next single draw; they add up to one.",
     },
+    { kind: "h2", text: "One card, with the same odds" },
+    {
+      kind: "p",
+      text: "`pickCard` draws a single card by tier weight and leaves it in the pool, so the same card can come up twice. It is what fills the strip of a [reel](/docs/components/card-spin/) with what could have been. Give it your own dice to make it repeatable.",
+    },
+    {
+      kind: "code",
+      language: "ts",
+      code: `import { createRng, pickCard } from "@react-cards-opening/core";
+
+const rng = createRng("strip:42");
+const tiles = Array.from({ length: 56 }, () => pickCard(allCards, { random: rng.next }));`,
+    },
     { kind: "h2", text: "Roll on the server" },
     {
       kind: "p",
@@ -510,9 +528,93 @@ function Reveal() {
   updated: UPDATED,
 };
 
+const useCardPack: DocPage = {
+  path: "/docs/core/use-card-pack/",
+  section: "core",
+  title: "useCardPack",
+  tagline: "a pack's rules without a look",
+  nav: "useCardPack",
+  description:
+    "useCardPack is the rules of a card pack as a React hook: sealed, dealt face down, each card turned over in any order, then done. Bring your own table.",
+  lead: "`useCardPack` is a pack of cards without a look. Where [useCardOpening](/docs/core/use-card-opening/) shows one card at a time, a pack puts every card on the table at once and lets the viewer turn them over in any order. The hook keeps the stage and which cards are up. [CardPack](/docs/components/card-pack/) is this hook with a table drawn around it.",
+  blocks: [
+    { kind: "h2", text: "Usage" },
+    {
+      kind: "code",
+      language: "tsx",
+      code: `import { useCardPack, useOpenedCards } from "@react-cards-opening/core";
+
+function Pack({ cards }) {
+  const { opened, open } = useOpenedCards("pack:42");
+  const pack = useCardPack({ cards, opened, onOpen: open });
+
+  if (pack.stage === "sealed") return <button onClick={pack.tear}>Open the pack</button>;
+
+  return (
+    <>
+      {cards.map((card) => (
+        <button key={card.id} onClick={() => pack.flip(card.id)}>
+          {pack.isUp(card.id) ? card.name : "?"}
+        </button>
+      ))}
+      {pack.allUp && pack.stage === "dealt" ? <button onClick={pack.finish}>Done</button> : null}
+    </>
+  );
+}`,
+    },
+    { kind: "h2", text: "The three stages" },
+    {
+      kind: "table",
+      head: ["Stage", "What is on the table", "How it moves on"],
+      rows: [
+        ["`sealed`", "The pack, unopened.", "`tear()` deals the cards face down."],
+        ["`dealt`", "Every card, face down until turned.", "`flip(id)` turns one. `finish()` works once all are up."],
+        ["`done`", "Every card, face up and gathered.", "`reset()` seals the pack to deal the same cards again."],
+      ],
+    },
+    {
+      kind: "p",
+      text: "The stage a pack starts in follows from `opened`. None of its cards opened is a sealed pack. Some of them is a pack somebody walked away from: it comes back dealt, with those cards up. All of them is done.",
+    },
+    { kind: "h2", text: "What it answers" },
+    {
+      kind: "table",
+      head: ["Field", "Type", "What it is"],
+      rows: [
+        ["`stage`", '`"sealed" | "dealt" | "done"`', "Where the pack is."],
+        ["`isUp`", "`(id: string) => boolean`", "Whether a card is face up."],
+        ["`left`", "`readonly C[]`", "Cards still face down."],
+        ["`allUp`", "`boolean`", "Every card is turned: the pack can be finished."],
+        ["`replay`", "`boolean`", "This deal is a replay: turning cards opens nothing."],
+        ["`tear`", "`() => void`", "Opens the sealed pack."],
+        [
+          "`flip`",
+          "`(id: string) => void`",
+          "Turns one card over. Ignored unless the pack is dealt and the card is down.",
+        ],
+        ["`finish`", "`() => void`", "Gathers the cards up. Ignored until every card is turned."],
+        ["`reset`", "`() => void`", "Seals the pack again."],
+      ],
+    },
+    { kind: "h2", text: "Replays" },
+    {
+      kind: "p",
+      text: "`onOpen` is called once a card, the first time it is turned. After `reset`, the same cards are dealt face down again and `replay` is true: they can be turned over to watch, and nothing is opened twice.",
+    },
+  ],
+  related: [
+    "/docs/components/card-pack/",
+    "/docs/core/use-card-opening/",
+    "/docs/core/use-opened-cards/",
+    "/docs/core/rolls/",
+  ],
+  updated: "2026-10-11",
+};
+
 export const CORE: readonly DocPage[] = [
   overview,
   useCardOpening,
+  useCardPack,
   useOpenedCards,
   rolls,
   showPlan,

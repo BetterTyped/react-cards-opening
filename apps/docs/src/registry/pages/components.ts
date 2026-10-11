@@ -1,6 +1,7 @@
 import type { DocPage } from "../../content/types";
 import { INSTALL } from "../../site";
 import { propsTable } from "../props";
+import { OPENERS } from "./openers";
 import type {
   CardHuntProps,
   CardOpeningProps,
@@ -19,26 +20,56 @@ const overview: DocPage = {
   tagline: "the reveal, drawn for you",
   nav: "Overview",
   description:
-    "The components of @react-cards-opening/ui: the reveal overlay, the whole hunt, the scan grid, a card that stands still, and pixel glyphs to draw on it.",
-  lead: "`@react-cards-opening/ui` is the look: five components, ten themes and one stylesheet. Every component is the one running in Hype Stack's Wrapped, checked against it pixel for pixel, and each one takes a `theme` and draws itself with no CSS framework on the page.",
+    "The components of @react-cards-opening/ui: a pack, a reel, a case and a hunt to open cards with, the reveal they share, and a library of effects.",
+  lead: "`@react-cards-opening/ui` is the look: four ways to open cards, the reveal they share, a library of effects, ten themes and one stylesheet. Every component is the one running in Hype Stack's Wrapped, checked against it pixel for pixel, and each one takes a `theme` and draws itself with no CSS framework on the page.",
   blocks: [
     { kind: "code", language: "bash", code: INSTALL },
     { kind: "code", language: "tsx", code: `import "@react-cards-opening/ui/styles.css";` },
-    { kind: "h2", text: "The five" },
+    { kind: "h2", text: "Four ways to open a card" },
     {
       kind: "cards",
       items: [
+        {
+          path: "/docs/components/card-pack/",
+          title: "CardPack",
+          text: "A sealed pack: it bursts, deals face down, and each card turns on a press.",
+          tier: "legendary",
+        },
+        {
+          path: "/docs/components/card-spin/",
+          title: "CardSpin",
+          text: "A reel that races under a marker and stops on the card that was dealt.",
+          tier: "epic",
+        },
+        {
+          path: "/docs/components/card-case/",
+          title: "CardCase",
+          text: "A case that opens and gives up its cards one after another.",
+          tier: "rare",
+        },
+        {
+          path: "/docs/components/card-hunt/",
+          title: "CardHunt",
+          text: "A grid, a scan that hunts it, and the list of finds.",
+          tier: "common",
+        },
+      ],
+    },
+    { kind: "h2", text: "The pieces" },
+    {
+      kind: "cards",
+      items: [
+        {
+          path: "/docs/components/effect-layer/",
+          title: "EffectLayer",
+          text: "A place to play any of the library's effects, on anything.",
+          tier: "legendary",
+        },
         {
           path: "/docs/components/card-opening/",
           title: "CardOpening",
           text: "The reveal over the page: flight, hum, flip, and the show for the tier.",
           tier: "legendary",
-        },
-        {
-          path: "/docs/components/card-hunt/",
-          title: "CardHunt",
-          text: "A grid, a scan button, the reveal and the list of finds in one piece.",
-          tier: "epic",
         },
         {
           path: "/docs/components/scan-grid/",
@@ -63,7 +94,7 @@ const overview: DocPage = {
     { kind: "h2", text: "How they fit" },
     {
       kind: "p",
-      text: "`CardHunt` is `ScanGrid` and `CardOpening` wired to [useCardOpening](/docs/core/use-card-opening/). Reach for it first. When the layout is yours (cards in a shop, a daily reward, a pack on a table), use `CardOpening` on its own and tell it where a card leaves from and where it lands.",
+      text: "Every opener ends in the same reveal. `CardHunt` is `ScanGrid` and `CardOpening` wired to [useCardOpening](/docs/core/use-card-opening/); `CardSpin` swaps the grid for a `SpinReel`, and `CardCase` for a `LootCase`. `CardPack` runs on [useCardPack](/docs/core/use-card-pack/) and turns its cards where they lie. When the layout is yours (cards in a shop, a daily reward), use `CardOpening` on its own and tell it where a card leaves from and where it lands.",
     },
     { kind: "preview", demo: { type: "hunt" }, caption: "CardHunt: all of them at once." },
     { kind: "h2", text: "What they share" },
@@ -74,6 +105,7 @@ const overview: DocPage = {
         "**`rarities`**: your [tiers](/docs/rarity-tiers/). The four defaults when left out.",
         "**Their own ground rules.** Each resets only the elements it renders, at one class of specificity, so a page's `button` or `p` styles do not reach in and nothing leaks out.",
         "**Pixels, not rems.** A page with a 10 pixel root font gets the same card as one with 16.",
+        "**`effects`**: a [plan](/docs/effects/plans/) of extra effects per tier, from a [library of dozens](/docs/effects/library/).",
         "**`classNames`**: a class of your own for any part, and a stylesheet where every rule weighs one class, so yours wins. [Styling by hand](/docs/guides/styling/) has the Tailwind setup.",
       ],
     },
@@ -154,6 +186,11 @@ function Shop({ cards }) {
         "optional",
       ],
       labels: ["Partial<CardOpeningLabels>", "What a screen reader and a tooltip say.", "optional"],
+      effects: [
+        "EffectPlan",
+        "More to play as a card turns: [which effects each tier gets](/docs/effects/plans/).",
+        "optional",
+      ],
       classNames: [
         "CardOpeningClassNames",
         "A class of your own for each part. See [Styling by hand](/docs/guides/styling/).",
@@ -290,6 +327,11 @@ function Hunt({ cards, activity }) {
       hero: ["boolean", "The hunt is the page: bigger type, and it fills the box it is given.", "optional"],
       onRunChange: ["(running: boolean) => void", "A scan started or came to rest.", "optional"],
       labels: ["Partial<CardHuntLabels>", "Every word in the panel.", "optional"],
+      effects: [
+        "EffectPlan",
+        "More to play as a card turns: [which effects each tier gets](/docs/effects/plans/).",
+        "optional",
+      ],
       landing: [
         "(card) => HTMLElement | null",
         "Where a found card lands instead of its badge. Answer null and it fades out.",
@@ -581,4 +623,13 @@ export const heart: PixelArt = [
   updated: UPDATED,
 };
 
-export const COMPONENTS: readonly DocPage[] = [overview, cardOpening, cardHunt, scanGrid, card, pixelGlyph];
+export const COMPONENTS: readonly DocPage[] = [
+  overview,
+  ...OPENERS.slice(0, 3),
+  cardHunt,
+  cardOpening,
+  scanGrid,
+  card,
+  pixelGlyph,
+  ...OPENERS.slice(3),
+];

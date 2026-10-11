@@ -1,0 +1,179 @@
+import { type CSSProperties, type ReactNode, useRef, useState } from "react";
+
+import { CardOpening } from "./card-opening";
+import type { CardSpinClassNames } from "./class-names";
+import { cn } from "./class-names";
+import type { EffectPlan } from "./effects";
+import { AgainIcon, ForwardIcon, ScanIcon } from "./icons";
+import { CARD_SPIN_LABELS, type CardSpinLabels, type OpenerState } from "./labels";
+import { badgeIn, Finds, Panel } from "./panel";
+import { SpinReel, type SpinReelHandle } from "./spin-reel";
+import { type CardTheme, DEFAULT_THEME, rarityColor } from "./theme";
+import type { CardFaceInfo, CardShow, GlyphCard } from "./types";
+import { DEFAULT_RARITIES, type RarityTier, tierOf, useCardOpening } from "@react-cards-opening/core";
+
+const NONE: CardSpinClassNames = {};
+
+export interface CardSpinProps<C extends GlyphCard> {
+  /** Every card in the deal, won or not, in the order they come up. */
+  cards: readonly C[];
+  opened: readonly string[];
+  /** A card was turned face up for the first time. */
+  onOpen: (id: string) => void;
+  /** What slides past on the reel. The deal itself unless you hand it the whole set. */
+  pool?: readonly C[];
+  theme?: CardTheme;
+  rarities?: readonly RarityTier[];
+  /** Extra buttons in the header, next to the spin button. */
+  actions?: ReactNode;
+  /** A spin started or came to rest. */
+  onRunChange?: (running: boolean) => void;
+  labels?: Partial<CardSpinLabels>;
+  /** Where a won card lands instead of its badge here. Answer null and the card fades out where it is. */
+  landing?: (card: C) => HTMLElement | null;
+  renderFace?: (card: C, info: CardFaceInfo) => ReactNode;
+  renderBack?: (card: C) => ReactNode;
+  readingOf?: (card: C, info: CardFaceInfo) => readonly string[];
+  /** More to play as a card turns over: which effects each tier gets. One of `EFFECT_SETS`, or your own plan. */
+  effects?: EffectPlan;
+  className?: string;
+  /** A class of your own for each part: the panel's, the reel's and the reveal's. */
+  classNames?: CardSpinClassNames;
+  style?: CSSProperties;
+}
+
+/**
+ * The reel as a whole opener: a strip that spins and stops on a card, the reveal for it, and a list of what was
+ * won. One press is one spin. It is `SpinReel` and `CardOpening` wired to `useCardOpening`.
+ */
+export function CardSpin<C extends GlyphCard>({
+  cards,
+  opened,
+  onOpen,
+  pool,
+  theme = DEFAULT_THEME,
+  rarities = DEFAULT_RARITIES,
+  actions,
+  onRunChange,
+  labels,
+  landing,
+  renderFace,
+  renderBack,
+  readingOf,
+  effects,
+  className,
+  classNames: names = NONE,
+  style,
+}: CardSpinProps<C>) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const flashRef = useRef<HTMLDivElement>(null);
+  const reelRef = useRef<SpinReelHandle>(null);
+  const hunt = useCardOpening<C>({ cards, opened, onOpen, onRunChange });
+  const { run, step, current, pending, left } = hunt;
+
+  // The strip keeps showing the last spin once it is over, with its winner still under the marker.
+  const [last, setLast] = useState<{ card: C; key: string } | null>(null);
+  const spinning = run && current && !hunt.peeking ? { card: current, key: `${run.id}:${step}` } : null;
+  if (spinning && spinning.key !== last?.key) setLast(spinning);
+  const shown = spinning ?? last;
+
+  if (cards.length === 0) return null;
+
+  const words = { ...CARD_SPIN_LABELS, ...labels };
+  const state: OpenerState = {
+    total: cards.length,
+    opened: cards.length - pending.length,
+    pending: pending.length,
+    left,
+    running: run !== null,
+    replay: run?.replay ?? false,
+  };
+  const idle = hunt.peeking !== null;
+
+  let buttons: ReactNode = (
+    <button
+      type="button"
+      className={cn("rco-button rco-button-main", names.mainButton)}
+      onClick={() => hunt.start(pending.slice(0, 1).map((card) => card.id))}
+      disabled={idle}
+    >
+      <ScanIcon />
+      {words.spin}
+    </button>
+  );
+  if (run) {
+    buttons =
+      // A spin is one card, so the run never has more to give. The deal does: Take all hands over the rest of it.
+      !run.replay && pending.length > 1 ? (
+        <button type="button" className={cn("rco-button rco-button-skip", names.sideButton)} onClick={hunt.openAll}>
+          <ForwardIcon />
+          {words.openAll}
+        </button>
+      ) : null;
+  } else if (hunt.allOpened) {
+    buttons = (
+      <button
+        type="button"
+        className={cn("rco-button rco-button-again", names.sideButton)}
+        onClick={hunt.replay}
+        disabled={idle}
+      >
+        <AgainIcon />
+        {words.replay}
+      </button>
+    );
+  }
+
+  const tone = current ? rarityColor(theme, current.rarity) : theme.fg;
+
+  return (
+    <Panel
+      kind="spin"
+      theme={theme}
+      tone={tone}
+      names={names}
+      className={className}
+      style={style}
+      panelRef={rootRef}
+      flashRef={flashRef}
+      headline={words.headline(state)}
+      subline={words.subline(state)}
+      actions={actions}
+      buttons={buttons}
+    >
+      <SpinReel
+        handle={reelRef}
+        winner={shown?.card ?? null}
+        pool={pool ?? cards}
+        spinKey={shown?.key ?? "idle"}
+        theme={theme}
+        rarities={rarities}
+        className={names.reel}
+        classNames={names}
+      />
+      <Finds
+        cards={cards}
+        opened={opened}
+        theme={theme}
+        names={names}
+        disabled={run !== null}
+        labels={words}
+        whereOf={(card) => tierOf(rarities, card.rarity).label}
+        onPeek={(card, element) => hunt.peek(card.id, element)}
+      />
+      <CardOpening
+        effects={effects}
+        opening={hunt.opening}
+        theme={theme}
+        rarities={rarities}
+        launch={(_card: C, show: CardShow) => reelRef.current?.spin(show, { flash: flashRef.current }) ?? null}
+        landing={landing ?? ((card) => badgeIn(rootRef.current, card.id))}
+        renderFace={renderFace}
+        renderBack={renderBack}
+        readingOf={readingOf}
+        labels={words}
+        classNames={names}
+      />
+    </Panel>
+  );
+}

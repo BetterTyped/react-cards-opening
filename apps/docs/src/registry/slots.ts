@@ -1,9 +1,14 @@
 import type { Block } from "../content/types";
 import type {
+  CardCaseClassNames,
   CardClassNames,
   CardHuntClassNames,
   CardOpeningClassNames,
+  CardPackClassNames,
+  LootCaseClassNames,
+  PanelClassNames,
   ScanGridClassNames,
+  SpinReelClassNames,
 } from "@react-cards-opening/ui";
 
 /*
@@ -37,6 +42,67 @@ const OPENING: Lines<Exclude<keyof CardOpeningClassNames, keyof CardClassNames>>
   legendFlash: ["rco-legend-flash", "The flash over the whole screen as a legendary turns."],
   wave: ["rco-legend-wave", "Each of a legendary's two shockwave rings."],
   sparkle: ["rco-sparkle", "Each of the diamonds that glint around a legendary."],
+  effects: ["rco-fx-layer", "The layer an `effects` plan is played on, behind the card."],
+};
+
+const PANEL: Lines<keyof PanelClassNames> = {
+  root: ["rco-panel", "The panel. The same as `className`."],
+  flash: ["rco-panel-flash", "The flash over the whole panel on a loud card."],
+  head: ["rco-panel-head", "The row that holds the words and the buttons."],
+  headline: ["rco-panel-headline", "The headline."],
+  subline: ["rco-panel-subline", "The line under it."],
+  actions: ["rco-panel-actions", "The buttons' row."],
+  mainButton: ["rco-button-main", "The main button: Spin, or Open the case."],
+  sideButton: ["rco-button-skip", "Take all during a run, and the replay button after it."],
+  finds: ["rco-finds", "The list of badges."],
+  badge: ["rco-badge", "Each badge, won or not. A won one is a `button`."],
+  badgeArt: ["rco-badge-art", "The little glyph's box in a badge."],
+  badgeName: ["rco-badge-name", "The card's name in a badge."],
+  badgeWhere: ["rco-badge-where", "The second line of a badge."],
+};
+
+const REEL: Lines<keyof SpinReelClassNames | "reel"> = {
+  reel: ["rco-reel", "The reel's window. `className` on a `SpinReel` used alone."],
+  strip: ["rco-reel-strip", "The strip that slides."],
+  tile: ["rco-reel-tile", "Every tile. The winner also gets `data-won`."],
+  tileName: ["rco-reel-name", "The card's name under a tile's glyph."],
+  marker: ["rco-reel-marker", "The line the reel stops under."],
+};
+
+const LOOT_CASE: Lines<keyof LootCaseClassNames | "case"> = {
+  case: ["rco-case", "The case's root. `className` on a `LootCase` used alone."],
+  box: ["rco-case-box", "The lid and the body together: what shakes."],
+  lid: ["rco-case-lid", "The lid."],
+  body: ["rco-case-body", "The body, with the emblem on it."],
+  latch: ["rco-case-latch", "The plate on the front. It wears the colour of what comes out next."],
+  glow: ["rco-case-glow", "The light that pours out of the open case."],
+  caseRays: ["rco-case-rays", "The wheel of rays behind an open case."],
+  caseBit: ["rco-case-bit", "Each spark thrown as the lid lifts."],
+};
+
+const SHELF: Lines<
+  Exclude<
+    keyof CardCaseClassNames,
+    keyof PanelClassNames | keyof LootCaseClassNames | keyof CardOpeningClassNames | "case"
+  >
+> = {
+  shelf: ["rco-shelf", "The row of places under the case."],
+  slot: ["rco-shelf-slot", "Each place: a button holding the card that lands there."],
+};
+
+const PACK: Lines<Exclude<keyof CardPackClassNames, keyof CardOpeningClassNames>> = {
+  root: ["rco-pack", "The pack's panel. The same as `className`. It carries `data-stage`."],
+  table: ["rco-pack-table", "The table the cards are dealt on."],
+  sealed: ["rco-pack-sealed", "The sealed pack: a button."],
+  packFlash: ["rco-pack-flash", "The flash over the table as the pack bursts, and as a legendary turns."],
+  seat: ["rco-pack-seat", "A card's place on the table. It carries `data-up` and `data-effect`."],
+  seatPress: ["rco-pack-press", "The button around each card."],
+  seatRays: ["rco-pack-rays", "The rays a loud card opens behind itself."],
+  seatBit: ["rco-pack-bit", "Each spark a turning card throws."],
+  foot: ["rco-pack-foot", "The row under the table: the hint and the buttons."],
+  hint: ["rco-pack-hint", "The line that says what to do next."],
+  mainButton: ["rco-button-main", "Done."],
+  sideButton: ["rco-button-again", "Deal them again."],
 };
 
 const SCAN: Lines<keyof ScanGridClassNames> = {
@@ -77,4 +143,14 @@ const table = (lines: Record<string, Line>): Block => ({
   rows: Object.entries(lines).map(([key, [libraryClass, text]]) => [`\`${key}\``, `\`.${libraryClass}\``, text]),
 });
 
-export const SLOT_TABLES = { card: table(CARD), opening: table(OPENING), scan: table(SCAN), hunt: table(HUNT) };
+export const SLOT_TABLES = {
+  card: table(CARD),
+  opening: table(OPENING),
+  scan: table(SCAN),
+  hunt: table(HUNT),
+  panel: table(PANEL),
+  reel: table(REEL),
+  lootCase: table(LOOT_CASE),
+  shelf: table(SHELF),
+  pack: table(PACK),
+};

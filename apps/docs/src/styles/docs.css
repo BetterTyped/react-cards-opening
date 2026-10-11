@@ -1358,6 +1358,60 @@ main:has(> .d-facts) > .d-facts {
   color: inherit;
 }
 
+/* The effects gallery: a room with a card in it, and a button for every effect under it. */
+.d-fx {
+  display: grid;
+  gap: 18px;
+}
+.d-fx-room {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  height: clamp(340px, 52vw, 460px);
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, currentColor 10%, transparent);
+}
+.d-fx-card {
+  position: relative;
+  width: clamp(120px, 20vw, 168px);
+}
+.d-fx-group {
+  display: grid;
+  gap: 8px;
+}
+.d-fx-kind {
+  margin: 0;
+  font: 600 12.5px var(--d-font);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+.d-fx-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.d-fx-chips .d-chip-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+/* Tiers and sets are written as their ids. */
+.d-fx-chips[role="group"] .d-chip-button {
+  text-transform: capitalize;
+}
+.d-fx .d-chip-button[aria-pressed="true"] {
+  background: color-mix(in oklch, currentColor 20%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, currentColor 45%, transparent);
+}
+.d-fx-dot {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
 /* Cards lying on a shelf: four across, two on a phone. */
 .d-shelf-cards {
   display: grid;

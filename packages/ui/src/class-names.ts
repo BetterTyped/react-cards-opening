@@ -51,6 +51,8 @@ export interface CardOpeningClassNames extends CardClassNames {
   sparkle?: string;
   /** Each particle of the burst. */
   burst?: string;
+  /** The layer the extra effects of an `effects` plan are played on. */
+  effects?: string;
   /** The button laid over the card: what a press and the keyboard focus land on. */
   press?: string;
 }
@@ -104,6 +106,102 @@ export interface CardHuntClassNames extends ScanGridClassNames, CardOpeningClass
   badgeName?: string;
   /** Where a found card was found, under its name. */
   badgeWhere?: string;
+}
+
+/** What every ready-made opener but the hunt shares: a panel with a few words, buttons, and a list of what was won. */
+export interface PanelClassNames {
+  /** The panel. The same as `className`. */
+  root?: string;
+  /** The flash over the whole panel on a loud card. */
+  flash?: string;
+  /** The row that holds the words and the buttons. */
+  head?: string;
+  headline?: string;
+  subline?: string;
+  /** The buttons' row. */
+  actions?: string;
+  /** The main button. */
+  mainButton?: string;
+  /** The quieter button next to it: skip, or go again. */
+  sideButton?: string;
+  /** The list of badges. */
+  finds?: string;
+  /** Each badge, won or not. A won one is a `button`. */
+  badge?: string;
+  badgeArt?: string;
+  badgeName?: string;
+  /** The small line under a won card's name. */
+  badgeWhere?: string;
+}
+
+/** The reel: a strip of tiles that slides under a marker. Its own root takes `className`. */
+export interface SpinReelClassNames {
+  /** The strip that moves. */
+  strip?: string;
+  /** Every tile. The one the reel stopped on carries `data-won`. */
+  tile?: string;
+  /** A tile's name, under its glyph. */
+  tileName?: string;
+  /** The line the strip stops under. */
+  marker?: string;
+}
+
+/** The reel as a whole opener. */
+export interface CardSpinClassNames extends PanelClassNames, SpinReelClassNames, CardOpeningClassNames {
+  /** The reel's root. */
+  reel?: string;
+}
+
+/** The case: a box whose lid opens. Its own root takes `className`. */
+export interface LootCaseClassNames {
+  /** The box: the lid and the body together. It is what shakes. */
+  box?: string;
+  lid?: string;
+  body?: string;
+  /** The plate on the front, in the colour of the card coming out. */
+  latch?: string;
+  /** The light that rises out of the open case. */
+  glow?: string;
+  /** The fan of rays behind it. */
+  caseRays?: string;
+  /** Each spark thrown as the lid pops. */
+  caseBit?: string;
+}
+
+/** The case as a whole opener: the box, and the shelf its cards land on. */
+export interface CardCaseClassNames extends PanelClassNames, LootCaseClassNames, CardOpeningClassNames {
+  /** The case's root. */
+  case?: string;
+  /** The row of places the cards land on. */
+  shelf?: string;
+  /** Each place: a button holding a card. */
+  slot?: string;
+}
+
+/** The pack: sealed, then dealt out on a table. The card parts apply to every card on it. */
+export interface CardPackClassNames extends CardOpeningClassNames {
+  /** The pack's root. The same as `className`. */
+  root?: string;
+  /** The sealed pack itself. */
+  sealed?: string;
+  /** The table the cards are dealt on. */
+  table?: string;
+  /** Each card's place on the table. It carries `data-up` once turned. */
+  seat?: string;
+  /** The button around a dealt card. */
+  seatPress?: string;
+  /** The rays behind a loud card once it is turned. */
+  seatRays?: string;
+  /** Each spark a turning card throws. */
+  seatBit?: string;
+  /** The flash over the table. */
+  packFlash?: string;
+  /** The row under the table: the words and the buttons. */
+  foot?: string;
+  /** The line of words under the table. */
+  hint?: string;
+  mainButton?: string;
+  sideButton?: string;
 }
 
 /** The library's class for a part, and yours after it. */

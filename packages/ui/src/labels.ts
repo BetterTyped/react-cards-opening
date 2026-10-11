@@ -68,3 +68,119 @@ export const CARD_HUNT_LABELS: CardHuntLabels = {
   openBadge: "Open this card",
   found: (where) => `Found on ${where}`,
 };
+
+/** Where a ready-made opener stands, for the lines that are written from it. */
+export interface OpenerState {
+  total: number;
+  /** Opened so far. */
+  opened: number;
+  pending: number;
+  /** Cards still to come in this run, after the one on screen. */
+  left: number;
+  running: boolean;
+  replay: boolean;
+}
+
+export interface CardSpinLabels extends CardOpeningLabels {
+  headline: (state: OpenerState) => string;
+  subline: (state: OpenerState) => string;
+  /** The main button: one spin. */
+  spin: string;
+  /** The button that takes whatever is left without the show. */
+  openAll: string;
+  replay: string;
+  hidden: string;
+  finds: string;
+  openBadge: string;
+}
+
+const times = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
+
+export const CARD_SPIN_LABELS: CardSpinLabels = {
+  ...CARD_OPENING_LABELS,
+  headline: ({ total, pending, running, replay }) => {
+    if (running) return replay ? "Spinning again." : "Spinning.";
+    if (pending === 0) return `You got all ${total}.`;
+    return `${times(pending, "spin", "spins")} left.`;
+  },
+  subline: ({ pending }) =>
+    pending === 0 ? "Spin again to watch them come up." : "Every spin stops on one of your cards.",
+  spin: "Spin",
+  openAll: "Take all",
+  replay: "Spin again",
+  hidden: "Not won yet",
+  finds: "Your cards",
+  openBadge: "Open this card",
+};
+
+export interface CardCaseLabels extends CardOpeningLabels {
+  headline: (state: OpenerState) => string;
+  subline: (state: OpenerState) => string;
+  /** The main button, and what a screen reader calls the case itself. */
+  open: string;
+  openAll: string;
+  replay: string;
+  /** What a screen reader calls a place on the shelf with nothing on it yet. */
+  emptySlot: string;
+  /** The same for a place with a card on it. */
+  openCard: (name: string) => string;
+  shelf: string;
+}
+
+export const CARD_CASE_LABELS: CardCaseLabels = {
+  ...CARD_OPENING_LABELS,
+  headline: ({ total, opened, pending, left, running, replay }) => {
+    if (running) {
+      if (replay) return "Opening it again.";
+      return left > 0 ? `Opening. ${left} more inside.` : "Opening. This is the last one.";
+    }
+    if (pending === 0) return `The case is empty. You got all ${total}.`;
+    if (opened > 0) return `${times(pending, "card is", "cards are")} still inside.`;
+    return `${times(total, "card is", "cards are")} in this case.`;
+  },
+  subline: ({ pending }) =>
+    pending === 0 ? "Open it again to watch them come out." : "Open it and they come out one after another.",
+  open: "Open the case",
+  openAll: "Take all",
+  replay: "Open it again",
+  emptySlot: "Nothing here yet",
+  openCard: (name) => `Look at ${name} again`,
+  shelf: "Your cards",
+};
+
+/** Where a pack stands, for the line under the table. */
+export interface PackState {
+  total: number;
+  /** Cards still face down. */
+  left: number;
+  stage: "sealed" | "dealt" | "done";
+  replay: boolean;
+}
+
+export interface CardPackLabels extends CardOpeningLabels {
+  /** What a screen reader calls the sealed pack. */
+  tear: string;
+  /** The line under the table. */
+  hint: (state: PackState) => string;
+  /** What a screen reader calls a card that is still face down. */
+  flip: string;
+  /** The same for a card that is turned: a press looks at it up close. */
+  openCard: (name: string) => string;
+  /** The button that appears once every card is turned. */
+  done: string;
+  replay: string;
+}
+
+export const CARD_PACK_LABELS: CardPackLabels = {
+  ...CARD_OPENING_LABELS,
+  tear: "Open the pack",
+  hint: ({ total, left, stage }) => {
+    if (stage === "sealed") return `${times(total, "card", "cards")} inside. Press the pack.`;
+    if (stage === "done") return `${times(total, "card", "cards")}, all yours.`;
+    return left > 0 ? `${left} to turn.` : "That is all of them.";
+  },
+  flip: "Turn this card over",
+  openCard: (name) => `Look at ${name} up close`,
+  done: "Done",
+  replay: "Deal them again",
+};

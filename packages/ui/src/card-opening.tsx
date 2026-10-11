@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 
 import { CardBackContent, CardContent } from "./card";
 import { type CardOpeningClassNames, cn } from "./class-names";
+import { clearEffects, type EffectPlan, effectsFor, playEffects } from "./effects";
 import { CARD_OPENING_LABELS, type CardOpeningLabels } from "./labels";
 import { type CardTheme, DEFAULT_THEME, rarityColor, themeStyle } from "./theme";
 import type { CardFaceInfo, CardLaunch, CardShow, GlyphCard } from "./types";
@@ -119,6 +120,11 @@ export interface CardOpeningProps<C extends OpeningCard> {
    */
   readingOf?: (card: C, info: CardFaceInfo) => readonly string[];
   labels?: Partial<CardOpeningLabels>;
+  /**
+   * More to play as a card turns over, on top of its own show: which effects each tier gets. One of
+   * `EFFECT_SETS`, or a plan of your own. Nothing more unless told.
+   */
+  effects?: EffectPlan;
   /** A class of your own for each part of the reveal. */
   classNames?: CardOpeningClassNames;
   /** The card's width in pixels at the middle of the screen. Narrow screens get 78% of their width at most. */
@@ -145,6 +151,7 @@ export function CardOpening<C extends OpeningCard>({
   noteOf,
   readingOf,
   labels,
+  effects,
   classNames: names = NONE,
   width: cardWidth = CARD_WIDTH,
   ratio = CARD_RATIO,
@@ -167,8 +174,17 @@ export function CardOpening<C extends OpeningCard>({
   }, []);
 
   // Read through a ref: a function from the page above is a new one on every render, and must not restart a reveal.
-  const latest = useRef({ launch, landing, noteOf, readingOf, theme, rarities });
-  latest.current = { launch, landing, noteOf, readingOf, theme, rarities };
+  const latest = useRef({ launch, landing, noteOf, readingOf, theme, rarities, effects });
+  latest.current = { launch, landing, noteOf, readingOf, theme, rarities, effects };
+
+  // The canvas the extra effects are drawn on goes when the reveal does.
+  useEffect(() => {
+    const stage = stageRef.current;
+    return () => {
+      const layer = stage?.querySelector<HTMLElement>(".rco-fx-layer");
+      if (layer) clearEffects(layer);
+    };
+  }, [mounted]);
 
   const killLoops = () => {
     for (const loop of loopsRef.current) loop.kill();
@@ -287,6 +303,25 @@ export function CardOpening<C extends OpeningCard>({
         },
         "<0.2",
       );
+      const extra = effectsFor(props.effects, tier);
+      if (extra.length > 0 && !reduced) {
+        tl.call(
+          safe(() => {
+            const layer = find(".rco-fx-layer");
+            if (!layer) return;
+            playEffects(layer, extra, {
+              at: flyer,
+              size: width,
+              ratio,
+              tone: colour,
+              accent: props.theme.levels[4],
+              subject: stage,
+            });
+          }),
+          undefined,
+          "<",
+        );
+      }
       if (plan.rays) {
         tl.fromTo(rays, { autoAlpha: 0, rotate: 0, scale: 0.6 }, { autoAlpha: 0.9, scale: 1, duration: 0.5 }, "<");
         tl.to(rays, { rotate: 60, duration: 2.6, ease: "none" }, "<");
@@ -566,6 +601,7 @@ export function CardOpening<C extends OpeningCard>({
           <div className={cn("rco-legend-flash", names.legendFlash)} aria-hidden />
         </>
       ) : null}
+      <div className={cn("rco-fx-layer", names.effects)} aria-hidden />
       <div className={cn("rco-flyer", names.flyer)}>
         {legendary ? (
           <>

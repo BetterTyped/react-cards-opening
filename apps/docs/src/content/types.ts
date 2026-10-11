@@ -29,7 +29,17 @@ export type Demo =
   /** Three tiers of your own. */
   | { type: "custom-tiers" }
   /** The hunt restyled through `classNames`. */
-  | { type: "styled" };
+  | { type: "styled" }
+  /** A sealed pack: press it, then turn its cards over. */
+  | { type: "pack" }
+  /** A reel that spins and stops on a card. */
+  | { type: "spin" }
+  /** A case that opens and gives up its cards. */
+  | { type: "case" }
+  /** Every effect in the library, each on a button. */
+  | { type: "effects" }
+  /** A pack under each of the ready-made plans of effects. */
+  | { type: "effect-sets" };
 
 export type CodeLanguage = "tsx" | "ts" | "css" | "bash" | "html";
 

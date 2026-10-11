@@ -22,3 +22,33 @@ body {
 .page[data-hero] {
   height: 100vh;
 }
+
+/* The effects view: one card in the middle of a stage that fills the window. */
+.fx-stage {
+  position: fixed;
+  inset: 0;
+}
+
+.fx-room {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.fx-card {
+  position: relative;
+}
+
+.fx-play {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: #ffffff22;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}

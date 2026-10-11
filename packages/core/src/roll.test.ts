@@ -1,6 +1,6 @@
 import type { OpeningCard } from "./opening";
 import { DEFAULT_RARITIES, type RarityTier, tierOf } from "./rarity";
-import { chances, rollCards } from "./roll";
+import { chances, pickCard, rollCards } from "./roll";
 
 const pool = (counts: Record<string, number>): OpeningCard[] =>
   Object.entries(counts).flatMap(([rarity, count]) =>
@@ -83,5 +83,37 @@ describe("rollCards", () => {
 describe("tierOf", () => {
   it("opens a card with an unknown tier quietly instead of throwing", () => {
     expect(tierOf(DEFAULT_RARITIES, "mythic")).toEqual({ id: "mythic", label: "mythic", weight: 0, effect: "quiet" });
+  });
+});
+
+describe("pickCard", () => {
+  it("leaves the card in the pool, so it can come up again", () => {
+    const one = [{ id: "only", rarity: "common" }];
+
+    expect(pickCard(one)?.id).toBe("only");
+    expect(pickCard(one)?.id).toBe("only");
+  });
+
+  it("goes by tier weight and by the source it is given", () => {
+    const two = [
+      { id: "common", rarity: "common" },
+      { id: "legendary", rarity: "legendary" },
+    ];
+
+    expect(pickCard(two, { random: () => 0 })?.id).toBe("common");
+    expect(pickCard(two, { random: () => 0.99 })?.id).toBe("legendary");
+  });
+
+  it("picks evenly when no tier is known, and nothing from an empty pool", () => {
+    expect(
+      pickCard(
+        [
+          { id: "a", rarity: "?" },
+          { id: "b", rarity: "?" },
+        ],
+        { random: () => 0.6 },
+      )?.id,
+    ).toBe("b");
+    expect(pickCard([])).toBeUndefined();
   });
 });

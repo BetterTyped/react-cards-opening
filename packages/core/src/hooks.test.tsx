@@ -1,8 +1,10 @@
 import { act, renderHook } from "@testing-library/react";
+import { useState } from "react";
 
 import type { OpeningCard } from "./opening";
 import { pickSpot, useCardSpots } from "./spots";
 import { useCardOpening, useOpeningPhase } from "./use-card-opening";
+import { useCardPack } from "./use-card-pack";
 import { useOpenedCards } from "./use-opened-cards";
 
 const CARDS: OpeningCard[] = [
@@ -164,5 +166,73 @@ describe("useCardOpening", () => {
 
     expect(result.current.allOpened).toBe(true);
     expect(result.current.running).toBe(false);
+  });
+});
+
+describe("useCardPack", () => {
+  function setup(initial: string[] = []) {
+    const onOpen = vi.fn<(id: string) => void>();
+    const hook = renderHook(() => {
+      const [opened, setOpened] = useState<readonly string[]>(initial);
+      return useCardPack({
+        cards: CARDS,
+        opened,
+        onOpen: (id) => {
+          onOpen(id);
+          setOpened((now) => [...now, id]);
+        },
+      });
+    });
+    return { ...hook, onOpen };
+  }
+
+  it("starts sealed, deals on a tear, and turns cards in any order", () => {
+    const { result, onOpen } = setup();
+    expect(result.current.stage).toBe("sealed");
+    act(() => result.current.flip("owl"));
+    expect(onOpen).not.toHaveBeenCalled();
+
+    act(() => result.current.tear());
+    expect(result.current.stage).toBe("dealt");
+    expect(result.current.left.map((card) => card.id)).toEqual(["fox", "owl"]);
+
+    act(() => result.current.flip("owl"));
+    act(() => result.current.flip("owl"));
+    expect(onOpen).toHaveBeenCalledExactlyOnceWith("owl");
+    expect(result.current.isUp("owl")).toBe(true);
+    expect(result.current.isUp("fox")).toBe(false);
+    expect(result.current.allUp).toBe(false);
+  });
+
+  it("cannot be finished until every card is turned", () => {
+    const { result } = setup();
+    act(() => result.current.tear());
+    act(() => result.current.flip("fox"));
+    act(() => result.current.finish());
+    expect(result.current.stage).toBe("dealt");
+
+    act(() => result.current.flip("owl"));
+    act(() => result.current.finish());
+    expect(result.current.stage).toBe("done");
+  });
+
+  it("comes back dealt when partly opened and done when fully opened", () => {
+    expect(setup(["fox"]).result.current.stage).toBe("dealt");
+    expect(setup(["fox", "owl"]).result.current.stage).toBe("done");
+  });
+
+  it("deals the same cards again without opening any", () => {
+    const { result, onOpen } = setup(["fox", "owl"]);
+
+    act(() => result.current.reset());
+    expect(result.current.stage).toBe("sealed");
+    expect(result.current.replay).toBe(true);
+
+    act(() => result.current.tear());
+    expect(result.current.isUp("fox")).toBe(false);
+    act(() => result.current.flip("fox"));
+    expect(result.current.isUp("fox")).toBe(true);
+    expect(result.current.left.map((card) => card.id)).toEqual(["owl"]);
+    expect(onOpen).not.toHaveBeenCalled();
   });
 });

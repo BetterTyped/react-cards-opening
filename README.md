@@ -62,6 +62,11 @@ middle of the screen face down, hums, turns over, stays as long as it takes to r
 loud that is depends on how rare the card is: a common hops, an epic opens a wheel of rays, a legendary gets a foil
 border, a shine and the whole screen.
 
+There are four ways to get to that moment: a sealed **pack** that bursts and deals its cards face down, a **reel** that
+races under a marker and stops on your card, a **case** that opens and gives its cards up one by one, and a **hunt**
+that scans a grid for them. On top sits a library of 59 effects (particles, light, shockwaves, screen effects) to play
+on any of them, or on anything else.
+
 It was built for the year in review inside
 [Hype Stack](https://www.hype-stack.dev/wrapped?utm_source=react-cards-opening&utm_medium=referral&utm_campaign=readme),
 where it turns achievements into cards. This is that code with the product taken out, checked against the original pixel
@@ -143,24 +148,29 @@ card and one button.
 
 Two packages, released together under one version number. A pair with the same version always fits.
 
-| Package                                                                                         | What it holds                                                                                                                              |
-| ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| [`@react-cards-opening/core`](https://bettertyped.github.io/react-cards-opening/docs/core/)     | The rules without a look: the queue, what each press means, rarity tiers, seeded rolls, opened-card storage. React is its only dependency. |
-| [`@react-cards-opening/ui`](https://bettertyped.github.io/react-cards-opening/docs/components/) | The look: the card and its reveal, the scan grid, the whole hunt, ten themes, one stylesheet. GSAP inside.                                 |
+| Package                                                                                         | What it holds                                                                                                                                               |
+| ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`@react-cards-opening/core`](https://bettertyped.github.io/react-cards-opening/docs/core/)     | The rules without a look: the queue, a pack's stages, what each press means, rarity tiers, seeded rolls, opened-card storage. React is its only dependency. |
+| [`@react-cards-opening/ui`](https://bettertyped.github.io/react-cards-opening/docs/components/) | The look: the pack, the reel, the case and the hunt, the reveal they share, 59 effects, ten themes, one stylesheet. GSAP inside.                            |
 
 ## What is in it
 
-| Part             | What it does                                                                                                                            | Docs                                                                                            |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `CardOpening`    | The reveal over the page. A card leaves an element you name, turns over in the middle of the screen and lands on another                | [CardOpening](https://bettertyped.github.io/react-cards-opening/docs/components/card-opening/)  |
-| `CardHunt`       | A grid with cards hidden in it, the scan that finds them, and the list of finds, in one component                                       | [CardHunt](https://bettertyped.github.io/react-cards-opening/docs/components/card-hunt/)        |
-| `ScanGrid`       | The grid alone, and the beam that hunts a cell down                                                                                     | [ScanGrid](https://bettertyped.github.io/react-cards-opening/docs/components/scan-grid/)        |
-| `Card`           | A card standing still, at any size, for a collection or a shop. A legendary keeps its foil on CSS alone                                 | [Card](https://bettertyped.github.io/react-cards-opening/docs/components/card/)                 |
-| Thirteen effects | Flight, hum, flip, burst, rays, flash, shockwaves, foil border, shine, sparkles and three for the scan. One page each, with the numbers | [Effects](https://bettertyped.github.io/react-cards-opening/docs/effects/)                      |
-| `useCardOpening` | The queue and the rules of a press, with nothing drawn. Build your own reveal on it                                                     | [useCardOpening](https://bettertyped.github.io/react-cards-opening/docs/core/use-card-opening/) |
-| `rollCards`      | Deals cards by rarity weight. With a seed, the same hand on a server and in a browser                                                   | [Rolls and odds](https://bettertyped.github.io/react-cards-opening/docs/core/rolls/)            |
-| `classNames`     | A class of your own on any part. Tailwind utilities or plain CSS, no `!important`                                                       | [Styling by hand](https://bettertyped.github.io/react-cards-opening/docs/guides/styling/)       |
-| Ten themes       | Each in dark and light, or a whole theme from one accent colour                                                                         | [Theming](https://bettertyped.github.io/react-cards-opening/docs/theming/)                      |
+| Part                               | What it does                                                                                                                                       | Docs                                                                                           |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `CardPack`                         | A sealed pack. It bursts on a press, deals its cards face down, and each one turns over on a press, in any order                                   | [CardPack](https://bettertyped.github.io/react-cards-opening/docs/components/card-pack/)       |
+| `CardSpin`                         | A reel that races under a marker and stops on the card that was dealt. The strip is filled by the real odds                                        | [CardSpin](https://bettertyped.github.io/react-cards-opening/docs/components/card-spin/)       |
+| `CardCase`                         | A case that shakes, opens, and gives up its cards one after another onto a shelf                                                                   | [CardCase](https://bettertyped.github.io/react-cards-opening/docs/components/card-case/)       |
+| `CardHunt`                         | A grid with cards hidden in it, the scan that finds them, and the list of finds, in one component                                                  | [CardHunt](https://bettertyped.github.io/react-cards-opening/docs/components/card-hunt/)       |
+| `CardOpening`                      | The reveal they all end in. A card leaves an element you name, turns over in the middle of the screen and lands on another                         | [CardOpening](https://bettertyped.github.io/react-cards-opening/docs/components/card-opening/) |
+| 59 effects                         | Sparks, confetti, embers, fireworks, rays, lens flares, lightning, shockwaves, novas, screen shake, glitch and more. One name each, and they stack | [Effects library](https://bettertyped.github.io/react-cards-opening/docs/effects/library/)     |
+| `effects`                          | A plan on any opener: which tier plays which effects as its card turns. Six ready-made sets, or your own                                           | [Effect plans](https://bettertyped.github.io/react-cards-opening/docs/effects/plans/)          |
+| `EffectLayer`                      | A sheet to play any effect on anything: a level-up, a purchase, a streak                                                                           | [EffectLayer](https://bettertyped.github.io/react-cards-opening/docs/components/effect-layer/) |
+| `Card`                             | A card standing still, at any size, for a collection or a shop. A legendary keeps its foil on CSS alone                                            | [Card](https://bettertyped.github.io/react-cards-opening/docs/components/card/)                |
+| `ScanGrid`, `SpinReel`, `LootCase` | The grid, the reel and the case on their own, for a layout that is yours                                                                           | [Components](https://bettertyped.github.io/react-cards-opening/docs/components/)               |
+| `useCardOpening`, `useCardPack`    | The rules with nothing drawn: the queue, a pack's stages, what each press means. Build your own look on them                                       | [Core](https://bettertyped.github.io/react-cards-opening/docs/core/)                           |
+| `rollCards`                        | Deals cards by rarity weight. With a seed, the same hand on a server and in a browser                                                              | [Rolls and odds](https://bettertyped.github.io/react-cards-opening/docs/core/rolls/)           |
+| `classNames`                       | A class of your own on any part. Tailwind utilities or plain CSS, no `!important`                                                                  | [Styling by hand](https://bettertyped.github.io/react-cards-opening/docs/guides/styling/)      |
+| Ten themes                         | Each in dark and light, or a whole theme from one accent colour                                                                                    | [Theming](https://bettertyped.github.io/react-cards-opening/docs/theming/)                     |
 
 <p align="center">
 	<a href="https://github.com/sponsors/prc5?tier=Gold">
@@ -179,6 +189,37 @@ Two packages, released together under one version number. A pair with the same v
 </p>
 
 ## Recipes
+
+### A pack, with effects
+
+A sealed pack of five and a plan that says what each tier plays as its card turns.
+
+```tsx
+import { useOpenedCards } from "@react-cards-opening/core";
+import { CardPack, EFFECT_SETS } from "@react-cards-opening/ui";
+
+export function Pack({ cards }: { cards: GlyphCard[] }) {
+  const { opened, open } = useOpenedCards("pack:42");
+  return <CardPack cards={cards} opened={opened} onOpen={open} effects={EFFECT_SETS.mythic} />;
+}
+```
+
+Swap `CardPack` for `CardSpin` or `CardCase` and the same cards open on a reel or out of a case.
+
+### An effect on anything
+
+```tsx
+import { EffectLayer, type EffectLayerHandle } from "@react-cards-opening/ui";
+
+const layer = useRef<EffectLayerHandle>(null);
+
+<div style={{ position: "relative" }}>
+  <EffectLayer handle={layer} />
+  <button onClick={(event) => layer.current?.play(["shockwave", "confetti"], { at: event.currentTarget })}>
+    Claim
+  </button>
+</div>;
+```
 
 ### Open a card from a button
 

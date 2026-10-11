@@ -527,6 +527,8 @@
   background:
     radial-gradient(circle at 50% 50%, color-mix(in oklch, var(--rco-tone) 28%, transparent), transparent 55%),
     var(--rco-backdrop, rgb(8 8 10 / 0.62));
+  /* The same dimming for a little way past every edge, so a shaken stage never shows the page at its rim. */
+  box-shadow: 0 0 0 40px var(--rco-backdrop, rgb(8 8 10 / 0.62));
   -webkit-backdrop-filter: blur(var(--rco-backdrop-blur, 3px));
   backdrop-filter: blur(var(--rco-backdrop-blur, 3px));
 }
@@ -859,14 +861,1286 @@
   }
 }
 
+/* ---------- the panel the reel and the case share ---------- */
+
+.rco-panel {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--rco-panel-radius, 28px);
+  padding: 16px;
+  background: var(--rco-bg);
+  color: var(--rco-fg);
+}
+
+.rco-panel-flash {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 60%, var(--rco-tone), transparent 70%);
+}
+
+.rco-panel-head {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.rco-panel-words {
+  min-width: 0;
+}
+
+.rco-panel-headline {
+  font-size: clamp(20px, 1.8vw, 26px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.rco-panel-subline {
+  margin-top: 4px;
+  font-size: 14.5px;
+  color: var(--rco-muted);
+}
+
+.rco-panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (min-width: 768px) {
+  .rco-panel {
+    padding: 24px;
+  }
+}
+
+/* ---------- the reel ---------- */
+
+.rco-reel {
+  position: relative;
+  overflow: hidden;
+  height: calc(var(--rco-tile, 112px) + 24px);
+  border-radius: 20px;
+  background: color-mix(in oklch, var(--rco-card) 60%, var(--rco-bg));
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--rco-fg) 9%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+}
+
+.rco-reel-flash {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, var(--rco-tone), transparent 70%);
+}
+
+.rco-reel-strip {
+  position: absolute;
+  top: 12px;
+  left: 0;
+  display: flex;
+  gap: 8px;
+  will-change: transform;
+}
+
+/* A tile: its tier is the colour rising from its bottom edge, the way a case's items are told apart at speed. */
+.rco-reel-tile {
+  display: grid;
+  flex: none;
+  place-items: center;
+  align-content: center;
+  gap: 7px;
+  width: var(--rco-tile, 112px);
+  height: var(--rco-tile, 112px);
+  border-radius: 14px;
+  background: linear-gradient(to top, color-mix(in oklch, var(--rco-tone) 30%, var(--rco-card)), var(--rco-card) 72%);
+  box-shadow:
+    inset 0 -4px 0 0 var(--rco-tone),
+    inset 0 0 0 1px color-mix(in oklch, var(--rco-tone) 26%, transparent);
+}
+
+.rco-reel-tile:where([data-won]) {
+  box-shadow:
+    inset 0 0 0 2px var(--rco-hit),
+    0 0 26px 4px var(--rco-hit);
+}
+
+.rco-reel-name {
+  display: block;
+  overflow: hidden;
+  max-width: 100%;
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--rco-muted);
+}
+
+.rco-reel-marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  display: block;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 9999px;
+  pointer-events: none;
+  background: var(--rco-fg);
+  box-shadow: 0 0 12px 2px var(--rco-accent);
+}
+
+@media (max-width: 560px) {
+  .rco-reel {
+    --rco-tile: 92px;
+  }
+
+  .rco-reel-name {
+    display: none;
+  }
+}
+
+/* ---------- the case ---------- */
+
+/*
+ * Drawn at 220 pixels wide and sized in `--rco-c`, one design pixel of the case, so `--rco-case-size` scales all of
+ * it. Back to front: the rays, the light, the box, the sparks.
+ */
+.rco-case {
+  position: relative;
+  --rco-c: calc(var(--rco-case-size, 220px) / 220);
+  --rco-u: var(--rco-c);
+  width: var(--rco-case-size, 220px);
+  height: calc(200 * var(--rco-c));
+}
+
+.rco-case-rays {
+  position: absolute;
+  bottom: calc(112 * var(--rco-c));
+  left: 50%;
+  display: block;
+  width: calc(430 * var(--rco-c));
+  height: calc(430 * var(--rco-c));
+  margin: 0 0 calc(-215 * var(--rco-c)) calc(-215 * var(--rco-c));
+  border-radius: 9999px;
+  opacity: 0;
+  pointer-events: none;
+  background: repeating-conic-gradient(
+    from 0deg,
+    color-mix(in oklch, var(--rco-tone) 34%, transparent) 0deg 7deg,
+    transparent 7deg 22deg
+  );
+  -webkit-mask-image: radial-gradient(circle, black 12%, transparent 64%);
+  mask-image: radial-gradient(circle, black 12%, transparent 64%);
+}
+
+.rco-case-glow {
+  position: absolute;
+  right: -22%;
+  bottom: calc(108 * var(--rco-c));
+  left: -22%;
+  display: block;
+  height: calc(190 * var(--rco-c));
+  transform-origin: 50% 100%;
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    ellipse 50% 100% at 50% 100%,
+    color-mix(in oklch, var(--rco-tone) 80%, white) 0%,
+    color-mix(in oklch, var(--rco-tone) 50%, transparent) 32%,
+    transparent 70%
+  );
+}
+
+.rco-case-bits {
+  position: absolute;
+  bottom: calc(114 * var(--rco-c));
+  left: 50%;
+  z-index: 3;
+  display: block;
+  pointer-events: none;
+}
+
+.rco-case-bit {
+  position: absolute;
+  display: block;
+  width: 10px;
+  height: 10px;
+  margin: -5px;
+  border-radius: 2px;
+  opacity: 0;
+  background: color-mix(in oklch, var(--rco-tone) 45%, white);
+}
+
+.rco-case-box {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  display: block;
+  height: calc(172 * var(--rco-c));
+  transform-origin: 50% 100%;
+  perspective: calc(700 * var(--rco-c));
+}
+
+.rco-case-lid {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: block;
+  height: calc(60 * var(--rco-c));
+  transform-origin: 50% 100%;
+  border-radius: calc(20 * var(--rco-c)) calc(20 * var(--rco-c)) calc(6 * var(--rco-c)) calc(6 * var(--rco-c));
+  background:
+    linear-gradient(
+      90deg,
+      transparent 14%,
+      color-mix(in oklch, var(--rco-fg) 9%, transparent) 14% 22%,
+      transparent 22% 78%,
+      color-mix(in oklch, var(--rco-fg) 9%, transparent) 78% 86%,
+      transparent 86%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in oklch, var(--rco-accent) 30%, var(--rco-card)),
+      color-mix(in oklch, var(--rco-accent) 14%, var(--rco-card))
+    );
+  box-shadow: inset 0 0 0 calc(2 * var(--rco-c)) color-mix(in oklch, var(--rco-fg) 14%, transparent);
+}
+
+/* Where the cards come out: the gap under the lid. */
+.rco-case-mouth {
+  position: absolute;
+  top: calc(48 * var(--rco-c));
+  right: 36%;
+  left: 36%;
+  display: block;
+  height: calc(14 * var(--rco-c));
+  pointer-events: none;
+}
+
+.rco-case-body {
+  position: absolute;
+  right: calc(6 * var(--rco-c));
+  bottom: 0;
+  left: calc(6 * var(--rco-c));
+  display: grid;
+  height: calc(110 * var(--rco-c));
+  place-items: center;
+  padding-top: calc(14 * var(--rco-c));
+  border-radius: calc(6 * var(--rco-c)) calc(6 * var(--rco-c)) calc(18 * var(--rco-c)) calc(18 * var(--rco-c));
+  background:
+    linear-gradient(
+      90deg,
+      transparent 12%,
+      color-mix(in oklch, var(--rco-fg) 8%, transparent) 12% 21%,
+      transparent 21% 79%,
+      color-mix(in oklch, var(--rco-fg) 8%, transparent) 79% 88%,
+      transparent 88%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in oklch, var(--rco-accent) 16%, var(--rco-card)),
+      color-mix(in oklch, var(--rco-bg) 55%, var(--rco-card))
+    );
+  box-shadow:
+    inset 0 0 0 calc(2 * var(--rco-c)) color-mix(in oklch, var(--rco-fg) 12%, transparent),
+    0 calc(26 * var(--rco-c)) calc(40 * var(--rco-c)) calc(-24 * var(--rco-c)) black;
+}
+
+/* The plate on the front wears the colour of what is coming out. */
+.rco-case-latch {
+  position: absolute;
+  top: calc(-12 * var(--rco-c));
+  left: 50%;
+  display: block;
+  width: calc(34 * var(--rco-c));
+  height: calc(30 * var(--rco-c));
+  margin-left: calc(-17 * var(--rco-c));
+  border-radius: calc(8 * var(--rco-c));
+  background: var(--rco-tone);
+  box-shadow:
+    inset 0 0 0 calc(2 * var(--rco-c)) color-mix(in oklch, var(--rco-tone) 50%, white),
+    0 0 calc(18 * var(--rco-c)) calc(2 * var(--rco-c)) color-mix(in oklch, var(--rco-tone) 55%, transparent);
+  transition:
+    background-color 300ms ease,
+    box-shadow 300ms ease;
+}
+
+.rco-case-press {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: block;
+  border-radius: calc(20 * var(--rco-c));
+  cursor: pointer;
+}
+
+.rco-case-press:where(:disabled) {
+  cursor: default;
+}
+
+/* The case on its stand, in the panel of the whole opener. */
+.rco-crate-stand {
+  display: grid;
+  place-items: center;
+  --rco-case-size: clamp(170px, 24vw, 230px);
+  padding: 34px 0 6px;
+}
+
+/* ---------- the shelf the case's cards land on ---------- */
+
+.rco-shelf {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 128px));
+  justify-content: center;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.rco-shelf-place {
+  display: block;
+}
+
+.rco-shelf-slot {
+  display: block;
+  width: 100%;
+  border-radius: 9.4% / 7%;
+  cursor: pointer;
+  transition: opacity 300ms ease;
+}
+
+.rco-shelf-slot:where(:disabled) {
+  cursor: default;
+}
+
+/* Not out of the case yet: its place is there, dimmed. */
+.rco-shelf-slot:where(:not([data-open])) {
+  opacity: 0.4;
+}
+
+/* In the air: its place is empty until it lands. Seen through, not hidden, so it can still take the focus. */
+.rco-shelf-slot:where([data-away]) {
+  opacity: 0;
+}
+
+/* ---------- the pack ---------- */
+
+/*
+ * The table is laid out in `--rco-p`, a hundredth of the pack's own width (up to `--rco-pack-width`), so the same
+ * numbers seat the cards at any size. A narrow pack has its own seats, picked by a container query, not by the
+ * screen: a pack in a sidebar lays itself out like one on a phone.
+ */
+.rco-pack {
+  position: relative;
+  container-type: inline-size;
+  --rco-p: min(1cqw, var(--rco-pack-width, 880px) / 100);
+  overflow: hidden;
+  border-radius: var(--rco-panel-radius, 28px);
+  padding: 16px 0 20px;
+  background: var(--rco-bg);
+  color: var(--rco-fg);
+}
+
+.rco-pack-table {
+  position: relative;
+  height: calc(var(--rco-pack-h) * var(--rco-p));
+  min-height: 300px;
+  transition: height 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rco-pack-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: block;
+  opacity: 0;
+  pointer-events: none;
+  /* An ellipse that ends where the table does, so the light never shows the table's edge. */
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    color-mix(in oklch, var(--rco-tone) 55%, white) 0%,
+    color-mix(in oklch, var(--rco-tone) 30%, transparent) 42%,
+    transparent 100%
+  );
+}
+
+.rco-pack-burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  display: block;
+  pointer-events: none;
+}
+
+.rco-pack-burst-bit {
+  position: absolute;
+  display: block;
+  width: 12px;
+  height: 12px;
+  margin: -6px;
+  border-radius: 3px;
+  opacity: 0;
+  background: var(--rco-accent);
+}
+
+/* The sealed pack: it floats until it is pressed. */
+.rco-pack-sealed {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  display: block;
+  width: var(--rco-pack-size, min(40cqw, 180px));
+  aspect-ratio: 3 / 4.2;
+  translate: -50% -50%;
+  border-radius: 12px;
+  cursor: pointer;
+  animation: rco-float 3.2s ease-in-out infinite;
+}
+
+.rco-pack-sealed:where(:disabled) {
+  cursor: default;
+  pointer-events: none;
+  animation: none;
+}
+
+.rco-pack-wrap {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  --rco-u: calc(var(--rco-pack-size, min(40cqw, 180px)) / 180);
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, rgb(0 0 0 / 0.24) 0 6%, transparent 6% 94%, rgb(0 0 0 / 0.24) 94%),
+    repeating-linear-gradient(115deg, rgb(255 255 255 / 0.12) 0 7px, transparent 7px 24px),
+    linear-gradient(
+      160deg,
+      color-mix(in oklch, var(--rco-accent) 78%, white),
+      var(--rco-accent) 45%,
+      color-mix(in oklch, var(--rco-accent) 55%, black)
+    );
+  box-shadow:
+    inset 0 0 0 2px color-mix(in oklch, var(--rco-accent) 50%, white),
+    0 30px 60px -24px black,
+    0 0 70px 0 color-mix(in oklch, var(--rco-accent) 40%, transparent);
+}
+
+@keyframes rco-float {
+  50% {
+    translate: -50% calc(-50% - 7px);
+  }
+}
+
+/* A card's place on the table. Its seat is two numbers; moving it is a change of numbers, and the place glides. */
+.rco-pack-seat {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--rco-pack-w) * var(--rco-p));
+  translate: calc(-50% + var(--rco-seat-x) * var(--rco-p)) calc(-50% + var(--rco-seat-y) * var(--rco-p));
+  rotate: calc(var(--rco-seat-tilt) * 1deg);
+  transition:
+    translate 550ms cubic-bezier(0.34, 1.2, 0.64, 1),
+    rotate 550ms ease,
+    width 550ms ease;
+}
+
+.rco-pack-seat:where([data-up]) {
+  z-index: 1;
+}
+
+.rco-pack-deal {
+  position: relative;
+  display: block;
+}
+
+/* The rays a loud card opens behind itself once it is turned. */
+.rco-pack-rays {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: 270%;
+  aspect-ratio: 1 / 1;
+  margin: -135% 0 0 -135%;
+  border-radius: 9999px;
+  opacity: 0;
+  pointer-events: none;
+  background: repeating-conic-gradient(
+    from 0deg,
+    color-mix(in oklch, var(--rco-tone) 30%, transparent) 0deg 8deg,
+    transparent 8deg 24deg
+  );
+  -webkit-mask-image: radial-gradient(circle, black 18%, transparent 66%);
+  mask-image: radial-gradient(circle, black 18%, transparent 66%);
+  transition: opacity 500ms ease 250ms;
+}
+
+:where(.rco-pack-seat[data-up]) .rco-pack-rays {
+  opacity: 0.85;
+  animation: rco-spin 24s linear infinite;
+}
+
+/* Gathered up, the cards stand close: the rays would cross their neighbours. */
+:where(.rco-pack[data-stage="done"]) .rco-pack-rays {
+  opacity: 0;
+}
+
+.rco-pack-bits {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  display: block;
+  pointer-events: none;
+}
+
+.rco-pack-bit {
+  position: absolute;
+  display: block;
+  width: 10px;
+  height: 10px;
+  margin: -5px;
+  border-radius: 3px;
+  opacity: 0;
+  background: var(--rco-tone);
+}
+
+.rco-pack-press {
+  position: relative;
+  display: block;
+  width: 100%;
+  border-radius: 9.4% / 7%;
+  cursor: pointer;
+  transition: translate 200ms ease;
+}
+
+.rco-pack-press:where(:disabled) {
+  cursor: default;
+}
+
+/* The tease: face down, a card's edge takes its tier's colour under the pointer or the focus. */
+:where(.rco-pack-seat) .rco-back {
+  transition: box-shadow 220ms ease;
+}
+
+:where(.rco-pack-seat:not([data-up]) .rco-pack-press:is(:hover, :focus-visible)) .rco-back {
+  box-shadow:
+    inset 0 0 0 calc(2 * var(--rco-u, 1px)) var(--rco-tone),
+    0 0 calc(46 * var(--rco-u, 1px)) calc(8 * var(--rco-u, 1px)) var(--rco-tone);
+}
+
+@media (hover: hover) {
+  :where(.rco-pack-seat:not([data-up])) .rco-pack-press:where(:hover) {
+    translate: 0 -6px;
+  }
+}
+
+.rco-pack-foot {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  min-height: 44px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 16px;
+  margin-top: 10px;
+  padding: 0 16px;
+}
+
+.rco-pack-hint {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--rco-muted);
+}
+
+@container (max-width: 520px) {
+  .rco-pack-table {
+    height: calc(var(--rco-pack-nh) * var(--rco-p));
+  }
+
+  .rco-pack-seat {
+    width: calc(var(--rco-pack-nw) * var(--rco-p));
+    translate: calc(-50% + var(--rco-seat-nx) * var(--rco-p)) calc(-50% + var(--rco-seat-ny) * var(--rco-p));
+  }
+}
+
+/* ---------- effects ---------- */
+
+/*
+ * Every effect is drawn for a card 300 pixels wide. A play sets where it is (`--rco-fx-x`, `--rco-fx-y`), how wide
+ * what it celebrates is (`--rco-fx-u`) and its colours (`--rco-tone`, `--rco-fx-accent`); the rules below do the
+ * rest, so a class of your own on a part restyles it like any other.
+ */
+.rco-fx-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.rco-fx-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.rco-fx-play {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+/* A part, centred on the effect. Nothing shows until its timeline says so. */
+.rco-fx {
+  position: absolute;
+  top: var(--rco-fx-y);
+  left: var(--rco-fx-x);
+  display: block;
+  translate: -50% -50%;
+  opacity: 0;
+}
+
+/* A part that fills the stage. */
+.rco-fx-cover {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  opacity: 0;
+}
+
+/* --- light --- */
+
+.rco-fx-rays {
+  width: calc(3.4 * var(--rco-fx-u));
+  aspect-ratio: 1 / 1;
+  border-radius: 9999px;
+  background: repeating-conic-gradient(
+    from 0deg,
+    color-mix(in oklch, var(--rco-tone) 38%, transparent) 0deg 7deg,
+    transparent 7deg 20deg
+  );
+  -webkit-mask-image: radial-gradient(circle, black 10%, transparent 66%);
+  mask-image: radial-gradient(circle, black 10%, transparent 66%);
+}
+
+.rco-fx-beams {
+  width: calc(4.6 * var(--rco-fx-u));
+  aspect-ratio: 1 / 1;
+  border-radius: 9999px;
+  mix-blend-mode: screen;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0% 5%,
+    color-mix(in oklch, var(--rco-tone) 46%, transparent) 10%,
+    transparent 16% 30%,
+    color-mix(in oklch, var(--rco-tone) 30%, transparent) 36%,
+    transparent 43% 55%,
+    color-mix(in oklch, var(--rco-tone) 52%, transparent) 61%,
+    transparent 68% 80%,
+    color-mix(in oklch, var(--rco-tone) 28%, transparent) 87%,
+    transparent 94%
+  );
+  filter: blur(calc(0.03 * var(--rco-fx-u)));
+  -webkit-mask-image: radial-gradient(circle, black 0%, transparent 68%);
+  mask-image: radial-gradient(circle, black 0%, transparent 68%);
+}
+
+.rco-fx-beams-back {
+  position: absolute;
+  inset: 8%;
+  display: block;
+  border-radius: 9999px;
+  background: conic-gradient(
+    from 40deg,
+    transparent 0% 12%,
+    color-mix(in oklch, var(--rco-fx-accent) 34%, transparent) 19%,
+    transparent 27% 48%,
+    color-mix(in oklch, var(--rco-fx-accent) 26%, transparent) 56%,
+    transparent 64% 82%,
+    color-mix(in oklch, var(--rco-fx-accent) 30%, transparent) 90%,
+    transparent 97%
+  );
+}
+
+.rco-fx-halo {
+  width: calc(2.5 * var(--rco-fx-u));
+  aspect-ratio: 1 / 1;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    transparent 38%,
+    color-mix(in oklch, var(--rco-tone) 22%, transparent) 44%,
+    color-mix(in oklch, var(--rco-tone) 78%, white) 51%,
+    color-mix(in oklch, var(--rco-tone) 30%, transparent) 58%,
+    transparent 70%
+  );
+  filter: blur(calc(0.018 * var(--rco-fx-u)));
+}
+
+.rco-fx-flash {
+  background: radial-gradient(
+    circle at var(--rco-fx-x) var(--rco-fx-y),
+    white 0%,
+    color-mix(in oklch, var(--rco-tone) 60%, white) 10%,
+    color-mix(in oklch, var(--rco-tone) 42%, transparent) 34%,
+    transparent 72%
+  );
+}
+
+/* The flare is a point: its pieces are laid out from it. */
+.rco-fx-flare {
+  width: 0;
+  height: 0;
+}
+
+.rco-fx-flare-streak {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: calc(4.8 * var(--rco-fx-u));
+  height: calc(0.05 * var(--rco-fx-u));
+  translate: -50% -50%;
+  border-radius: 9999px;
+  mix-blend-mode: screen;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklch, var(--rco-tone) 60%, transparent) 25%,
+    white 50%,
+    color-mix(in oklch, var(--rco-tone) 60%, transparent) 75%,
+    transparent
+  );
+  filter: blur(calc(0.008 * var(--rco-fx-u)));
+}
+
+.rco-fx-flare-cross {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: calc(0.03 * var(--rco-fx-u));
+  height: calc(1.7 * var(--rco-fx-u));
+  translate: -50% -50%;
+  border-radius: 9999px;
+  mix-blend-mode: screen;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in oklch, var(--rco-tone) 60%, transparent) 30%,
+    white 50%,
+    color-mix(in oklch, var(--rco-tone) 60%, transparent) 70%,
+    transparent
+  );
+  filter: blur(calc(0.006 * var(--rco-fx-u)));
+}
+
+.rco-fx-flare-core {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: calc(0.9 * var(--rco-fx-u));
+  aspect-ratio: 1 / 1;
+  translate: -50% -50%;
+  border-radius: 9999px;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    circle,
+    white 0%,
+    color-mix(in oklch, var(--rco-tone) 70%, white) 14%,
+    color-mix(in oklch, var(--rco-tone) 40%, transparent) 34%,
+    transparent 68%
+  );
+}
+
+.rco-fx-flare-ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: calc(0.34 * var(--rco-fx-u));
+  aspect-ratio: 1 / 1;
+  translate: -50% -50%;
+  border-radius: 9999px;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    circle,
+    transparent 42%,
+    color-mix(in oklch, var(--rco-tone) 45%, transparent) 58%,
+    color-mix(in oklch, var(--rco-fx-accent) 30%, transparent) 66%,
+    transparent 72%
+  );
+}
+
+/* A cone from the top of the stage down onto the effect. */
+.rco-fx-spotlight {
+  top: 0;
+  width: calc(3 * var(--rco-fx-u));
+  height: calc(var(--rco-fx-y) + calc(0.9 * var(--rco-fx-u)));
+  translate: -50% 0;
+  transform-origin: 50% 0;
+  mix-blend-mode: screen;
+  background: conic-gradient(
+    from 160deg at 50% 0%,
+    transparent 0deg,
+    color-mix(in oklch, var(--rco-tone) 50%, white) 13deg,
+    color-mix(in oklch, var(--rco-tone) 64%, white) 20deg,
+    color-mix(in oklch, var(--rco-tone) 50%, white) 27deg,
+    transparent 40deg
+  );
+  -webkit-mask-image: linear-gradient(180deg, black 0%, black 55%, transparent 100%);
+  mask-image: linear-gradient(180deg, black 0%, black 55%, transparent 100%);
+}
+
+.rco-fx-aurora {
+  width: 0;
+  height: 0;
+}
+
+.rco-fx-aurora-band {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: calc(3.4 * var(--rco-fx-u));
+  height: calc(1.5 * var(--rco-fx-u));
+  margin: calc(-0.75 * var(--rco-fx-u)) 0 0 calc(-1.7 * var(--rco-fx-u));
+  border-radius: 50%;
+  opacity: 0;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    ellipse,
+    color-mix(in oklch, var(--rco-tone) 90%, transparent) 0%,
+    color-mix(in oklch, var(--rco-tone) 48%, transparent) 40%,
+    transparent 70%
+  );
+  filter: blur(calc(0.12 * var(--rco-fx-u)));
+}
+
+.rco-fx-aurora-other {
+  background: radial-gradient(
+    ellipse,
+    color-mix(in oklch, var(--rco-fx-accent) 88%, transparent) 0%,
+    color-mix(in oklch, var(--rco-fx-accent) 44%, transparent) 40%,
+    transparent 70%
+  );
+}
+
+.rco-fx-sunburst {
+  width: calc(4.2 * var(--rco-fx-u));
+  aspect-ratio: 1 / 1;
+  border-radius: 9999px;
+  background: repeating-conic-gradient(
+    from 0deg,
+    color-mix(in oklch, var(--rco-tone) 35%, white) 0deg 1.1deg,
+    transparent 1.1deg 9deg
+  );
+  -webkit-mask-image: radial-gradient(circle, transparent 12%, black 20%, transparent 62%);
+  mask-image: radial-gradient(circle, transparent 12%, black 20%, transparent 62%);
+}
+
+.rco-fx-bloom {
+  width: calc(3.4 * var(--rco-fx-u));
+  aspect-ratio: 1 / 1;
+  border-radius: 9999px;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklch, var(--rco-tone) 45%, white) 0%,
+    color-mix(in oklch, var(--rco-tone) 58%, transparent) 22%,
+    color-mix(in oklch, var(--rco-tone) 18%, transparent) 46%,
+    transparent 68%
+  );
+}
+
+.rco-fx-starburst {
+  width: calc(2.8 * var(--rco-fx-u));
+  aspect-ratio: 1 / 1;
+  filter: drop-shadow(0 0 calc(0.05 * var(--rco-fx-u)) var(--rco-tone));
+}
+
+.rco-fx-starburst-star {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: radial-gradient(
+    circle,
+    white 0%,
+    color-mix(in oklch, var(--rco-tone) 45%, white) 26%,
+    var(--rco-tone) 64%
+  );
+  clip-path: polygon(50% 0%, 53% 47%, 100% 50%, 53% 53%, 50% 100%, 47% 53%, 0% 50%, 47% 47%);
+}
+
+.rco-fx-starburst-small {
+  rotate: 45deg;
+  scale: 0.5;
+}
+
+/* From the top of the stage to the bottom, through the effect. */
+.rco-fx-pillar {
+  top: 0;
+  width: calc(0.95 * var(--rco-fx-u));
+  height: 100%;
+  translate: -50% 0;
+  mix-blend-mode: screen;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in oklch, var(--rco-tone) 22%, transparent) 22%,
+    color-mix(in oklch, var(--rco-tone) 62%, white) 44%,
+    white 50%,
+    color-mix(in oklch, var(--rco-tone) 62%, white) 56%,
+    color-mix(in oklch, var(--rco-tone) 22%, transparent) 78%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 16%, black 84%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, black 16%, black 84%, transparent 100%);
+}
+
+.rco-fx-lightning {
+  overflow: visible;
+  width: calc(3.6 * var(--rco-fx-u));
+  aspect-ratio: 1 / 1;
+  filter: drop-shadow(0 0 calc(0.025 * var(--rco-fx-u)) var(--rco-tone))
+    drop-shadow(0 0 calc(0.1 * var(--rco-fx-u)) var(--rco-tone));
+}
+
+.rco-fx-lightning-line {
+  fill: none;
+  stroke: color-mix(in oklch, var(--rco-tone) 22%, white);
+  stroke-width: max(2px, calc(0.014 * var(--rco-fx-u)));
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rco-fx-rim {
+  width: var(--rco-fx-u);
+  aspect-ratio: 1 / var(--rco-fx-ratio);
+  border-radius: 9.4% / 7%;
+  box-shadow:
+    0 0 0 calc(0.012 * var(--rco-fx-u)) color-mix(in oklch, var(--rco-tone) 55%, white),
+    0 0 calc(0.1 * var(--rco-fx-u)) calc(0.045 * var(--rco-fx-u)) var(--rco-tone),
+    0 0 calc(0.5 * var(--rco-fx-u)) calc(0.16 * var(--rco-fx-u)) color-mix(in oklch, var(--rco-tone) 55%, transparent);
+}
+
+/* --- waves --- */
+
+.rco-fx-shockwave {
+  width: var(--rco-fx-u);
+  aspect-ratio: 1 / 1;
+  border: calc(var(--rco-fx-line, 0.09) * var(--rco-fx-u)) solid color-mix(in oklch, var(--rco-tone) 70%, white);
+  border-radius: 9999px;
+  box-shadow:
+    0 0 calc(0.1 * var(--rco-fx-u)) var(--rco-tone),
+    inset 0 0 calc(0.1 * var(--rco-fx-u)) var(--rco-tone);
+}
+
+.rco-fx-ripples,
+.rco-fx-converge,
+.rco-fx-echo {
+  width: 0;
+  height: 0;
+}
+
+.rco-fx-ripples-ring,
+.rco-fx-converge-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: var(--rco-fx-u);
+  aspect-ratio: 1 / 1;
+  margin: calc(-0.5 * var(--rco-fx-u)) 0 0 calc(-0.5 * var(--rco-fx-u));
+  border: calc(0.014 * var(--rco-fx-u)) solid color-mix(in oklch, var(--rco-tone) 75%, white);
+  border-radius: 9999px;
+  opacity: 0;
+  box-shadow: 0 0 calc(0.05 * var(--rco-fx-u)) color-mix(in oklch, var(--rco-tone) 60%, transparent);
+}
+
+.rco-fx-pulse {
+  width: var(--rco-fx-u);
+  aspect-ratio: 1 / 1;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklch, var(--rco-tone) 8%, transparent) 0%,
+    color-mix(in oklch, var(--rco-tone) 34%, transparent) 52%,
+    color-mix(in oklch, var(--rco-tone) 60%, white) 67%,
+    transparent 70%
+  );
+}
+
+.rco-fx-sonar {
+  width: calc(2.7 * var(--rco-fx-u));
+  aspect-ratio: 1 / 1;
+  border-radius: 9999px;
+  box-shadow:
+    inset 0 0 0 max(1px, calc(0.006 * var(--rco-fx-u))) color-mix(in oklch, var(--rco-tone) 60%, transparent),
+    inset 0 0 calc(0.12 * var(--rco-fx-u)) color-mix(in oklch, var(--rco-tone) 22%, transparent);
+}
+
+.rco-fx-sonar-sweep {
+  position: absolute;
+  inset: 0;
+  display: block;
+  border-radius: 9999px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0% 70%,
+    color-mix(in oklch, var(--rco-tone) 10%, transparent) 84%,
+    color-mix(in oklch, var(--rco-tone) 55%, transparent) 99.4%,
+    color-mix(in oklch, var(--rco-tone) 40%, white) 100%
+  );
+}
+
+.rco-fx-sonar-ping {
+  position: absolute;
+  inset: 0;
+  display: block;
+  border: max(1.5px, calc(0.01 * var(--rco-fx-u))) solid color-mix(in oklch, var(--rco-tone) 70%, white);
+  border-radius: 9999px;
+  opacity: 0;
+}
+
+.rco-fx-hex,
+.rco-fx-diamond {
+  overflow: visible;
+  width: var(--rco-fx-u);
+  aspect-ratio: 1 / 1;
+  filter: drop-shadow(0 0 calc(0.03 * var(--rco-fx-u)) var(--rco-tone));
+}
+
+.rco-fx-hex-line,
+.rco-fx-diamond-line {
+  fill: none;
+  stroke: color-mix(in oklch, var(--rco-tone) 70%, white);
+  stroke-width: max(2px, calc(0.014 * var(--rco-fx-u)));
+  stroke-linejoin: round;
+}
+
+/* On the floor: under the card's foot, and seen from the side. */
+.rco-fx-slam {
+  top: calc(var(--rco-fx-y) + var(--rco-fx-ratio) * calc(0.5 * var(--rco-fx-u)));
+  width: var(--rco-fx-u);
+  aspect-ratio: 1 / 0.24;
+  border: calc(var(--rco-fx-line, 0.07) * var(--rco-fx-u)) solid color-mix(in oklch, var(--rco-tone) 70%, white);
+  border-radius: 50%;
+  box-shadow: 0 0 calc(0.08 * var(--rco-fx-u)) var(--rco-tone);
+}
+
+.rco-fx-slam-hit {
+  top: calc(var(--rco-fx-y) + var(--rco-fx-ratio) * calc(0.5 * var(--rco-fx-u)));
+  width: calc(1.6 * var(--rco-fx-u));
+  aspect-ratio: 1 / 0.24;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    ellipse,
+    white 0%,
+    color-mix(in oklch, var(--rco-tone) 60%, transparent) 30%,
+    transparent 70%
+  );
+}
+
+/* It has no colour: it changes what is behind it. */
+.rco-fx-heatwave {
+  width: var(--rco-fx-u);
+  aspect-ratio: 1 / 1;
+  border-radius: 9999px;
+  -webkit-backdrop-filter: blur(calc(0.012 * var(--rco-fx-u))) brightness(1.7) saturate(1.8);
+  backdrop-filter: blur(calc(0.012 * var(--rco-fx-u))) brightness(1.7) saturate(1.8);
+  background: color-mix(in oklch, var(--rco-tone) 16%, transparent);
+  -webkit-mask-image: radial-gradient(circle, transparent 54%, black 61%, black 67%, transparent 71%);
+  mask-image: radial-gradient(circle, transparent 54%, black 61%, black 67%, transparent 71%);
+}
+
+.rco-fx-echo-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: var(--rco-fx-u);
+  aspect-ratio: 1 / var(--rco-fx-ratio);
+  translate: -50% -50%;
+  border-radius: 9.4% / 7%;
+  opacity: 0;
+  box-shadow:
+    inset 0 0 0 max(1.5px, calc(0.01 * var(--rco-fx-u))) color-mix(in oklch, var(--rco-tone) 70%, white),
+    0 0 calc(0.08 * var(--rco-fx-u)) color-mix(in oklch, var(--rco-tone) 55%, transparent);
+}
+
+.rco-fx-nova {
+  --rco-fx-edge: calc(var(--rco-fx-hole, 0) * 1%);
+  width: calc(3.8 * var(--rco-fx-u));
+  aspect-ratio: 1 / 1;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    transparent var(--rco-fx-edge),
+    white calc(var(--rco-fx-edge) + 2%),
+    color-mix(in oklch, var(--rco-tone) 60%, white) calc(var(--rco-fx-edge) + 7%),
+    color-mix(in oklch, var(--rco-tone) 45%, transparent) calc(var(--rco-fx-edge) + 13%),
+    transparent calc(var(--rco-fx-edge) + 20%)
+  );
+}
+
+/* --- the whole stage --- */
+
+/* These three only hold their pieces: bars, halves. Nothing of their own is drawn, and nothing catches a press. */
+.rco-fx-glitch,
+.rco-fx-chroma,
+.rco-fx-letterbox {
+  pointer-events: none;
+}
+
+.rco-fx-vignette {
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    transparent 40%,
+    color-mix(in oklch, var(--rco-tone) 38%, transparent) 76%,
+    color-mix(in oklch, var(--rco-tone) 70%, black) 100%
+  );
+}
+
+.rco-fx-tint {
+  mix-blend-mode: soft-light;
+  background: var(--rco-tone);
+}
+
+.rco-fx-scanlines {
+  background: repeating-linear-gradient(
+    180deg,
+    color-mix(in oklch, var(--rco-tone) 20%, transparent) 0 1px,
+    transparent 1px 4px
+  );
+}
+
+.rco-fx-scanlines-band {
+  position: absolute;
+  right: 0;
+  left: 0;
+  display: block;
+  height: 16%;
+  mix-blend-mode: screen;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in oklch, var(--rco-tone) 14%, transparent) 55%,
+    color-mix(in oklch, var(--rco-tone) 46%, transparent) 96%,
+    transparent 100%
+  );
+}
+
+.rco-fx-glitch-bar {
+  position: absolute;
+  display: block;
+  opacity: 0;
+  mix-blend-mode: screen;
+  background: var(--rco-tone);
+}
+
+.rco-fx-glitch-other {
+  mix-blend-mode: difference;
+  background: var(--rco-fx-accent);
+}
+
+.rco-fx-chroma-half {
+  position: absolute;
+  inset: 0;
+  display: block;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    circle at var(--rco-fx-x) var(--rco-fx-y),
+    color-mix(in oklch, var(--rco-tone) 95%, transparent) 0%,
+    color-mix(in oklch, var(--rco-tone) 45%, transparent) 30%,
+    transparent 66%
+  );
+}
+
+.rco-fx-chroma-other {
+  background: radial-gradient(
+    circle at var(--rco-fx-x) var(--rco-fx-y),
+    color-mix(in oklch, var(--rco-fx-accent) 95%, transparent) 0%,
+    color-mix(in oklch, var(--rco-fx-accent) 45%, transparent) 30%,
+    transparent 66%
+  );
+}
+
+.rco-fx-letterbox-bar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: block;
+  height: 11%;
+  background: black;
+}
+
+.rco-fx-letterbox-foot {
+  top: auto;
+  bottom: 0;
+}
+
+.rco-fx-flicker {
+  background: black;
+}
+
+.rco-fx-speedlines {
+  background: repeating-conic-gradient(
+    from calc(var(--rco-fx-turn, 0) * 1deg) at var(--rco-fx-x) var(--rco-fx-y),
+    color-mix(in oklch, var(--rco-tone) 45%, white) 0deg 0.45deg,
+    transparent 0.45deg 3.4deg,
+    color-mix(in oklch, var(--rco-tone) 45%, white) 3.4deg 3.6deg,
+    transparent 3.6deg 9deg
+  );
+  -webkit-mask-image: radial-gradient(circle at var(--rco-fx-x) var(--rco-fx-y), transparent 26%, black 78%);
+  mask-image: radial-gradient(circle at var(--rco-fx-x) var(--rco-fx-y), transparent 26%, black 78%);
+}
+
+.rco-fx-negative {
+  -webkit-backdrop-filter: invert(1) hue-rotate(180deg);
+  backdrop-filter: invert(1) hue-rotate(180deg);
+}
+
+.rco-fx-focus {
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .rco-cell:where([data-found]),
+  .rco-pack-sealed,
+  :where(.rco-pack-seat[data-up]) .rco-pack-rays,
   :where(.rco-card) .rco-legend-spin,
   :where(.rco-card) .rco-foil {
     animation: none;
   }
 
-  :where(.rco-card) .rco-flyer-inner {
+  :where(.rco-card) .rco-flyer-inner,
+  .rco-pack-seat,
+  .rco-pack-table {
     transition: none;
   }
 }

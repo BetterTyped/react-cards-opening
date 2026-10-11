@@ -1,8 +1,13 @@
 import { renderToString } from "react-dom/server";
 
 import { Card } from "./card";
+import { CardCase } from "./card-case";
 import { CardHunt } from "./card-hunt";
 import { CardOpening } from "./card-opening";
+import { CardPack } from "./card-pack";
+import { CardSpin } from "./card-spin";
+import { EffectLayer } from "./effect-layer";
+import { EFFECT_SETS, playEffects } from "./effects";
 import { GLYPHS } from "./glyphs";
 import { themeOf } from "./theme";
 import type { GlyphCard } from "./types";
@@ -32,6 +37,35 @@ describe("on a server, where there is no window", () => {
     expect(html).toContain("Vault Dragon");
     expect(html).toContain("Legendary");
     expect(html).toContain(theme.rarity.legendary);
+  });
+
+  it("renders a sealed pack, and a pack somebody already started as dealt", () => {
+    const sealed = renderToString(<CardPack cards={CARDS} opened={[]} onOpen={noop} effects={EFFECT_SETS.mythic} />);
+    const started = renderToString(<CardPack cards={CARDS} opened={["fox"]} onOpen={noop} />);
+
+    expect(sealed).toContain('data-stage="sealed"');
+    expect(sealed).toContain("2 cards inside. Press the pack.");
+    expect(started).toContain('data-stage="dealt"');
+    expect(started).toContain("Lantern Fox");
+    expect(started.match(/rco-pack-seat/g)).toHaveLength(2);
+  });
+
+  it("renders the reel with the same strip a browser would lay out, and the case with its shelf", () => {
+    const reel = <CardSpin cards={CARDS} opened={[]} onOpen={noop} />;
+    const chest = renderToString(<CardCase cards={CARDS} opened={["fox"]} onOpen={noop} />);
+
+    expect(renderToString(reel)).toBe(renderToString(reel));
+    expect(renderToString(reel).match(/rco-reel-tile/g)?.length).toBeGreaterThan(40);
+    expect(chest).toContain("rco-case-lid");
+    expect(chest.match(/rco-shelf-slot/g)).toHaveLength(2);
+  });
+
+  it("renders an effect layer as an empty sheet, and plays nothing where there is no page", () => {
+    const html = renderToString(<EffectLayer tone="#f5c451" />);
+
+    expect(html).toContain("rco-fx-layer");
+    expect(html).not.toContain("canvas");
+    expect(playEffects({} as HTMLElement, "confetti").duration()).toBe(0);
   });
 
   it("leaves the reveal's overlay to the browser", () => {

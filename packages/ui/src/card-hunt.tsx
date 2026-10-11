@@ -2,6 +2,7 @@ import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 
 
 import { CardOpening } from "./card-opening";
 import { type CardHuntClassNames, cn } from "./class-names";
+import type { EffectPlan } from "./effects";
 import { GLYPHS } from "./glyphs";
 import { AgainIcon, ForwardIcon, ScanIcon } from "./icons";
 import { CARD_HUNT_LABELS, type CardHuntLabels, type HuntState } from "./labels";
@@ -49,6 +50,8 @@ export interface CardHuntProps<C extends GlyphCard> {
   renderBack?: (card: C) => ReactNode;
   /** Every run of text on a face of your own, so the card stays up long enough to read. */
   readingOf?: (card: C, info: CardFaceInfo) => readonly string[];
+  /** More to play as a card turns over: which effects each tier gets. One of `EFFECT_SETS`, or your own plan. */
+  effects?: EffectPlan;
   className?: string;
   /** A class of your own for each part: the panel's, the grid's and the reveal's. */
   classNames?: CardHuntClassNames;
@@ -80,6 +83,7 @@ export function CardHunt<C extends GlyphCard>({
   renderFace,
   renderBack,
   readingOf,
+  effects,
   className,
   classNames: names = NONE,
   style,
@@ -288,6 +292,7 @@ export function CardHunt<C extends GlyphCard>({
       </ul>
 
       <CardOpening
+        effects={effects}
         opening={hunt.opening}
         theme={theme}
         rarities={rarities}
