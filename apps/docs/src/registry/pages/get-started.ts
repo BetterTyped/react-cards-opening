@@ -33,6 +33,7 @@ const introduction: DocPage = {
         "**The rules.** [useCardOpening](/docs/core/use-card-opening/) decides what a press means at each moment, when a card counts as opened, and what stopping does.",
         "**Tiers that are yours.** Four tiers ship. [Three or seven of your own](/docs/guides/custom-tiers/) get the right show from one word each.",
         "**One stylesheet.** No CSS framework and no reset needed. Ten [themes](/docs/theming/) in dark and light, or one from a single colour.",
+        "**Yours to restyle.** A `classNames` prop for every part, and rules light enough that a Tailwind utility or a class of your own wins. See [Styling by hand](/docs/guides/styling/).",
       ],
     },
     { kind: "h2", text: "What it is not" },
@@ -269,7 +270,7 @@ const theme = customTheme("#ff5a36", "dark");`,
     { kind: "h2", text: "CSS variables" },
     {
       kind: "p",
-      text: "Colours come from the `theme` prop. A few things that are not colours are yours to set in CSS, on any ancestor of the components.",
+      text: "Colours come from the `theme` prop. A few things that are not colours are yours to set in CSS, on any ancestor of the components. [Styling by hand](/docs/guides/styling/) lists all of them, and how to put a class of your own on any part.",
     },
     {
       kind: "table",

@@ -4,7 +4,7 @@ import type { Demo } from "../content/types";
 import { CardShelf } from "../demos/card-shelf";
 import { CustomFaceDemo, CustomTiersDemo } from "../demos/custom";
 import { HeadlessDemo } from "../demos/headless";
-import { HuntDemo } from "../demos/hunt";
+import { HuntDemo, StyledHuntDemo } from "../demos/hunt";
 import { ScanDemo } from "../demos/scan";
 import { CardsDemo, GlyphsDemo, ThemesDemo } from "../demos/static";
 import { cardOfTier, TIER_CARDS } from "../registry/sample";
@@ -16,7 +16,7 @@ import { LookControls, useLookTheme } from "./look";
  */
 
 /** A demo that is its own panel: it brings its ground and its corners, so it sits on the plate without a stage. */
-const isPanel = (demo: Demo) => demo.type === "hunt";
+const isPanel = (demo: Demo) => demo.type === "hunt" || demo.type === "styled";
 
 /** One card of a tier on a shelf of its own. */
 function OneCard({ tier }: { tier: string }) {
@@ -48,6 +48,8 @@ function DemoView({ demo }: { demo: Demo }): ReactNode {
       return <CustomFaceDemo theme={theme} />;
     case "custom-tiers":
       return <CustomTiersDemo theme={theme} />;
+    case "styled":
+      return <StyledHuntDemo theme={theme} />;
   }
 }
 

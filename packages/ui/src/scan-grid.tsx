@@ -1,6 +1,7 @@
 import { gsap } from "gsap";
 import { type CSSProperties, type Ref, useEffect, useImperativeHandle, useRef } from "react";
 
+import { cn, type ScanGridClassNames } from "./class-names";
 import { type CardTheme, DEFAULT_THEME, themeStyle } from "./theme";
 import type { CardLaunch, CardShow } from "./types";
 import { prefersReducedMotion } from "@react-cards-opening/core";
@@ -60,10 +61,13 @@ export interface ScanGridProps {
   markerLabel?: (name: string) => string;
   handle?: Ref<ScanGridHandle>;
   className?: string;
+  /** A class of your own for each part of the grid. The grid's root takes `className`. */
+  classNames?: ScanGridClassNames;
   style?: CSSProperties;
 }
 
 const NO_MARKERS: ReadonlyMap<number, ScanMarker> = new Map();
+const NONE: ScanGridClassNames = {};
 const openLabel = (name: string) => `Open ${name}`;
 
 /**
@@ -86,6 +90,7 @@ export function ScanGrid({
   markerLabel = openLabel,
   handle,
   className,
+  classNames: names = NONE,
   style,
 }: ScanGridProps) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -343,12 +348,12 @@ export function ScanGrid({
   return (
     <div
       ref={rootRef}
-      className={className ? `rco-root rco-scan ${className}` : "rco-root rco-scan"}
+      className={cn("rco-root rco-scan", className)}
       style={{ ...themeStyle(theme), "--rco-tone": tone ?? theme.fg, ...style } as CSSProperties}
     >
-      <div className="rco-scan-flash" aria-hidden />
+      <div className={cn("rco-scan-flash", names.scanFlash)} aria-hidden />
       <div
-        className="rco-grid"
+        className={cn("rco-grid", names.grid)}
         data-veiled={veiled ? "" : undefined}
         style={{
           gridTemplateRows: `repeat(${rows}, auto)`,
@@ -359,14 +364,14 @@ export function ScanGrid({
           const cell = slot - lead;
           if (cell < 0) {
             // oxlint-disable-next-line react/no-array-index-key -- one cell per slot, positional
-            return <i key={slot} className="rco-cell" data-level={0} />;
+            return <i key={slot} className={cn("rco-cell", names.cell)} data-level={0} />;
           }
           const marker = veiled ? undefined : markers.get(cell);
           return (
             <i
               // oxlint-disable-next-line react/no-array-index-key -- one cell per slot, positional
               key={slot}
-              className="rco-cell"
+              className={cn("rco-cell", names.cell)}
               data-cell={cell}
               data-level={Math.min(4, Math.max(0, levels[cell]))}
               data-found={marker ? "" : undefined}
@@ -376,7 +381,7 @@ export function ScanGrid({
                 // Inside the tile, so the tile itself is never swapped for another element mid-scan.
                 <button
                   type="button"
-                  className="rco-cell-press"
+                  className={cn("rco-cell-press", names.marker)}
                   disabled={markersDisabled}
                   onClick={(event) => onMarkerPress?.(marker, event.currentTarget)}
                   aria-label={markerLabel(marker.name)}
@@ -386,19 +391,19 @@ export function ScanGrid({
             </i>
           );
         })}
-        <i className="rco-band" aria-hidden />
-        <i className="rco-reticle" aria-hidden />
-        <i className="rco-ring" aria-hidden />
+        <i className={cn("rco-band", names.band)} aria-hidden />
+        <i className={cn("rco-reticle", names.reticle)} aria-hidden />
+        <i className={cn("rco-ring", names.ring)} aria-hidden />
         <span className="rco-crack" aria-hidden>
           {Array.from({ length: CRACK }, (_unused, index) => (
             // oxlint-disable-next-line react/no-array-index-key -- particles are positional
-            <i key={index} className="rco-crack-bit" />
+            <i key={index} className={cn("rco-crack-bit", names.spark)} />
           ))}
         </span>
       </div>
-      <span className="rco-beam" aria-hidden>
-        <i className="rco-beam-glow" />
-        <i className="rco-beam-line" />
+      <span className={cn("rco-beam", names.beam)} aria-hidden>
+        <i className={cn("rco-beam-glow", names.beamGlow)} />
+        <i className={cn("rco-beam-line", names.beamLine)} />
       </span>
     </div>
   );

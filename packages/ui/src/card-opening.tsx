@@ -3,6 +3,7 @@ import { type CSSProperties, type ReactNode, useEffect, useRef, useState, useSyn
 import { createPortal } from "react-dom";
 
 import { CardBackContent, CardContent } from "./card";
+import { type CardOpeningClassNames, cn } from "./class-names";
 import { CARD_OPENING_LABELS, type CardOpeningLabels } from "./labels";
 import { type CardTheme, DEFAULT_THEME, rarityColor, themeStyle } from "./theme";
 import type { CardFaceInfo, CardLaunch, CardShow, GlyphCard } from "./types";
@@ -24,6 +25,7 @@ const CARD_WIDTH = 300;
 const CARD_RATIO = 4 / 3;
 
 const noop = () => {};
+const NONE: CardOpeningClassNames = {};
 
 /** What keeps a legendary card alive while it is up: the turning foil border, the ray wheel, the shine, sparkles. */
 function legendLoops(stage: HTMLElement): gsap.core.Animation[] {
@@ -70,7 +72,7 @@ function whenRendered(look: () => HTMLElement | null, frames = 30): Promise<HTML
   });
 }
 
-function defaultFace(card: OpeningCard, info: CardFaceInfo): ReactNode {
+function defaultFace(card: OpeningCard, info: CardFaceInfo, names: CardOpeningClassNames): ReactNode {
   const glyph = card as Partial<GlyphCard> & OpeningCard;
   return (
     <CardContent
@@ -80,6 +82,7 @@ function defaultFace(card: OpeningCard, info: CardFaceInfo): ReactNode {
       line={glyph.line}
       note={info.note}
       tone={info.tone}
+      classNames={names}
     />
   );
 }
@@ -116,6 +119,8 @@ export interface CardOpeningProps<C extends OpeningCard> {
    */
   readingOf?: (card: C, info: CardFaceInfo) => readonly string[];
   labels?: Partial<CardOpeningLabels>;
+  /** A class of your own for each part of the reveal. */
+  classNames?: CardOpeningClassNames;
   /** The card's width in pixels at the middle of the screen. Narrow screens get 78% of their width at most. */
   width?: number;
   /** Height over width. */
@@ -140,6 +145,7 @@ export function CardOpening<C extends OpeningCard>({
   noteOf,
   readingOf,
   labels,
+  classNames: names = NONE,
   width: cardWidth = CARD_WIDTH,
   ratio = CARD_RATIO,
   container,
@@ -548,23 +554,23 @@ export function CardOpening<C extends OpeningCard>({
   return createPortal(
     <div
       ref={stageRef}
-      className="rco-root rco-stage"
+      className={cn("rco-root rco-stage", names.stage)}
       aria-live="polite"
       style={{ ...themeStyle(theme), "--rco-tone": tone } as CSSProperties}
     >
-      <div className="rco-backdrop" aria-hidden onClick={opening.pressBackdrop} />
-      <div className="rco-rays" aria-hidden />
+      <div className={cn("rco-backdrop", names.backdrop)} aria-hidden onClick={opening.pressBackdrop} />
+      <div className={cn("rco-rays", names.rays)} aria-hidden />
       {legendary ? (
         <>
-          <div className="rco-legend-rays" aria-hidden />
-          <div className="rco-legend-flash" aria-hidden />
+          <div className={cn("rco-legend-rays", names.legendRays)} aria-hidden />
+          <div className={cn("rco-legend-flash", names.legendFlash)} aria-hidden />
         </>
       ) : null}
-      <div className="rco-flyer">
+      <div className={cn("rco-flyer", names.flyer)}>
         {legendary ? (
           <>
             {[0, 1].map((wave) => (
-              <i key={wave} className="rco-legend-wave" aria-hidden />
+              <i key={wave} className={cn("rco-legend-wave", names.wave)} aria-hidden />
             ))}
             <span className="rco-sparkles" aria-hidden>
               {Array.from({ length: SPARKLES }, (_unused, index) => {
@@ -574,7 +580,7 @@ export function CardOpening<C extends OpeningCard>({
                   <i
                     // oxlint-disable-next-line react/no-array-index-key -- sparkles are positional
                     key={index}
-                    className="rco-sparkle"
+                    className={cn("rco-sparkle", names.sparkle)}
                     style={{
                       left: `${50 + Math.cos(angle) * reach * 100}%`,
                       top: `${50 + Math.sin(angle) * reach * 80}%`,
@@ -583,7 +589,7 @@ export function CardOpening<C extends OpeningCard>({
                 );
               })}
             </span>
-            <div className="rco-legend-border" aria-hidden>
+            <div className={cn("rco-legend-border", names.foilBorder)} aria-hidden>
               <i className="rco-legend-spin" />
             </div>
           </>
@@ -591,22 +597,22 @@ export function CardOpening<C extends OpeningCard>({
         <span className="rco-burst" aria-hidden>
           {Array.from({ length: BURST }, (_unused, index) => (
             // oxlint-disable-next-line react/no-array-index-key -- burst particles are positional
-            <i key={index} className="rco-burst-bit" />
+            <i key={index} className={cn("rco-burst-bit", names.burst)} />
           ))}
         </span>
         <button
           type="button"
-          className="rco-flyer-press"
+          className={cn("rco-flyer-press", names.press)}
           aria-label={peek ? words.closeCard : words.turnCard}
           title={peek ? words.closeCardHint : words.turnCardHint}
           onClick={opening.pressCard}
         />
         <div className="rco-flyer-inner">
-          <div className="rco-face">
-            {legendary ? <i className="rco-foil" aria-hidden /> : null}
-            {current && info ? (renderFace ?? defaultFace)(current, info) : null}
+          <div className={cn("rco-face", names.face)}>
+            {legendary ? <i className={cn("rco-foil", names.shine)} aria-hidden /> : null}
+            {current && info ? (renderFace ? renderFace(current, info) : defaultFace(current, info, names)) : null}
           </div>
-          <div className="rco-back">
+          <div className={cn("rco-back", names.back)}>
             {current && renderBack ? renderBack(current) : <CardBackContent theme={theme} />}
           </div>
         </div>

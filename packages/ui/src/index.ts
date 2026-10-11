@@ -4,6 +4,13 @@ import "./styles.css";
 export { Card, CardBackContent, CardContent, type CardProps } from "./card";
 export { CardHunt, type CardHuntProps } from "./card-hunt";
 export { CardOpening, type CardOpeningProps } from "./card-opening";
+export type {
+  CardClassNames,
+  CardContentClassNames,
+  CardHuntClassNames,
+  CardOpeningClassNames,
+  ScanGridClassNames,
+} from "./class-names";
 export { GLYPHS, type GlyphId, type PixelArt } from "./glyphs";
 export {
   CARD_HUNT_LABELS,

@@ -11,10 +11,17 @@
  *
  * Yours to set, on any ancestor:
  *
- *   --rco-font          the typeface (inherits the page's by default)
- *   --rco-z             where the overlay stacks (80)
- *   --rco-radius        the corner of a card (28px)
- *   --rco-card-shadow   the shadow under a card
+ *   --rco-font            the typeface (inherits the page's by default)
+ *   --rco-z               where the overlay stacks (80)
+ *   --rco-radius          the corner of a card (28px)
+ *   --rco-card-shadow     the shadow under a card
+ *   --rco-panel-radius    the corner of the hunt's panel (28px)
+ *   --rco-button-radius   the corner of a button (a pill)
+ *   --rco-badge-radius    the corner of a badge (14px)
+ *   --rco-cell-radius     the corner of a grid cell (22%)
+ *   --rco-cell-gap        the room between grid cells (3px)
+ *   --rco-backdrop        what dims the page behind a card
+ *   --rco-backdrop-blur   how much it blurs the page (3px)
  *
  * Sizes are in pixels on purpose: the pieces look the same whatever the page does with its root font size.
  *
@@ -27,8 +34,10 @@
 /* ---------- ground rules ---------- */
 
 /*
- * One class of specificity: enough to beat a page's `button { ... }`, `p { ... }` or `* { ... }`, and still below
- * every rule further down this file. Only elements this library renders carry an `rco-` class, so what you pass
+ * Every rule in this file weighs exactly one class, the ground rules included. That is enough to beat a page's
+ * `button { ... }`, `p { ... }` or `* { ... }`, and little enough that a class of yours, or a utility in a later
+ * cascade layer, beats any rule here. Where two rules here set the same thing, the later one wins: the order of
+ * this file is part of how it works. State and context sit inside `:where()`, which weighs nothing. Only elements this library renders carry an `rco-` class, so what you pass
  * in (a face of your own, extra header buttons) is left alone.
  */
 :where(.rco-root),
@@ -99,11 +108,11 @@
   background: var(--rco-glyph-off, rgb(255 255 255 / 0.06));
 }
 
-.rco-glyph-pixel[data-on="1"] {
+.rco-glyph-pixel:where([data-on="1"]) {
   background: color-mix(in oklch, var(--rco-glyph) 50%, transparent);
 }
 
-.rco-glyph-pixel[data-on="2"] {
+.rco-glyph-pixel:where([data-on="2"]) {
   background: var(--rco-glyph);
 }
 
@@ -112,13 +121,13 @@
 .rco-hunt {
   position: relative;
   overflow: hidden;
-  border-radius: 28px;
+  border-radius: var(--rco-panel-radius, 28px);
   padding: 16px;
   background: var(--rco-bg);
   color: var(--rco-fg);
 }
 
-.rco-hunt[data-hero] {
+.rco-hunt:where([data-hero]) {
   display: flex;
   height: 100%;
   flex-direction: column;
@@ -154,7 +163,7 @@
   letter-spacing: -0.03em;
 }
 
-.rco-hunt[data-hero] .rco-hunt-headline {
+:where(.rco-hunt[data-hero]) .rco-hunt-headline {
   font-size: clamp(28px, 3vw, 44px);
   letter-spacing: -0.04em;
 }
@@ -165,7 +174,7 @@
   color: var(--rco-muted);
 }
 
-.rco-hunt[data-hero] .rco-hunt-subline {
+:where(.rco-hunt[data-hero]) .rco-hunt-subline {
   font-size: 16px;
 }
 
@@ -181,11 +190,11 @@
     padding: 24px;
   }
 
-  .rco-hunt[data-hero] {
+  .rco-hunt:where([data-hero]) {
     padding: 40px;
   }
 
-  .rco-hunt[data-hero] .rco-hunt-subline {
+  :where(.rco-hunt[data-hero]) .rco-hunt-subline {
     margin-top: 8px;
     font-size: 17px;
   }
@@ -198,7 +207,7 @@
   height: 44px;
   align-items: center;
   gap: 8px;
-  border-radius: 9999px;
+  border-radius: var(--rco-button-radius, 9999px);
   font-weight: 600;
   cursor: pointer;
 }
@@ -228,9 +237,9 @@
 }
 
 @media (hover: hover) {
-  .rco-button-main:hover,
-  .rco-button-again:hover,
-  button.rco-badge:hover {
+  .rco-button-main:where(:hover),
+  .rco-button-again:where(:hover),
+  .rco-badge:where(button:hover) {
     translate: 0 -1px;
   }
 }
@@ -253,40 +262,40 @@
   position: relative;
   display: grid;
   grid-auto-flow: column;
-  gap: 3px;
+  gap: var(--rco-cell-gap, 3px);
 }
 
 .rco-cell {
   position: relative;
   display: block;
   aspect-ratio: 1 / 1;
-  border-radius: 22%;
+  border-radius: var(--rco-cell-radius, 22%);
   background: var(--rco-l0);
   transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.rco-cell[data-level="1"] {
+.rco-cell:where([data-level="1"]) {
   background: var(--rco-l1);
 }
 
-.rco-cell[data-level="2"] {
+.rco-cell:where([data-level="2"]) {
   background: var(--rco-l2);
 }
 
-.rco-cell[data-level="3"] {
+.rco-cell:where([data-level="3"]) {
   background: var(--rco-l3);
 }
 
-.rco-cell[data-level="4"] {
+.rco-cell:where([data-level="4"]) {
   background: var(--rco-l4);
 }
 
 /* Blank until the beam has passed over it. */
-.rco-grid[data-veiled] .rco-cell[data-cell]:not([data-lit]) {
+:where(.rco-grid[data-veiled]) .rco-cell:where([data-cell]:not([data-lit])) {
   background: var(--rco-l0);
 }
 
-.rco-cell[data-hit] {
+.rco-cell:where([data-hit]) {
   z-index: 10;
   box-shadow:
     0 0 0 2px var(--rco-hit),
@@ -294,7 +303,7 @@
 }
 
 /* Found tiles keep breathing in their colour. Box-shadow only, on a handful of cells. */
-.rco-cell[data-found] {
+.rco-cell:where([data-found]) {
   z-index: 5;
   box-shadow:
     0 0 0 2px var(--rco-found),
@@ -326,13 +335,12 @@
   cursor: pointer;
 }
 
-.rco-cell-press:disabled,
-.rco-badge:disabled {
+.rco-cell-press:where(:disabled) {
   cursor: default;
 }
 
-.rco-cell-press:focus-visible,
-.rco-flyer-press:focus-visible {
+.rco-cell-press:where(:focus-visible),
+.rco-flyer-press:where(:focus-visible) {
   box-shadow: 0 0 0 2px rgb(255 255 255 / 0.7);
 }
 
@@ -451,19 +459,24 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  border-radius: 14px;
+  border-radius: var(--rco-badge-radius, 14px);
   padding: 6px 14px 6px 6px;
   background: var(--rco-card);
   color: var(--rco-muted);
 }
 
-button.rco-badge {
+.rco-badge:where(button) {
   background: color-mix(in oklch, var(--rco-tone) 14%, var(--rco-card));
   box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--rco-tone) 40%, transparent);
   color: var(--rco-fg);
   text-align: left;
   cursor: pointer;
   transition: translate 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* After the rule above on purpose: every rule here weighs the same, so the later one decides. */
+.rco-badge:where(:disabled) {
+  cursor: default;
 }
 
 .rco-badge-art {
@@ -473,7 +486,7 @@ button.rco-badge {
   background: var(--rco-bg);
 }
 
-button.rco-badge .rco-badge-art {
+:where(button.rco-badge) .rco-badge-art {
   background: color-mix(in oklch, var(--rco-tone) 10%, var(--rco-bg));
 }
 
@@ -488,7 +501,7 @@ button.rco-badge .rco-badge-art {
   font-weight: 600;
 }
 
-button.rco-badge .rco-badge-name {
+:where(button.rco-badge) .rco-badge-name {
   line-height: 1.25;
 }
 
@@ -513,9 +526,9 @@ button.rco-badge .rco-badge-name {
   opacity: 0;
   background:
     radial-gradient(circle at 50% 50%, color-mix(in oklch, var(--rco-tone) 28%, transparent), transparent 55%),
-    rgb(8 8 10 / 0.62);
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
+    var(--rco-backdrop, rgb(8 8 10 / 0.62));
+  -webkit-backdrop-filter: blur(var(--rco-backdrop-blur, 3px));
+  backdrop-filter: blur(var(--rco-backdrop-blur, 3px));
 }
 
 .rco-rays {
@@ -537,7 +550,7 @@ button.rco-badge .rco-badge-name {
   mask-image: radial-gradient(circle, black 20%, transparent 70%);
 }
 
-.rco-stage .rco-legend-rays {
+.rco-legend-rays {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -787,7 +800,7 @@ button.rco-badge .rco-badge-name {
 }
 
 /* A card on a shelf casts a shorter shadow than one held up over a dimmed page. */
-.rco-card .rco-face {
+:where(.rco-card) .rco-face {
   box-shadow:
     inset 0 0 0 calc(2 * var(--rco-u, 1px)) var(--rco-tone),
     var(
@@ -796,33 +809,33 @@ button.rco-badge .rco-badge-name {
     );
 }
 
-.rco-card .rco-back {
+:where(.rco-card) .rco-back {
   box-shadow: inset 0 0 0 calc(2 * var(--rco-u, 1px)) color-mix(in oklch, var(--rco-fg) 14%, transparent);
 }
 
-.rco-card .rco-flyer-inner {
+:where(.rco-card) .rco-flyer-inner {
   transition: transform 600ms cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 
-.rco-card[data-down] .rco-flyer-inner {
+:where(.rco-card[data-down]) .rco-flyer-inner {
   transform: rotateY(180deg);
 }
 
-.rco-card .rco-legend-border {
+:where(.rco-card) .rco-legend-border {
   opacity: 1;
   transition: opacity 300ms ease;
 }
 
 /* Face down, a legendary looks like any other card: the foil is part of the face. */
-.rco-card[data-down] .rco-legend-border {
+:where(.rco-card[data-down]) .rco-legend-border {
   opacity: 0;
 }
 
-.rco-card .rco-legend-spin {
+:where(.rco-card) .rco-legend-spin {
   animation: rco-spin 2.4s linear infinite;
 }
 
-.rco-card .rco-foil {
+:where(.rco-card) .rco-foil {
   opacity: 1;
   background-position: 115% 0;
   animation: rco-shine 2.1s cubic-bezier(0.45, 0, 0.55, 1) infinite;
@@ -847,13 +860,13 @@ button.rco-badge .rco-badge-name {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rco-cell[data-found],
-  .rco-card .rco-legend-spin,
-  .rco-card .rco-foil {
+  .rco-cell:where([data-found]),
+  :where(.rco-card) .rco-legend-spin,
+  :where(.rco-card) .rco-foil {
     animation: none;
   }
 
-  .rco-card .rco-flyer-inner {
+  :where(.rco-card) .rco-flyer-inner {
     transition: none;
   }
 }

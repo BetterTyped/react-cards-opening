@@ -1,6 +1,7 @@
 import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from "react";
 
 import { CardOpening } from "./card-opening";
+import { type CardHuntClassNames, cn } from "./class-names";
 import { GLYPHS } from "./glyphs";
 import { AgainIcon, ForwardIcon, ScanIcon } from "./icons";
 import { CARD_HUNT_LABELS, type CardHuntLabels, type HuntState } from "./labels";
@@ -11,6 +12,7 @@ import type { CardFaceInfo, CardShow, GlyphCard } from "./types";
 import { DEFAULT_RARITIES, pickSpot, type RarityTier, useCardOpening, useCardSpots } from "@react-cards-opening/core";
 
 const describeTile = (cell: number) => `tile ${cell + 1}`;
+const NONE: CardHuntClassNames = {};
 
 export interface CardHuntProps<C extends GlyphCard> {
   /** Every card in the deal, found or not, in the order they were dealt. */
@@ -48,6 +50,8 @@ export interface CardHuntProps<C extends GlyphCard> {
   /** Every run of text on a face of your own, so the card stays up long enough to read. */
   readingOf?: (card: C, info: CardFaceInfo) => readonly string[];
   className?: string;
+  /** A class of your own for each part: the panel's, the grid's and the reveal's. */
+  classNames?: CardHuntClassNames;
   style?: CSSProperties;
 }
 
@@ -77,6 +81,7 @@ export function CardHunt<C extends GlyphCard>({
   renderBack,
   readingOf,
   className,
+  classNames: names = NONE,
   style,
 }: CardHuntProps<C>) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -177,7 +182,7 @@ export function CardHunt<C extends GlyphCard>({
   let button: ReactNode = (
     <button
       type="button"
-      className="rco-button rco-button-main"
+      className={cn("rco-button rco-button-main", names.scanButton)}
       onClick={() => hunt.start()}
       disabled={hunt.peeking !== null}
     >
@@ -188,7 +193,7 @@ export function CardHunt<C extends GlyphCard>({
   if (run) {
     button =
       !run.replay && left > 0 ? (
-        <button type="button" className="rco-button rco-button-skip" onClick={findAll}>
+        <button type="button" className={cn("rco-button rco-button-skip", names.skipButton)} onClick={findAll}>
           <ForwardIcon />
           {words.openAll}
         </button>
@@ -197,7 +202,7 @@ export function CardHunt<C extends GlyphCard>({
     button = (
       <button
         type="button"
-        className="rco-button rco-button-again"
+        className={cn("rco-button rco-button-again", names.replayButton)}
         onClick={scanAgain}
         disabled={hunt.peeking !== null}
       >
@@ -212,17 +217,17 @@ export function CardHunt<C extends GlyphCard>({
   return (
     <div
       ref={rootRef}
-      className={className ? `rco-root rco-hunt ${className}` : "rco-root rco-hunt"}
+      className={cn("rco-root rco-hunt", className, names.root)}
       data-hero={hero ? "" : undefined}
       style={{ ...themeStyle(theme), "--rco-tone": tone, ...style } as CSSProperties}
     >
-      <div ref={flashRef} className="rco-hunt-flash" aria-hidden />
-      <div className="rco-hunt-head">
+      <div ref={flashRef} className={cn("rco-hunt-flash", names.flash)} aria-hidden />
+      <div className={cn("rco-hunt-head", names.head)}>
         <div className="rco-hunt-words">
-          <p className="rco-hunt-headline">{words.headline(state)}</p>
-          <p className="rco-hunt-subline">{words.subline(state)}</p>
+          <p className={cn("rco-hunt-headline", names.headline)}>{words.headline(state)}</p>
+          <p className={cn("rco-hunt-subline", names.subline)}>{words.subline(state)}</p>
         </div>
-        <div className="rco-hunt-actions">
+        <div className={cn("rco-hunt-actions", names.actions)}>
           {actions ? <div className="rco-slot">{actions}</div> : null}
           {button}
         </div>
@@ -230,6 +235,8 @@ export function CardHunt<C extends GlyphCard>({
 
       <ScanGrid
         handle={scanRef}
+        className={names.scan}
+        classNames={names}
         levels={levels}
         lead={lead}
         rows={rows}
@@ -244,34 +251,34 @@ export function CardHunt<C extends GlyphCard>({
         onMarkerPress={(marker, element) => hunt.peek(marker.id, element)}
       />
 
-      <ul className="rco-finds" aria-label={words.finds}>
+      <ul className={cn("rco-finds", names.finds)} aria-label={words.finds}>
         {cards.map((card) => {
           const spot = opened.includes(card.id) && !veiled ? spots[card.id] : undefined;
           return (
             <li key={card.id} className="rco-find">
               {spot === undefined ? (
-                <span className="rco-badge">
-                  <span className="rco-badge-art">
+                <span className={cn("rco-badge", names.badge)}>
+                  <span className={cn("rco-badge-art", names.badgeArt)}>
                     <PixelGlyph art={GLYPHS.question} colour={theme.muted} cell={3} />
                   </span>
-                  <span className="rco-badge-name">{words.hidden}</span>
+                  <span className={cn("rco-badge-name", names.badgeName)}>{words.hidden}</span>
                 </span>
               ) : (
                 <button
                   type="button"
-                  className="rco-badge"
+                  className={cn("rco-badge", names.badge)}
                   data-rco-badge={card.id}
                   disabled={run !== null}
                   onClick={(event) => hunt.peek(card.id, event.currentTarget)}
                   title={words.openBadge}
                   style={{ "--rco-tone": rarityColor(theme, card.rarity) } as CSSProperties}
                 >
-                  <span className="rco-badge-art">
+                  <span className={cn("rco-badge-art", names.badgeArt)}>
                     <PixelGlyph art={card.art ?? GLYPHS.question} colour={rarityColor(theme, card.rarity)} cell={3} />
                   </span>
                   <span className="rco-badge-words">
-                    <span className="rco-badge-name">{card.name}</span>
-                    <span className="rco-badge-where">{describeSpot(spot)}</span>
+                    <span className={cn("rco-badge-name", names.badgeName)}>{card.name}</span>
+                    <span className={cn("rco-badge-where", names.badgeWhere)}>{describeSpot(spot)}</span>
                   </span>
                 </button>
               )}
@@ -291,6 +298,7 @@ export function CardHunt<C extends GlyphCard>({
         renderBack={renderBack}
         readingOf={readingOf}
         labels={words}
+        classNames={names}
       />
     </div>
   );

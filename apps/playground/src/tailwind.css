@@ -1,0 +1,6 @@
+/*
+ * The setup the docs tell a Tailwind project to use: the library's stylesheet goes into the `components` layer,
+ * above Tailwind's reset and below its utilities.
+ */
+@import "tailwindcss";
+@import "../../../packages/ui/src/styles.css" layer(components);

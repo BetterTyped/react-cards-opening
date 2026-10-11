@@ -1814,3 +1814,46 @@ main:has(> .d-facts) > .d-facts {
 .d-split .d-band-more {
   justify-content: flex-start;
 }
+
+/*
+ * The "typewriter" restyle on the styling page: a look of this site's own, put on the library's parts through
+ * `classNames`. Single classes, loaded after the library's stylesheet, which is all it takes to win.
+ */
+.d-tw-panel {
+  border-radius: 0;
+  box-shadow: inset 0 0 0 2px currentColor;
+  font-family: var(--d-mono);
+  --rco-button-radius: 0;
+  --rco-badge-radius: 0;
+  --rco-cell-radius: 0;
+  --rco-cell-gap: 2px;
+}
+.d-tw-headline {
+  font-size: clamp(18px, 2vw, 24px);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+.d-tw-subline {
+  font-size: 13px;
+}
+.d-tw-button {
+  box-shadow:
+    inset 0 0 0 2px var(--rco-fg),
+    5px 5px 0 0 var(--rco-fg);
+}
+.d-tw-badge {
+  box-shadow: inset 0 0 0 1.5px color-mix(in oklch, var(--rco-fg) 70%, transparent);
+}
+.d-tw-badge-art {
+  border-radius: 0;
+}
+/* The reveal is mounted on the body, outside the panel: what it reads is set on its own stage. */
+.d-tw-stage {
+  font-family: var(--d-mono);
+  --rco-radius: 4px;
+  --rco-backdrop: rgb(0 0 0 / 0.82);
+  --rco-backdrop-blur: 0px;
+}
+.d-tw-name {
+  letter-spacing: -0.02em;
+}

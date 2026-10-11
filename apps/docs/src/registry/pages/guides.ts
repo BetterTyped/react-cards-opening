@@ -1,6 +1,159 @@
 import type { DocPage } from "../../content/types";
+import { SLOT_TABLES } from "../slots";
 
 const UPDATED = "2026-10-11";
+
+const styling: DocPage = {
+  path: "/docs/guides/styling/",
+  section: "guides",
+  title: "Styling by hand",
+  tagline: "Tailwind or plain CSS",
+  nav: "Styling by hand",
+  description:
+    "Restyle any part of a card opening with Tailwind utilities or plain CSS: a classNames prop for every part and a stylesheet where every rule weighs one class.",
+  lead: "The look that ships is a default, not a wall. Every part of every component takes a class of your own through `classNames`, and every rule in the library's stylesheet weighs exactly one class, so yours wins without `!important`. With Tailwind it takes one line of setup, and then utilities work on any part.",
+  blocks: [
+    {
+      kind: "preview",
+      demo: { type: "styled" },
+      caption: "The same hunt, restyled with a dozen classes: square corners, a typewriter face, hard shadows.",
+    },
+    { kind: "h2", text: "With Tailwind 4" },
+    {
+      kind: "p",
+      text: "Import the library's stylesheet into the `components` layer. That puts it above Tailwind's reset, so the reset cannot flatten it, and below your utilities, so a utility always wins.",
+    },
+    {
+      kind: "code",
+      language: "css",
+      file: "app.css",
+      code: `@import "tailwindcss";
+@import "@react-cards-opening/ui/styles.css" layer(components);`,
+    },
+    {
+      kind: "code",
+      language: "tsx",
+      code: `<CardHunt
+  classNames={{
+    root: "rounded-none bg-zinc-950 p-10",
+    headline: "font-serif text-5xl",
+    scanButton: "rounded-md bg-pink-500 px-8 text-white",
+    cell: "rounded-none",
+    badge: "rounded-md",
+    face: "rounded-xl p-4",
+  }}
+  {...rest}
+/>`,
+    },
+    {
+      kind: "note",
+      text: "Do not also import the stylesheet from JavaScript in this setup. One import, in the CSS, in the layer. With Tailwind 3, which has no real layers, import the library's stylesheet before your own CSS and the same classes work by order.",
+    },
+    { kind: "h2", text: "With plain CSS" },
+    {
+      kind: "p",
+      text: "The `rco-` class on each part is a stable name, and every rule on it weighs one class. Two ways to win follow from that. A rule of yours with a parent in front of it always wins. A single class of yours wins when your stylesheet loads after the library's.",
+    },
+    {
+      kind: "code",
+      language: "css",
+      code: `/* Always wins: two classes against one. */
+.my-hunt .rco-hunt-headline {
+  font-family: Georgia, serif;
+}
+
+/* Wins when it comes later: one class against one. Hand it over with classNames. */
+.headline {
+  font-size: 40px;
+}`,
+    },
+    {
+      kind: "code",
+      language: "tsx",
+      code: `import styles from "./hunt.module.css";
+
+<CardHunt className="my-hunt" classNames={{ headline: styles.headline }} {...rest} />`,
+    },
+    { kind: "h2", text: "Variables for the usual things" },
+    {
+      kind: "p",
+      text: "Corners, gaps and the dimmed page are variables, so the common changes need no class at all. Set them on any ancestor. The reveal is mounted on the document's body, outside your component, so set what it reads on `:root`, on `body`, or on the `stage` part.",
+    },
+    {
+      kind: "table",
+      head: ["Variable", "Default", "What it does"],
+      rows: [
+        ["`--rco-font`", "the page's font", "The typeface of everything the library draws."],
+        ["`--rco-radius`", "`28px`", "The corner of a card. The foil border follows it."],
+        ["`--rco-card-shadow`", "a deep drop", "The shadow under a card."],
+        ["`--rco-panel-radius`", "`28px`", "The corner of the hunt's panel."],
+        ["`--rco-button-radius`", "a pill", "The corner of the hunt's buttons."],
+        ["`--rco-badge-radius`", "`14px`", "The corner of a badge."],
+        ["`--rco-cell-radius`", "`22%`", "The corner of a grid cell."],
+        ["`--rco-cell-gap`", "`3px`", "The room between grid cells."],
+        ["`--rco-backdrop`", "a near-black wash", "What dims the page behind a card."],
+        ["`--rco-backdrop-blur`", "`3px`", "How much the page behind is blurred."],
+        ["`--rco-z`", "`80`", "Where the reveal's overlay stacks."],
+      ],
+    },
+    { kind: "h2", text: "The parts of a hunt" },
+    {
+      kind: "p",
+      text: "`CardHunt` takes every key on this page: its own, and the grid's and the reveal's, which it passes down.",
+    },
+    SLOT_TABLES.hunt,
+    { kind: "h2", text: "The parts of the grid" },
+    { kind: "p", text: "`ScanGrid` takes these. Its own root takes `className`." },
+    SLOT_TABLES.scan,
+    { kind: "h2", text: "The parts of the reveal" },
+    { kind: "p", text: "`CardOpening` takes these, and the card's parts below." },
+    SLOT_TABLES.opening,
+    { kind: "h2", text: "The parts of a card" },
+    { kind: "p", text: "`Card` takes these. So does `CardOpening`, for the card it turns over." },
+    SLOT_TABLES.card,
+    { kind: "h2", text: "States" },
+    {
+      kind: "p",
+      text: "State is written on the parts as data attributes, so a selector or a Tailwind `data-` variant can follow it.",
+    },
+    {
+      kind: "table",
+      head: ["On", "Attribute", "When"],
+      rows: [
+        ["`.rco-hunt`", "`data-hero`", "The hunt is the page."],
+        ["`.rco-grid`", "`data-veiled`", "The grid is blank until the beam has passed."],
+        ["`.rco-cell`", '`data-level="0"` to `"4"`', "How lit the cell is."],
+        ["`.rco-cell`", "`data-lit`", "The beam has crossed it."],
+        ["`.rco-cell`", "`data-hit`", "It is the cell being cracked. `--rco-hit` is the card's colour."],
+        ["`.rco-cell`", "`data-found`", "A card was found here. `--rco-found` is its colour."],
+        ["`.rco-card`", "`data-down`", "The card lies face down."],
+        ["`.rco-card`", "`data-effect`", "`quiet`, `loud` or `legendary`."],
+      ],
+    },
+    {
+      kind: "code",
+      language: "tsx",
+      code: `<CardHunt classNames={{ cell: "data-found:rounded-full data-[level='0']:opacity-40" }} {...rest} />`,
+    },
+    { kind: "h2", text: "What to leave to the library" },
+    {
+      kind: "list",
+      items: [
+        "**Colour, type, corners, shadows, padding**: yours to change on any part.",
+        "**`transform`, `opacity` and `visibility` on what moves**: the flyer, the particles, the beam, the reticle, the rays. The animation writes these as inline styles and will overwrite a class.",
+        "**The card's own colour** comes from the theme's `rarity`, through `--rco-tone`. Change it there and the border, the burst and the rays follow together.",
+        "**The words** are [labels](/docs/guides/labels-and-translation/), not styles.",
+      ],
+    },
+  ],
+  related: [
+    "/docs/theming/",
+    "/docs/guides/custom-card-face/",
+    "/docs/components/card-hunt/",
+    "/docs/guides/labels-and-translation/",
+  ],
+  updated: "2026-10-11",
+};
 
 const customFace: DocPage = {
   path: "/docs/guides/custom-card-face/",
@@ -601,6 +754,7 @@ const labels = { ...CARD_HUNT_LABELS, replay: "Run it back" };`,
 };
 
 export const GUIDES: readonly DocPage[] = [
+  styling,
   customFace,
   customTiers,
   originAndLanding,

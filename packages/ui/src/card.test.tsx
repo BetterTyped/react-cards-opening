@@ -71,6 +71,17 @@ describe("Card", () => {
     expect(screen.getByText("Epic creature")).toHaveAttribute("data-tone", themeOf().rarity.epic);
   });
 
+  it("takes a class of the page's own for itself and for each of its parts", () => {
+    render(
+      <Card card={DRAGON} className="my-card" classNames={{ face: "my-face", back: "my-back", rarity: "my-tier" }} />,
+    );
+
+    expect(document.querySelector(".rco-card")).toHaveClass("my-card");
+    expect(document.querySelector(".rco-face")).toHaveClass("my-face");
+    expect(document.querySelector(".rco-back")).toHaveClass("my-back");
+    expect(screen.getByText("Legendary")).toHaveClass("rco-card-rarity", "my-tier");
+  });
+
   it("lies face down when told to", () => {
     const { rerender } = render(<Card card={DRAGON} faceDown />);
     expect(document.querySelector(".rco-card")).toHaveAttribute("data-down");

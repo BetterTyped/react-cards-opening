@@ -27,7 +27,9 @@ export type Demo =
   /** A face of your own: a picture card. */
   | { type: "custom-face" }
   /** Three tiers of your own. */
-  | { type: "custom-tiers" };
+  | { type: "custom-tiers" }
+  /** The hunt restyled through `classNames`. */
+  | { type: "styled" };
 
 export type CodeLanguage = "tsx" | "ts" | "css" | "bash" | "html";
 

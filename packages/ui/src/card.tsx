@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
 
+import { type CardClassNames, type CardContentClassNames, cn } from "./class-names";
 import { GLYPHS, type PixelArt } from "./glyphs";
 import { PixelGlyph } from "./pixel-glyph";
 import { type CardTheme, DEFAULT_THEME, rarityColor, themeStyle } from "./theme";
@@ -8,6 +9,8 @@ import { DEFAULT_RARITIES, type RarityTier, tierOf } from "@react-cards-opening/
 
 /** Holds a row open when it has nothing to say, so every card's rows line up. */
 const NBSP = "\u00A0";
+
+const NONE: CardClassNames = {};
 
 /**
  * The rows of the ready-made face: a glyph in the room that is left, then the name, the rarity as a word, a line of
@@ -21,6 +24,7 @@ export function CardContent({
   line,
   note,
   tone,
+  classNames: names = NONE,
 }: {
   art?: PixelArt;
   name: string;
@@ -29,14 +33,18 @@ export function CardContent({
   line?: string;
   note?: string;
   tone: string;
+  /** A class of your own for each row. */
+  classNames?: CardContentClassNames;
 }) {
   return (
     <>
-      <div className="rco-line rco-card-art">{art ? <PixelGlyph art={art} colour={tone} cell={14} /> : null}</div>
-      <p className="rco-line rco-card-name">{name}</p>
-      <p className="rco-line rco-card-rarity">{rarity ?? NBSP}</p>
-      <p className="rco-line rco-card-text">{line}</p>
-      <p className="rco-line rco-card-note">{note ?? NBSP}</p>
+      <div className={cn("rco-line rco-card-art", names.art)}>
+        {art ? <PixelGlyph art={art} colour={tone} cell={14} /> : null}
+      </div>
+      <p className={cn("rco-line rco-card-name", names.name)}>{name}</p>
+      <p className={cn("rco-line rco-card-rarity", names.rarity)}>{rarity ?? NBSP}</p>
+      <p className={cn("rco-line rco-card-text", names.text)}>{line}</p>
+      <p className={cn("rco-line rco-card-note", names.note)}>{note ?? NBSP}</p>
     </>
   );
 }
@@ -66,6 +74,8 @@ export interface CardProps {
   /** What the back shows instead of the question glyph. */
   back?: ReactNode;
   className?: string;
+  /** A class of your own for each part of the card. The card itself takes `className`. */
+  classNames?: CardClassNames;
   style?: CSSProperties;
   /** A face of your own. As a function it is given the tone and the tier. */
   children?: ReactNode | ((info: CardFaceInfo) => ReactNode);
@@ -87,6 +97,7 @@ export function Card({
   ratio = 4 / 3,
   back,
   className,
+  classNames: names = NONE,
   style,
   children,
 }: CardProps) {
@@ -98,12 +109,20 @@ export function Card({
   else if (children !== undefined && children !== null) face = children;
   else if (card) {
     face = (
-      <CardContent art={card.art} name={card.name} rarity={tier.label} line={card.line} note={note} tone={info.tone} />
+      <CardContent
+        art={card.art}
+        name={card.name}
+        rarity={tier.label}
+        line={card.line}
+        note={note}
+        tone={info.tone}
+        classNames={names}
+      />
     );
   }
   return (
     <div
-      className={className ? `rco-root rco-card ${className}` : "rco-root rco-card"}
+      className={cn("rco-root rco-card", className)}
       data-effect={tier.effect}
       data-down={faceDown ? "" : undefined}
       style={
@@ -111,16 +130,16 @@ export function Card({
       }
     >
       {legendary ? (
-        <div className="rco-legend-border" aria-hidden>
+        <div className={cn("rco-legend-border", names.foilBorder)} aria-hidden>
           <i className="rco-legend-spin" />
         </div>
       ) : null}
       <div className="rco-flyer-inner">
-        <div className="rco-face">
-          {legendary ? <i className="rco-foil" aria-hidden /> : null}
+        <div className={cn("rco-face", names.face)}>
+          {legendary ? <i className={cn("rco-foil", names.shine)} aria-hidden /> : null}
           {face}
         </div>
-        <div className="rco-back">{back ?? <CardBackContent theme={theme} />}</div>
+        <div className={cn("rco-back", names.back)}>{back ?? <CardBackContent theme={theme} />}</div>
       </div>
     </div>
   );

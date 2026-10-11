@@ -50,6 +50,29 @@ describe("themes", () => {
   });
 });
 
+// What `:where()` holds weighs nothing; take it out, brackets and all.
+const bare = (selector: string) => {
+  let out = "";
+  let depth = 0;
+  for (let at = 0; at < selector.length; at += 1) {
+    if (depth === 0 && selector.startsWith(":where(", at)) {
+      depth = 1;
+      at += ":where(".length - 1;
+    } else if (depth > 0) {
+      if (selector[at] === "(") depth += 1;
+      if (selector[at] === ")") depth -= 1;
+    } else out += selector[at];
+  }
+  return out;
+};
+const weigh = (selector: string) => {
+  const rest = bare(selector);
+  const ids = (rest.match(/#[\w-]+/g) ?? []).length;
+  const classes = (rest.match(/\.[\w-]+|\[[^\]]*\]|(?<!:):[\w-]+/g) ?? []).length;
+  const tags = (rest.replaceAll(/\.[\w-]+|\[[^\]]*\]|::?[\w-]+|#[\w-]+/g, " ").match(/[a-z][\w-]*/gi) ?? []).length;
+  return `${ids},${classes},${tags}`;
+};
+
 describe("the stylesheet", () => {
   const css = readFileSync(path.join(import.meta.dirname, "styles.css"), "utf8").replaceAll(/\/\*[\s\S]*?\*\//g, "");
 
@@ -64,6 +87,23 @@ describe("the stylesheet", () => {
 
     expect(selectors.length).toBeGreaterThan(60);
     expect(loose).toEqual([]);
+  });
+
+  it("gives every rule the weight of exactly one class, so a class of the page's own can always win", () => {
+    const selectors = [...css.matchAll(/(^|[{}])\s*([^{}@]+?)\s*\{/g)]
+      .map((match) => match[2].trim())
+      .filter((selector) => !/^(from|to|[\d.,%\s]+)$/.test(selector))
+      .flatMap((selector) => selector.split(/,(?![^(]*\))/).map((part) => part.trim()));
+
+    // One rule weighs nothing on purpose: the ground rules for a component's own root, so that a margin or a
+    // width the page gives the root is never fought over.
+    const off = selectors
+      .filter((selector) => selector !== ":where(.rco-root)")
+      .filter((selector) => weigh(selector) !== "0,1,0")
+      .map((selector) => `${selector} weighs ${weigh(selector)}`);
+
+    expect(selectors.length).toBeGreaterThan(80);
+    expect(off).toEqual([]);
   });
 
   it("names every animation its own", () => {

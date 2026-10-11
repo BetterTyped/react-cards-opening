@@ -198,6 +198,40 @@ describe("CardHunt", () => {
     expect(screen.getAllByText("Not yet")).toHaveLength(2);
   });
 
+  it("puts a class of the page's own on any part, next to the library's", async () => {
+    const user = userEvent.setup();
+    render(
+      <Hunt
+        cards={[CARDS[1]]}
+        classNames={{
+          root: "my-panel",
+          headline: "my-headline",
+          scanButton: "my-button",
+          scan: "my-scan",
+          cell: "my-cell",
+          badge: "my-badge",
+          stage: "my-stage",
+          face: "my-face",
+          name: "my-name",
+          foilBorder: "my-foil",
+        }}
+      />,
+    );
+
+    expect(document.querySelector(".rco-hunt")).toHaveClass("my-panel");
+    expect(screen.getByText("1 card is hiding in here.")).toHaveClass("rco-hunt-headline", "my-headline");
+    expect(screen.getByRole("button", { name: "Scan" })).toHaveClass("rco-button-main", "my-button");
+    expect(document.querySelector(".rco-scan")).toHaveClass("my-scan");
+    expect(document.querySelectorAll(".rco-cell.my-cell")).toHaveLength(LEVELS.length);
+    expect(document.querySelector(".rco-badge")).toHaveClass("my-badge");
+
+    await user.click(screen.getByRole("button", { name: "Scan" }));
+    expect(document.body.querySelector(".rco-stage")).toHaveClass("my-stage");
+    expect(document.body.querySelector(".rco-stage .rco-face")).toHaveClass("my-face");
+    expect(document.body.querySelector(".rco-stage .rco-card-name")).toHaveClass("rco-line", "my-name");
+    expect(document.body.querySelector(".rco-stage .rco-legend-border")).toHaveClass("my-foil");
+  });
+
   it("gives a legendary its foil and leaves it off a rare", async () => {
     const user = userEvent.setup();
     const { unmount } = render(<Hunt cards={[CARDS[1]]} />);

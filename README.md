@@ -159,6 +159,7 @@ Two packages, released together under one version number. A pair with the same v
 | Thirteen effects | Flight, hum, flip, burst, rays, flash, shockwaves, foil border, shine, sparkles and three for the scan. One page each, with the numbers | [Effects](https://bettertyped.github.io/react-cards-opening/docs/effects/)                      |
 | `useCardOpening` | The queue and the rules of a press, with nothing drawn. Build your own reveal on it                                                     | [useCardOpening](https://bettertyped.github.io/react-cards-opening/docs/core/use-card-opening/) |
 | `rollCards`      | Deals cards by rarity weight. With a seed, the same hand on a server and in a browser                                                   | [Rolls and odds](https://bettertyped.github.io/react-cards-opening/docs/core/rolls/)            |
+| `classNames`     | A class of your own on any part. Tailwind utilities or plain CSS, no `!important`                                                       | [Styling by hand](https://bettertyped.github.io/react-cards-opening/docs/guides/styling/)       |
 | Ten themes       | Each in dark and light, or a whole theme from one accent colour                                                                         | [Theming](https://bettertyped.github.io/react-cards-opening/docs/theming/)                      |
 
 <p align="center">
@@ -223,6 +224,31 @@ const theme = { ...themeOf("mono", "dark"), rarity: { bronze: "#d08a5a", silver:
 
 <CardHunt rarities={tiers} theme={theme} {...rest} />;
 ```
+
+### Style it by hand
+
+Every part takes a class of your own through `classNames`, and every rule in the stylesheet weighs one class, so yours
+wins. With Tailwind 4, import the stylesheet into the `components` layer and utilities work on any part.
+
+```css
+@import "tailwindcss";
+@import "@react-cards-opening/ui/styles.css" layer(components);
+```
+
+```tsx
+<CardHunt
+  classNames={{
+    root: "rounded-none bg-zinc-950 p-10",
+    headline: "font-serif text-5xl",
+    scanButton: "rounded-md bg-pink-500 px-8 text-white",
+    face: "rounded-xl p-4",
+  }}
+  {...rest}
+/>
+```
+
+Plain CSS works the same way: `.my-hunt .rco-hunt-headline { ... }`. The parts, the states and the variables are listed
+in [Styling by hand](https://bettertyped.github.io/react-cards-opening/docs/guides/styling/).
 
 ### Only the rules
 
