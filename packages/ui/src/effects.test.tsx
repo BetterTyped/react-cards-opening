@@ -17,7 +17,7 @@ import {
   playEffects,
 } from "./effects";
 import type { EffectStage } from "./fx-stage";
-import { onEdge, spawn } from "./fx-stage";
+import { corners, drawing, onEdge, spawn } from "./fx-stage";
 import { createRng, DEFAULT_RARITIES, tierOf } from "@react-cards-opening/core";
 
 const css = readFileSync(path.join(import.meta.dirname, "styles.css"), "utf8");
@@ -130,6 +130,36 @@ describe("the effects", () => {
 
     clearEffects(layer);
 
+    expect(layer.querySelector(".rco-fx-play")).toBeNull();
+  });
+
+  it("lets an effect of the page's own draw an outline, the way the hex wave does", async () => {
+    const layer = stage();
+
+    playEffects(layer, {
+      name: "triangle",
+      kind: "wave",
+      label: "Triangle",
+      about: "Three sides, thrown out from the card.",
+      seconds: 0.4,
+      play: (onStage, timeline) => {
+        const [line] = drawing(onStage, "hex", { tag: "polygon" });
+        line?.setAttribute("points", corners(3));
+        timeline.fromTo(
+          line?.parentElement ?? null,
+          { opacity: 1, scale: 0.3 },
+          { opacity: 0, scale: 3, duration: 0.4 },
+          0,
+        );
+      },
+    });
+    const points = layer.querySelector(".rco-fx-hex-line")?.getAttribute("points")?.split(" ") ?? [];
+
+    // Three corners on a circle of 100, the first straight up.
+    expect(points).toHaveLength(3);
+    expect(points[0]).toBe("0.00,-100.00");
+    expect(layer.querySelector("svg.rco-fx-hex")).toHaveAttribute("viewBox", "-100 -100 200 200");
+    await play(0.6);
     expect(layer.querySelector(".rco-fx-play")).toBeNull();
   });
 

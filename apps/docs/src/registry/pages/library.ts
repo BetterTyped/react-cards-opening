@@ -98,6 +98,47 @@ const hearts: Effect = {
 playEffects(layer, [hearts, "flash"]);`,
     },
     {
+      kind: "table",
+      head: ["Helper", "What it does"],
+      rows: [
+        ["`emit(stage, timeline, spec)`", "Lets particles go at a moment of the effect."],
+        [
+          "`part(stage, name)`",
+          "Puts an element on the stage with the class `rco-fx-<name>`, centred on the effect. Pass `true` as a third argument for one that fills the stage.",
+        ],
+        ["`piece(parent, name)`", "An element inside a part: a ring's second line, a flare's ghost."],
+        [
+          "`drawing(stage, name, { tag, count })`",
+          "An SVG outline that stays one line thick however far it is stretched. This is how the hex wave and the lightning are drawn.",
+        ],
+        ["`corners(sides)`", "The points of a shape with that many sides, for a `drawing`."],
+        [
+          "`onEdge(angle, ratio)`",
+          "Where a line from the middle crosses the card's outline, for placing things on its edge.",
+        ],
+        ["`tint(colour, amount)`, `shade(colour, amount)`", "A hex colour part of the way to white, or to black."],
+      ],
+    },
+    {
+      kind: "code",
+      language: "ts",
+      code: `import { corners, drawing, type Effect } from "@react-cards-opening/ui";
+
+// A triangle thrown out from the card, drawn with the hex wave's own styles.
+const triangle: Effect = {
+  name: "triangle",
+  kind: "wave",
+  label: "Triangle",
+  about: "Three sides, thrown out from the card.",
+  seconds: 1,
+  play: (stage, timeline) => {
+    const [line] = drawing(stage, "hex", { tag: "polygon" });
+    line.setAttribute("points", corners(3));
+    timeline.fromTo(line.parentElement, { opacity: 1, scale: 0.3 }, { opacity: 0, scale: 3, duration: 1 }, 0);
+  },
+};`,
+    },
+    {
       kind: "p",
       text: 'Particles come in eleven shapes: `square`, `dot`, `mote`, `star`, `streak`, `shard`, `flake`, `ring`, `petal`, `puff` and `coin`. Speeds are in pixels a second, angles in radians with zero pointing right, and `from: "edge"` starts each one on the card\'s outline, where it is seen from the first frame.',
     },

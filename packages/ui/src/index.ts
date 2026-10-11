@@ -38,7 +38,10 @@ export {
 } from "./effects";
 export type { Particle, ParticleShape } from "./fx-particles";
 export {
+  corners,
+  drawing,
   emit,
+  onEdge,
   part,
   piece,
   shade,
