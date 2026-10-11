@@ -1,0 +1,24 @@
+/* What both pages share around the piece under test: the same font, the same ground, the same box. */
+html,
+body {
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: #060709;
+  font-family: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.page {
+  box-sizing: border-box;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+.page[data-hero] {
+  height: 100vh;
+}
