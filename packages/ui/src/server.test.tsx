@@ -6,6 +6,7 @@ import { CardHunt } from "./card-hunt";
 import { CardOpening } from "./card-opening";
 import { CardPack } from "./card-pack";
 import { CardSpin } from "./card-spin";
+import { CardWheel } from "./card-wheel";
 import { EffectLayer } from "./effect-layer";
 import { EFFECT_SETS, playEffects } from "./effects";
 import { GLYPHS } from "./glyphs";
@@ -50,7 +51,11 @@ describe("on a server, where there is no window", () => {
     expect(started.match(/rco-pack-seat/g)).toHaveLength(2);
   });
 
-  it("renders the reel with the same strip a browser would lay out, and the case with its shelf", () => {
+  it("renders the wheel and the reel the way a browser would lay them out, and the case with its shelf", () => {
+    const wheel = <CardWheel cards={CARDS} opened={[]} onOpen={noop} segments={6} />;
+    expect(renderToString(wheel)).toBe(renderToString(wheel));
+    expect(renderToString(wheel).match(/rco-wheel-wedge/g)).toHaveLength(6);
+
     const reel = <CardSpin cards={CARDS} opened={[]} onOpen={noop} />;
     const chest = renderToString(<CardCase cards={CARDS} opened={["fox"]} onOpen={noop} />);
 

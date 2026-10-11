@@ -94,6 +94,11 @@ export interface CardSpinLabels extends CardOpeningLabels {
   openBadge: string;
 }
 
+export interface CardWheelLabels extends CardSpinLabels {
+  /** What the middle of the wheel says. */
+  hub: (state: OpenerState) => string;
+}
+
 const times = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
 
 export const CARD_SPIN_LABELS: CardSpinLabels = {
@@ -183,4 +188,14 @@ export const CARD_PACK_LABELS: CardPackLabels = {
   openCard: (name) => `Look at ${name} up close`,
   done: "Done",
   replay: "Deal them again",
+};
+
+export const CARD_WHEEL_LABELS: CardWheelLabels = {
+  ...CARD_SPIN_LABELS,
+  subline: ({ pending }) =>
+    pending === 0 ? "Spin again to watch them come up." : "Every spin lands on one of your cards.",
+  hub: ({ pending, running }) => {
+    if (running) return "...";
+    return pending === 0 ? "Again" : "Spin";
+  },
 };

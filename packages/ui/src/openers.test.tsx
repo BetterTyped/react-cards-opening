@@ -1,11 +1,13 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { gsap } from "gsap";
 
 import { ownTheClock, play, reduceMotion } from "../testing/clock";
 import { CardCase } from "./card-case";
 import { CardHunt } from "./card-hunt";
 import { CardPack, type CardPackProps } from "./card-pack";
 import { CardSpin } from "./card-spin";
+import { CardWheel } from "./card-wheel";
 import { EFFECT_SETS, type EffectPlan } from "./effects";
 import { GLYPHS } from "./glyphs";
 import type { GlyphCard } from "./types";
@@ -17,7 +19,7 @@ const CARDS: GlyphCard[] = [
   { id: "dragon", name: "Vault Dragon", rarity: "legendary", line: "Keeps one of every card.", art: GLYPHS.dragon },
 ];
 
-type Opener = "pack" | "spin" | "case" | "hunt";
+type Opener = "pack" | "spin" | "wheel" | "case" | "hunt";
 
 function Game({
   kind,
@@ -43,6 +45,7 @@ function Game({
   };
   if (kind === "pack") return <CardPack {...pack} {...shared} />;
   if (kind === "spin") return <CardSpin {...shared} />;
+  if (kind === "wheel") return <CardWheel {...shared} />;
   if (kind === "case") return <CardCase {...shared} />;
   return <CardHunt {...shared} levels={Array.from({ length: 70 }, (_unused, cell) => (cell % 3 === 0 ? 0 : 2))} />;
 }
@@ -188,6 +191,47 @@ describe("the new openers", () => {
       await user.click(screen.getByRole("button", { name: "Take all" }));
 
       expect(onOpen.mock.calls.map(([id]) => id)).toEqual(["fox", "owl", "dragon"]);
+    });
+  });
+
+  describe("CardWheel", () => {
+    it("has a wedge for every card of the deal, and spins once a press to the next one", async () => {
+      const onOpen = vi.fn<(id: string) => void>();
+      const user = userEvent.setup();
+      render(<Game kind="wheel" onOpen={onOpen} />);
+
+      expect(document.querySelectorAll(".rco-wheel-wedge")).toHaveLength(8);
+      expect(screen.getByText("3 spins left.")).toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: "Spin" }));
+      expect(onOpen).not.toHaveBeenCalled();
+
+      // The spin, the stop, the flight and the turn.
+      await play(9.5);
+      expect(onOpen).toHaveBeenCalledExactlyOnceWith("fox");
+      expect(document.querySelectorAll(".rco-wheel-wedge[data-won]")).toHaveLength(1);
+      expect(overlay().getByText("Lantern Fox")).toBeInTheDocument();
+    });
+
+    it("stops with the winner's wedge under the pointer, however often it has spun", async () => {
+      const user = userEvent.setup();
+      render(<Game kind="wheel" cards={CARDS.slice(0, 2)} />);
+      const turnOf = () => {
+        const won = document.querySelector<HTMLElement>(".rco-wheel-wedge[data-won]");
+        const disc = document.querySelector<HTMLElement>(".rco-wheel-disc");
+        const wedge = Number(won?.style.getPropertyValue("--rco-wheel-turn"));
+        // Where the wedge's middle stands once the disc has turned: from the top, in degrees, between -180 and 180.
+        const at = (((wedge + (gsap.getProperty(disc, "rotation") as number)) % 360) + 540) % 360;
+        return at - 180;
+      };
+
+      await user.click(screen.getByRole("button", { name: "Spin" }));
+      await play(6.2);
+      expect(Math.abs(turnOf())).toBeLessThan(22.5);
+
+      await play(16);
+      await user.click(screen.getByRole("button", { name: "Spin" }));
+      await play(6.2);
+      expect(Math.abs(turnOf())).toBeLessThan(22.5);
     });
   });
 

@@ -74,6 +74,15 @@ test("a reel: at rest, and stopped on its card", async ({ page }) => {
   await shot(page, "spin-locked.png");
 });
 
+test("a wheel: at rest, and stopped on its card", async ({ page }) => {
+  await start(page, "view=wheel");
+  await shot(page, "wheel-rest.png");
+
+  await press(page, ".rco-button-main");
+  await advance(page, 6000);
+  await shot(page, "wheel-locked.png");
+});
+
 test("a case: shut, and open with its light on", async ({ page }) => {
   await start(page, "view=case");
   await shot(page, "case-shut.png");

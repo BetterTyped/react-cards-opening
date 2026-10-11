@@ -153,6 +153,27 @@ export interface CardSpinClassNames extends PanelClassNames, SpinReelClassNames,
 }
 
 /** The case: a box whose lid opens. Its own root takes `className`. */
+/** The wheel. Its root takes `className`. */
+export interface PrizeWheelClassNames {
+  /** The disc that turns. */
+  disc?: string;
+  /** Every wedge. The winner also gets `data-won`. */
+  wedge?: string;
+  /** What a wedge holds: the card's glyph. */
+  prize?: string;
+  /** The pointer the wheel stops under. */
+  pointer?: string;
+  /** The middle of the wheel. */
+  hub?: string;
+  /** The light behind the wheel once it has stopped, in the winner's colour. */
+  wheelGlow?: string;
+}
+
+export interface CardWheelClassNames extends PanelClassNames, PrizeWheelClassNames, CardOpeningClassNames {
+  /** The wheel's root. */
+  wheel?: string;
+}
+
 export interface LootCaseClassNames {
   /** The box: the lid and the body together. It is what shakes. */
   box?: string;

@@ -13,6 +13,7 @@ import {
   CardHunt,
   CardPack,
   CardSpin,
+  CardWheel,
   EFFECT_SETS,
   EffectLayer,
   type EffectLayerHandle,
@@ -42,6 +43,9 @@ function Page() {
   return (
     <div className="page" data-hero={hero ? "" : undefined}>
       {view === "spin" ? <CardSpin cards={cards} opened={opened} onOpen={onOpen} theme={theme} effects={plan} /> : null}
+      {view === "wheel" ? (
+        <CardWheel cards={cards} pool={everyCard} opened={opened} onOpen={onOpen} theme={theme} effects={plan} />
+      ) : null}
       {view === "case" ? <CardCase cards={cards} opened={opened} onOpen={onOpen} theme={theme} effects={plan} /> : null}
       {view === "pack" ? <CardPack cards={cards} opened={opened} onOpen={onOpen} theme={theme} effects={plan} /> : null}
       {view === "hunt" ? (
