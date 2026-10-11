@@ -113,32 +113,32 @@ test.describe("on a phone", () => {
 });
 
 test.describe("the bar", () => {
-  test("the theme toggle flips dark mode and the choice survives a reload", async ({ page }) => {
-    // Arrange: a browser that asks for light, so the page opens light.
+  test("the site opens in the dark, the toggle flips it, and the choice survives a reload", async ({ page }) => {
+    // Arrange: even a browser that asks for light gets the dark: it is the site's own look, not a preference.
     await page.emulateMedia({ colorScheme: "light" });
     await page.goto(at("/docs/"));
     await hydrated(page, ".d-bar");
     const html = page.locator("html");
-    await expect(html).not.toHaveClass(/(^|\s)dark(\s|$)/);
+    await expect(html).toHaveClass(/(^|\s)dark(\s|$)/);
 
     // Act
-    await page.getByRole("button", { name: "Use dark mode" }).click();
+    await page.getByRole("button", { name: "Use light mode" }).click();
 
     // Assert
-    await expect(html).toHaveClass(/(^|\s)dark(\s|$)/);
-    expect(await page.evaluate((key) => localStorage.getItem(key), THEME_KEY)).toBe("dark");
+    await expect(html).not.toHaveClass(/(^|\s)dark(\s|$)/);
+    expect(await page.evaluate((key) => localStorage.getItem(key), THEME_KEY)).toBe("light");
 
-    // Act: the same page again, and then back to light.
+    // Act: the same page again, and then back to dark.
     await page.reload();
     await hydrated(page, ".d-bar");
 
     // Assert
+    await expect(html).not.toHaveClass(/(^|\s)dark(\s|$)/);
+    await page.getByRole("button", { name: "Use dark mode" }).click();
     await expect(html).toHaveClass(/(^|\s)dark(\s|$)/);
-    await page.getByRole("button", { name: "Use light mode" }).click();
-    await expect(html).not.toHaveClass(/(^|\s)dark(\s|$)/);
-    expect(await page.evaluate((key) => localStorage.getItem(key), THEME_KEY)).toBe("light");
+    expect(await page.evaluate((key) => localStorage.getItem(key), THEME_KEY)).toBe("dark");
     await page.reload();
-    await expect(html).not.toHaveClass(/(^|\s)dark(\s|$)/);
+    await expect(html).toHaveClass(/(^|\s)dark(\s|$)/);
   });
 
   test("the Hype Stack link says where the visitor came from", async ({ page }) => {

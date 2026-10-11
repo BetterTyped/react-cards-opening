@@ -21,11 +21,11 @@ const overview: DocPage = {
   nav: "Overview",
   description:
     "The components of @react-cards-opening/ui: a pack, a reel, a case and a hunt to open cards with, the reveal they share, and a library of effects.",
-  lead: "`@react-cards-opening/ui` is the look: four ways to open cards, the reveal they share, a library of effects, ten themes and one stylesheet. The reveal at the heart of it started as the one in Hype Stack's Wrapped, and each component takes a `theme` and draws itself with no CSS framework on the page.",
+  lead: "`@react-cards-opening/ui` is the look: five ways to open cards, the reveal they share, a library of effects, ten themes and one stylesheet. The reveal at the heart of it started as the one in Hype Stack's Wrapped, and each component takes a `theme` and draws itself with no CSS framework on the page.",
   blocks: [
     { kind: "code", language: "bash", code: INSTALL },
     { kind: "code", language: "tsx", code: `import "@react-cards-opening/ui/styles.css";` },
-    { kind: "h2", text: "Four ways to open a card" },
+    { kind: "h2", text: "Five ways to open a card" },
     {
       kind: "cards",
       items: [
@@ -40,6 +40,12 @@ const overview: DocPage = {
           title: "CardSpin",
           text: "A reel that races under a marker and stops on the card that was dealt.",
           tier: "epic",
+        },
+        {
+          path: "/docs/components/card-wheel/",
+          title: "CardWheel",
+          text: "A prize wheel that spins under a pointer and lands on your card.",
+          tier: "mythic",
         },
         {
           path: "/docs/components/card-case/",
@@ -94,7 +100,7 @@ const overview: DocPage = {
     { kind: "h2", text: "How they fit" },
     {
       kind: "p",
-      text: "Every opener ends in the same reveal. `CardHunt` is `ScanGrid` and `CardOpening` wired to [useCardOpening](/docs/core/use-card-opening/); `CardSpin` swaps the grid for a `SpinReel`, and `CardCase` for a `LootCase`. `CardPack` runs on [useCardPack](/docs/core/use-card-pack/) and turns its cards where they lie. When the layout is yours (cards in a shop, a daily reward), use `CardOpening` on its own and tell it where a card leaves from and where it lands.",
+      text: "Every opener ends in the same reveal. `CardHunt` is `ScanGrid` and `CardOpening` wired to [useCardOpening](/docs/core/use-card-opening/); `CardSpin` swaps the grid for a `SpinReel`, `CardWheel` for a `PrizeWheel`, and `CardCase` for a `LootCase`. `CardPack` runs on [useCardPack](/docs/core/use-card-pack/) and turns its cards where they lie. When the layout is yours (cards in a shop, a daily reward), use `CardOpening` on its own and tell it where a card leaves from and where it lands.",
     },
     { kind: "preview", demo: { type: "hunt" }, caption: "CardHunt: all of them at once." },
     { kind: "h2", text: "What they share" },
@@ -625,11 +631,11 @@ export const heart: PixelArt = [
 
 export const COMPONENTS: readonly DocPage[] = [
   overview,
-  ...OPENERS.slice(0, 3),
+  ...OPENERS.slice(0, 4),
   cardHunt,
   cardOpening,
   scanGrid,
   card,
   pixelGlyph,
-  ...OPENERS.slice(3),
+  ...OPENERS.slice(4),
 ];

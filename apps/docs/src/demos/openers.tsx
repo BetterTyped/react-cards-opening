@@ -5,6 +5,7 @@ import {
   CardCase,
   CardPack,
   CardSpin,
+  CardWheel,
   type CardTheme,
   EFFECT_SETS,
   type EffectPlan,
@@ -27,6 +28,12 @@ export function PackDemo({ theme, effects }: { theme: CardTheme; effects?: Effec
 export function SpinDemo({ theme }: { theme: CardTheme }) {
   const { opened, onOpen } = useOpened();
   return <CardSpin cards={HUNT_DEAL} pool={SAMPLE_CARDS} opened={opened} onOpen={onOpen} theme={theme} />;
+}
+
+/** A wheel of prizes that spins and stops on the next card of the deal. */
+export function WheelDemo({ theme }: { theme: CardTheme }) {
+  const { opened, onOpen } = useOpened();
+  return <CardWheel cards={HUNT_DEAL} pool={SAMPLE_CARDS} opened={opened} onOpen={onOpen} theme={theme} />;
 }
 
 /** A case that opens and gives up its cards one after another. */

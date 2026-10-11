@@ -6,7 +6,7 @@ import { CustomFaceDemo, CustomTiersDemo } from "../demos/custom";
 import { EffectsDemo } from "../demos/effects";
 import { HeadlessDemo } from "../demos/headless";
 import { HuntDemo, StyledHuntDemo } from "../demos/hunt";
-import { CaseDemo, EffectSetsDemo, PackDemo, SpinDemo } from "../demos/openers";
+import { CaseDemo, EffectSetsDemo, PackDemo, SpinDemo, WheelDemo } from "../demos/openers";
 import { ScanDemo } from "../demos/scan";
 import { CardsDemo, GlyphsDemo, ThemesDemo } from "../demos/static";
 import { cardOfTier, TIER_CARDS } from "../registry/sample";
@@ -18,7 +18,7 @@ import { LookControls, useLookTheme } from "./look";
  */
 
 /** A demo that is its own panel: it brings its ground and its corners, so it sits on the plate without a stage. */
-const isPanel = (demo: Demo) => ["hunt", "styled", "pack", "spin", "case"].includes(demo.type);
+const isPanel = (demo: Demo) => ["hunt", "styled", "pack", "spin", "wheel", "case"].includes(demo.type);
 
 /** One card of a tier on a shelf of its own. */
 function OneCard({ tier }: { tier: string }) {
@@ -56,6 +56,8 @@ function DemoView({ demo }: { demo: Demo }): ReactNode {
       return <PackDemo theme={theme} />;
     case "spin":
       return <SpinDemo theme={theme} />;
+    case "wheel":
+      return <WheelDemo theme={theme} />;
     case "case":
       return <CaseDemo theme={theme} />;
     case "effects":

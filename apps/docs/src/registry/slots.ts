@@ -7,6 +7,7 @@ import type {
   CardPackClassNames,
   LootCaseClassNames,
   PanelClassNames,
+  PrizeWheelClassNames,
   ScanGridClassNames,
   SpinReelClassNames,
 } from "@react-cards-opening/ui";
@@ -67,6 +68,16 @@ const REEL: Lines<keyof SpinReelClassNames | "reel"> = {
   tile: ["rco-reel-tile", "Every tile. The winner also gets `data-won`."],
   tileName: ["rco-reel-name", "The card's name under a tile's glyph."],
   marker: ["rco-reel-marker", "The line the reel stops under."],
+};
+
+const WHEEL: Lines<keyof PrizeWheelClassNames | "wheel"> = {
+  wheel: ["rco-wheel", "The wheel's root. `className` on a `PrizeWheel` used alone."],
+  disc: ["rco-wheel-disc", "The disc that turns."],
+  wedge: ["rco-wheel-wedge", "Every wedge. The winner also gets `data-won`."],
+  prize: ["rco-wheel-prize", "What a wedge holds: the card's glyph."],
+  pointer: ["rco-wheel-pointer", "The pointer the wheel stops under."],
+  hub: ["rco-wheel-hub", "The middle of the wheel."],
+  wheelGlow: ["rco-wheel-glow", "The light behind the wheel once it has stopped, in the winner's colour."],
 };
 
 const LOOT_CASE: Lines<keyof LootCaseClassNames | "case"> = {
@@ -150,6 +161,7 @@ export const SLOT_TABLES = {
   hunt: table(HUNT),
   panel: table(PANEL),
   reel: table(REEL),
+  wheel: table(WHEEL),
   lootCase: table(LOOT_CASE),
   shelf: table(SHELF),
   pack: table(PACK),

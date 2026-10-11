@@ -5,10 +5,12 @@ import type {
   CardCaseProps,
   CardPackProps,
   CardSpinProps,
+  CardWheelProps,
   EffectLayerProps,
   GlyphCard,
   LootCaseProps,
   PlayOptions,
+  PrizeWheelProps,
   SpinReelProps,
 } from "@react-cards-opening/ui";
 
@@ -237,6 +239,119 @@ const reel = useRef<SpinReelHandle>(null);
   updated: UPDATED,
 };
 
+const cardWheel: DocPage = {
+  path: "/docs/components/card-wheel/",
+  section: "components",
+  title: "CardWheel",
+  tagline: "a wheel that lands on your card",
+  nav: "CardWheel",
+  description:
+    "CardWheel is a prize wheel for React: wedges in their tiers' colours spin under a pointer, slow, and stop on the card that was dealt, which lifts out of its wedge.",
+  lead: "`CardWheel` is the wheel of a daily spin. Wedges in their tiers' colours turn under a pointer that is knocked aside by each one that passes. The wheel slows, stops on a card, the winning wedge lights up, and the card lifts out of it into the [reveal](/docs/components/card-opening/). One press is one spin.",
+  blocks: [
+    { kind: "preview", demo: { type: "wheel" }, caption: "Press Spin, or the middle of the wheel." },
+    { kind: "h2", text: "Usage" },
+    {
+      kind: "code",
+      language: "tsx",
+      code: `import { useOpenedCards } from "@react-cards-opening/core";
+import { CardWheel } from "@react-cards-opening/ui";
+
+function DailySpin({ won, catalog }) {
+  const { opened, open } = useOpenedCards("spin:2026-10-11");
+  return <CardWheel cards={won} pool={catalog} opened={opened} onOpen={open} />;
+}`,
+    },
+    { kind: "h2", text: "The wheel decides nothing" },
+    {
+      kind: "p",
+      text: "`cards` is what was won, decided before anything moves: deal it with [rollCards](/docs/core/rolls/) on your server. `pool` is what goes on the wheel. Every card of the pool gets a wedge while there is room, and the wedge under the pointer at the end is always the card that was dealt. What is on the wheel stays the same from spin to spin, and it is laid out from a seed, so a server and a browser draw the same wheel.",
+    },
+    { kind: "h2", text: "Props" },
+    propsTable<CardWheelProps<GlyphCard>>({
+      cards: ["readonly C[]", "What was won, in the order the spins stop on them."],
+      opened: ["readonly string[]", "Ids already won on the wheel."],
+      onOpen: ["(id: string) => void", "A card was turned face up for the first time."],
+      pool: ["readonly C[]", "What is on the wheel. The deal itself when left out.", "optional"],
+      segments: ["number", "How many wedges the wheel has, from four to twelve. Eight when left out.", "optional"],
+      theme: ["CardTheme", "The colours. `moss` in the dark when left out.", "optional"],
+      rarities: ["readonly RarityTier[]", "Your tiers. The six defaults when left out.", "optional"],
+      actions: ["ReactNode", "Extra buttons in the header, next to the spin button.", "optional"],
+      onRunChange: ["(running: boolean) => void", "A spin started or came to rest.", "optional"],
+      labels: ["Partial<CardWheelLabels>", "Every word in the panel, and what the hub says.", "optional"],
+      landing: ["(card) => HTMLElement | null", "Where a won card lands, instead of its badge here.", "optional"],
+      renderFace: ["(card, info) => ReactNode", "The front of the card, instead of the ready-made face.", "optional"],
+      renderBack: ["(card) => ReactNode", "The back of the card.", "optional"],
+      readingOf: [
+        "(card, info) => readonly string[]",
+        "The text on a face of your own, so the card stays up long enough to read.",
+        "optional",
+      ],
+      effects: [
+        "EffectPlan | false",
+        "What each tier plays on top of the card's own reveal. The [signature shows](/docs/effects/plans/) when left out, `false` for none.",
+        "optional",
+      ],
+      className: ["string", "A class for the panel.", "optional"],
+      classNames: [
+        "CardWheelClassNames",
+        "A class of your own for each part: the panel's, the wheel's and the reveal's.",
+        "optional",
+      ],
+      style: ["CSSProperties", "Inline styles for the panel.", "optional"],
+    }),
+    { kind: "h2", text: "PrizeWheel on its own" },
+    {
+      kind: "p",
+      text: "`CardWheel` is `PrizeWheel` and `CardOpening` wired to [useCardOpening](/docs/core/use-card-opening/). When the layout is yours, take the wheel alone. Its handle has one call: `spin` plays the wheel and hands back what `launch` on `CardOpening` takes. Whatever you put inside it sits in the hub.",
+    },
+    {
+      kind: "code",
+      language: "tsx",
+      code: `import { CardOpening, PrizeWheel, type PrizeWheelHandle } from "@react-cards-opening/ui";
+
+const wheel = useRef<PrizeWheelHandle>(null);
+
+<PrizeWheel handle={wheel} winner={hunt.current} pool={catalog} segments={10}>
+  <button onClick={() => hunt.start()}>Spin</button>
+</PrizeWheel>
+<CardOpening opening={hunt.opening} launch={(card, show) => wheel.current?.spin(show) ?? null} />`,
+    },
+    propsTable<PrizeWheelProps<GlyphCard>>({
+      winner: ["C | null", "The card the next spin stops on. With none, the wheel shows what could come up and waits."],
+      pool: ["readonly C[]", "What is on the wheel: every card that could have come up."],
+      segments: ["number", "How many wedges, from four to twelve. Eight when left out.", "optional"],
+      theme: ["CardTheme", "The colours.", "optional"],
+      rarities: ["readonly RarityTier[]", "Your tiers.", "optional"],
+      handle: [
+        "Ref<PrizeWheelHandle>",
+        "`spin(show, { flash, onLock })`: plays the wheel and answers a launch.",
+        "optional",
+      ],
+      children: ["ReactNode", "What sits in the hub: a count, a button, a logo.", "optional"],
+      className: ["string", "A class for the wheel's root.", "optional"],
+      classNames: ["PrizeWheelClassNames", "A class of your own for each part of the wheel.", "optional"],
+      style: ["CSSProperties", "Inline styles for the root: the place for `--rco-wheel-size`.", "optional"],
+    }),
+    { kind: "h2", text: "Parts and variables" },
+    SLOT_TABLES.wheel,
+    SLOT_TABLES.panel,
+    {
+      kind: "table",
+      head: ["Variable", "What it sets", "When left out"],
+      rows: [["`--rco-wheel-size`", "The wheel's width. Everything on it scales with this.", "`360px`"]],
+    },
+  ],
+  related: [
+    "/docs/components/card-spin/",
+    "/docs/components/card-opening/",
+    "/docs/core/rolls/",
+    "/docs/effects/plans/",
+    "/docs/components/card-pack/",
+  ],
+  updated: UPDATED,
+};
+
 const cardCase: DocPage = {
   path: "/docs/components/card-case/",
   section: "components",
@@ -461,4 +576,4 @@ timeline.timeScale(0.5);`,
   updated: UPDATED,
 };
 
-export const OPENERS: readonly DocPage[] = [cardPack, cardSpin, cardCase, effectLayer];
+export const OPENERS: readonly DocPage[] = [cardPack, cardSpin, cardWheel, cardCase, effectLayer];

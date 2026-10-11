@@ -34,6 +34,8 @@ export type Demo =
   | { type: "pack" }
   /** A reel that spins and stops on a card. */
   | { type: "spin" }
+  /** A wheel of prizes that spins and stops on a card. */
+  | { type: "wheel" }
   /** A case that opens and gives up its cards. */
   | { type: "case" }
   /** Every effect in the library, each on a button. */

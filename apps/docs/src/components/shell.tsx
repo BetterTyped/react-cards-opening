@@ -19,10 +19,10 @@ export function useSitePath() {
 }
 
 /**
- * Runs before the first paint: the page opens in the mode it was left in, or the system's, with no flash of the
+ * Runs before the first paint: the page opens in the mode it was left in, or in the dark, which is the site's own look, with no flash of the
  * other one. Kept as a string because it has to be in the HTML ahead of everything else.
  */
-export const THEME_SCRIPT = `(function(){try{var s=localStorage.getItem("react-cards-opening:docs:theme");var d=s?s==="dark":matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.classList.toggle("dark",d)}catch(e){}})()`;
+export const THEME_SCRIPT = `(function(){try{var s=localStorage.getItem("react-cards-opening:docs:theme");var d=s?s==="dark":true;document.documentElement.classList.toggle("dark",d)}catch(e){}})()`;
 
 function ThemeToggle() {
   const [dark, setDark] = useState(false);

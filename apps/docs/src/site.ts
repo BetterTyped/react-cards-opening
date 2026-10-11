@@ -41,7 +41,7 @@ export const PACKAGES = [
   },
   {
     name: "@react-cards-opening/ui",
-    holds: "The look: the card and its reveal, the scan grid, the whole hunt, ten themes, one stylesheet.",
+    holds: "The look: the pack, the wheel, the reel, the case and the hunt, 64 effects, ten themes, one stylesheet.",
   },
 ] as const;
 

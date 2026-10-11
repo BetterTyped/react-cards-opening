@@ -92,6 +92,63 @@ test.describe("a reel", () => {
   });
 });
 
+test.describe("a wheel", () => {
+  test("spins, stops with the winning wedge under the pointer, and shows the card", async ({ page }) => {
+    // Arrange
+    const errors = watchErrors(page);
+    await page.goto(at("/docs/components/card-wheel/"));
+    await hydrated(page, ".rco-wheel");
+    const panel = page.locator(".rco-wheelbox").first();
+    await expect(panel.locator(".rco-wheel-wedge")).toHaveCount(8);
+
+    // Act
+    await panel.getByRole("button", { name: "Spin", exact: true }).click();
+
+    // Assert: the wedge that won is the one standing under the pointer, at the top of the wheel.
+    const won = panel.locator(".rco-wheel-wedge[data-won] .rco-wheel-prize");
+    await expect(won).toHaveCount(1, { timeout: 12_000 });
+    const prize = await won.boundingBox();
+    const wheel = await panel.locator(".rco-wheel").boundingBox();
+    const middle = (wheel?.x ?? 0) + (wheel?.width ?? 0) / 2;
+    expect(Math.abs((prize?.x ?? 0) + (prize?.width ?? 0) / 2 - middle)).toBeLessThan((wheel?.width ?? 0) * 0.16);
+    expect((prize?.y ?? 0) + (prize?.height ?? 0) / 2).toBeLessThan((wheel?.y ?? 0) + (wheel?.height ?? 0) * 0.3);
+    await expect(page.locator(".rco-stage .rco-card-name")).toBeVisible({ timeout: 12_000 });
+    expect(errors).toEqual([]);
+  });
+});
+
+test.describe("the home page", () => {
+  test("holds a hand of six cards, and switches between the five openers", async ({ page }) => {
+    // Arrange
+    const errors = watchErrors(page);
+    await page.goto(at("/"));
+    await hydrated(page, ".d-fan");
+
+    // Assert: one card of every tier, face down, and lights drifting behind them.
+    await expect(page.locator(".d-fan .rco-card[data-down]")).toHaveCount(6);
+    await expect(page.locator(".h-air canvas.rco-fx-canvas")).toHaveCount(1);
+
+    // Act and assert: each tab puts its own opener on the stage.
+    const tabs = page.getByRole("tab");
+    await expect(tabs).toHaveCount(5);
+    for (const [name, root] of [
+      ["Wheel", ".rco-wheel"],
+      ["Reel", ".rco-reel"],
+      ["Case", ".rco-case"],
+      ["Hunt", ".rco-hunt"],
+      ["Pack", ".rco-pack"],
+    ] as const) {
+      // oxlint-disable-next-line no-await-in-loop -- one tab after another, as a visitor would
+      await page.getByRole("tab", { name }).click();
+      // oxlint-disable-next-line no-await-in-loop
+      await expect(page.getByRole("tab", { name })).toHaveAttribute("aria-selected", "true");
+      // oxlint-disable-next-line no-await-in-loop
+      await expect(page.locator(`#opener-panel ${root}`)).toBeVisible();
+    }
+    expect(errors).toEqual([]);
+  });
+});
+
 test.describe("a case", () => {
   test("opens, and hands over everything in it on Take all", async ({ page }) => {
     // Arrange

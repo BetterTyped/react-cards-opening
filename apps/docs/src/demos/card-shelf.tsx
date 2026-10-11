@@ -1,7 +1,14 @@
-import { type ReactNode, useRef, useState } from "react";
+import { type CSSProperties, type ReactNode, useRef, useState } from "react";
 
 import { DEFAULT_RARITIES, type RarityTier, useCardOpening, useOpeningPhase } from "@react-cards-opening/core";
-import { Card, type CardFaceInfo, CardOpening, type CardTheme, type GlyphCard } from "@react-cards-opening/ui";
+import {
+  Card,
+  type CardFaceInfo,
+  CardOpening,
+  type CardTheme,
+  type GlyphCard,
+  rarityColor,
+} from "@react-cards-opening/ui";
 
 /*
  * Cards lying face down that open where they lie: press one and it lifts out of its place, turns over in the middle
@@ -14,12 +21,15 @@ export function CardShelf<C extends GlyphCard>({
   rarities = DEFAULT_RARITIES,
   renderFace,
   readingOf,
+  layout = "shelf",
 }: {
   cards: readonly C[];
   theme: CardTheme;
   rarities?: readonly RarityTier[];
   renderFace?: (card: C, info: CardFaceInfo) => ReactNode;
   readingOf?: (card: C, info: CardFaceInfo) => readonly string[];
+  /** Side by side on a shelf, or held like a hand of cards. */
+  layout?: "shelf" | "fan";
 }) {
   const [opened, setOpened] = useState<readonly string[]>([]);
   const places = useRef(new Map<string, HTMLElement>());
@@ -35,11 +45,19 @@ export function CardShelf<C extends GlyphCard>({
 
   return (
     <>
-      <ul className="d-shelf-cards" data-count={cards.length}>
-        {cards.map((card) => {
+      <ul className={layout === "fan" ? "d-fan" : "d-shelf-cards"} data-count={cards.length}>
+        {cards.map((card, index) => {
           const isOpen = opened.includes(card.id);
           return (
-            <li key={card.id}>
+            <li
+              key={card.id}
+              style={
+                {
+                  "--i": index - (cards.length - 1) / 2,
+                  "--tone": rarityColor(theme, card.rarity),
+                } as CSSProperties
+              }
+            >
               <button
                 type="button"
                 ref={(element) => {

@@ -15,43 +15,48 @@
 
 :root {
   color-scheme: light;
-  --d-page: oklch(0.938 0.016 78);
-  --d-panel: oklch(0.995 0.003 80);
-  --d-sunk: oklch(0.965 0.008 78);
-  --d-ink: oklch(0.16 0.01 75);
-  --d-dim: oklch(0.47 0.015 75);
-  --d-faint: oklch(0.6 0.015 75);
-  --d-line: oklch(0.9 0.01 75);
-  /* The site's own violet: the epic tier on the grape theme, the one a legendary's gold stands out on most. */
-  --d-brand: oklch(0.56 0.22 295);
-  --d-brand-ink: oklch(0.48 0.21 295);
+  --d-page: oklch(0.955 0.022 300);
+  --d-panel: oklch(0.995 0.004 300);
+  --d-sunk: oklch(0.962 0.016 300);
+  --d-ink: oklch(0.2 0.045 292);
+  --d-dim: oklch(0.45 0.045 292);
+  --d-faint: oklch(0.6 0.04 292);
+  --d-line: oklch(0.9 0.025 300);
+  /* The site's violet, and the pink it runs into wherever something glows. */
+  --d-brand: oklch(0.55 0.25 295);
+  --d-brand-ink: oklch(0.47 0.24 295);
   --d-on-brand: oklch(0.99 0.01 295);
+  --d-pink: oklch(0.62 0.25 345);
   /* A legendary's gold, for the few places the site shows a tier. */
   --d-gold: oklch(0.84 0.13 88);
   /* Hype Stack's orange, for the one link that goes there. */
   --d-hype: oklch(0.65 0.22 50);
-  --d-code: oklch(0.2 0.012 260);
-  --d-code-ink: oklch(0.92 0.01 260);
+  --d-code: oklch(0.19 0.04 292);
+  --d-code-ink: oklch(0.93 0.015 300);
+  --d-glow: 0.5;
   --d-radius: 28px;
   --d-font: "Inter Variable", Inter, ui-sans-serif, system-ui, sans-serif;
   --d-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
   --d-bar: 68px;
 }
 
+/* The site's own look: a deep violet night that the cards light up. */
 .dark {
   color-scheme: dark;
-  --d-page: oklch(0.165 0.008 70);
-  --d-panel: oklch(0.21 0.008 70);
-  --d-sunk: oklch(0.25 0.008 70);
-  --d-ink: oklch(0.96 0.005 80);
-  --d-dim: oklch(0.74 0.012 78);
-  --d-faint: oklch(0.6 0.012 78);
-  --d-line: oklch(0.3 0.008 70);
-  --d-brand: oklch(0.74 0.17 297);
-  --d-brand-ink: oklch(0.81 0.13 297);
-  --d-on-brand: oklch(0.17 0.05 295);
+  --d-page: oklch(0.125 0.035 292);
+  --d-panel: oklch(0.17 0.042 292);
+  --d-sunk: oklch(0.215 0.05 292);
+  --d-ink: oklch(0.97 0.012 300);
+  --d-dim: oklch(0.77 0.04 296);
+  --d-faint: oklch(0.6 0.045 296);
+  --d-line: oklch(0.29 0.055 292);
+  --d-brand: oklch(0.68 0.22 296);
+  --d-brand-ink: oklch(0.8 0.15 298);
+  --d-on-brand: oklch(0.99 0.01 295);
+  --d-pink: oklch(0.72 0.22 345);
   --d-hype: oklch(0.72 0.19 52);
-  --d-code: oklch(0.15 0.008 260);
+  --d-code: oklch(0.105 0.03 292);
+  --d-glow: 1;
 }
 
 /* The site's own small reset. The library does not lean on it: it resets its own roots (see its reset.css). */
@@ -109,7 +114,22 @@ body {
   top: 12px;
 }
 
-:where(.d-bar, .d-side, .d-foot, .d-article, .d-plain, .d-hero, .d-band, .d-promo, .d-toc, .d-drawer) a {
+:where(
+    .d-bar,
+    .d-side,
+    .d-foot,
+    .d-article,
+    .d-plain,
+    .d-hero,
+    .d-band,
+    .d-promo,
+    .d-toc,
+    .d-drawer,
+    .h-hero,
+    .h-section,
+    .h-promo
+  )
+  a {
   color: inherit;
   text-decoration: none;
 }
@@ -1920,4 +1940,433 @@ main:has(> .d-facts) > .d-facts {
 }
 .d-tw-name {
   letter-spacing: -0.02em;
+}
+
+/* ---------- the night the site is set in ---------- */
+
+/* Two lights behind everything, and a grid that fades out below the fold. Fixed, so the page scrolls over them. */
+body::before,
+body::after {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  content: "";
+  pointer-events: none;
+}
+body::before {
+  background:
+    radial-gradient(
+      55% 46% at 12% -4%,
+      color-mix(in oklch, var(--d-brand) calc(26% * var(--d-glow)), transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      46% 40% at 92% 4%,
+      color-mix(in oklch, var(--d-pink) calc(16% * var(--d-glow)), transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      70% 50% at 50% 108%,
+      color-mix(in oklch, var(--d-brand) calc(18% * var(--d-glow)), transparent),
+      transparent 70%
+    );
+}
+body::after {
+  background-image:
+    linear-gradient(color-mix(in oklch, var(--d-ink) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklch, var(--d-ink) 7%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent 78%);
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent 78%);
+}
+
+/* The bar is glass with a lit edge. */
+.d-bar-inner {
+  background: color-mix(in oklch, var(--d-panel) 72%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in oklch, var(--d-brand) 26%, var(--d-line)),
+    0 14px 40px -22px color-mix(in oklch, var(--d-brand) 70%, black);
+  backdrop-filter: blur(18px) saturate(1.5);
+}
+.d-bar nav a[aria-current="page"] {
+  background: color-mix(in oklch, var(--d-brand) 22%, transparent);
+  color: var(--d-ink);
+}
+
+/* The solid pill is the site's one loud button: violet into pink, with its own light under it. */
+.d-pill-solid {
+  border: 0;
+  background: linear-gradient(100deg, var(--d-brand), var(--d-pink));
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.28),
+    0 10px 30px -10px color-mix(in oklch, var(--d-brand) 80%, transparent);
+  color: oklch(0.99 0.01 300);
+}
+.d-pill-solid:hover {
+  filter: brightness(1.1);
+}
+
+/* In the docs: the page you are on, and the things that frame what you read. */
+.d-side a[aria-current="page"] {
+  background: linear-gradient(
+    100deg,
+    color-mix(in oklch, var(--d-brand) 30%, transparent),
+    color-mix(in oklch, var(--d-pink) 14%, transparent)
+  );
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--d-brand) 40%, transparent);
+  color: var(--d-ink);
+}
+.d-preview-plate {
+  box-shadow:
+    0 0 0 1px color-mix(in oklch, var(--d-brand) 22%, var(--d-line)),
+    0 30px 70px -40px color-mix(in oklch, var(--d-brand) 70%, black);
+}
+.d-article > h2::before {
+  display: block;
+  width: 36px;
+  height: 3px;
+  margin-bottom: 14px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--d-brand), var(--d-pink));
+  content: "";
+}
+
+/* ---------- the home page ---------- */
+
+.h-hero {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(28px, 4vw, 56px) 20px 0;
+  text-align: center;
+}
+/* The air around the hand of cards: lights that drift up through it. */
+.h-air {
+  position: absolute;
+  inset: 0 0 -60px;
+  z-index: -1;
+  overflow: hidden;
+  -webkit-mask-image: radial-gradient(ellipse 60% 62% at 50% 62%, black 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 60% 62% at 50% 62%, black 40%, transparent 100%);
+}
+.h-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px 7px 12px;
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--d-brand) 14%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--d-brand) 34%, transparent);
+  color: var(--d-dim);
+  font-size: 14px;
+  font-weight: 550;
+}
+.h-hero .h-kicker a {
+  color: var(--d-hype);
+  font-weight: 650;
+}
+.h-hero h1 {
+  max-width: 13ch;
+  margin-top: 22px;
+  font-size: clamp(44px, 7.2vw, 96px);
+  font-weight: 700;
+  line-height: 0.96;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+.h-hero h1 em,
+.h-section h2 em,
+.h-facts strong {
+  background: linear-gradient(100deg, var(--d-brand-ink) 10%, var(--d-pink) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-style: normal;
+}
+.h-lead {
+  max-width: 46ch;
+  margin-top: 18px;
+  color: var(--d-dim);
+  font-size: clamp(17px, 1.5vw, 20px);
+  line-height: 1.5;
+  text-wrap: balance;
+}
+.h-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+.h-actions .d-pill {
+  height: 50px;
+  padding: 0 26px;
+  font-size: 16px;
+}
+.h-install {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 100%;
+  margin-top: 16px;
+  padding: 10px 16px;
+  overflow-x: auto;
+  border-radius: 14px;
+  background: color-mix(in oklch, var(--d-code) 80%, transparent);
+  box-shadow: inset 0 0 0 1px var(--d-line);
+  color: var(--d-code-ink);
+  font: 500 13.5px var(--d-mono);
+  white-space: nowrap;
+}
+.h-install i {
+  color: var(--d-brand-ink);
+  font-style: normal;
+}
+.h-table {
+  width: 100%;
+  /* A fanned hand is wider than the cards in it: what swings past the page's edge is cut, not scrolled to. */
+  overflow-x: clip;
+  overflow-y: visible;
+  margin-top: clamp(8px, 1.5vw, 20px);
+}
+.h-note {
+  margin-top: 26px;
+  color: var(--d-faint);
+  font-size: 14.5px;
+}
+
+/* A hand of cards: each a little further round than the last, and lower the further it is from the middle. */
+.d-fan {
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  padding: 26px 0 40px;
+  list-style: none;
+}
+.d-fan li {
+  flex: none;
+  width: clamp(92px, 13.5vw, 184px);
+  margin: 0 clamp(-22px, -1.2vw, -6px);
+  rotate: calc(var(--i) * 6.5deg);
+  translate: 0 calc(var(--i) * var(--i) * clamp(4px, 0.75vw, 10px));
+  transition:
+    translate 0.35s cubic-bezier(0.34, 1.4, 0.64, 1),
+    rotate 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.d-fan li:hover,
+.d-fan li:focus-within {
+  z-index: 2;
+  rotate: calc(var(--i) * 3deg);
+  translate: 0 calc(var(--i) * var(--i) * clamp(4px, 0.75vw, 10px) - 22px);
+}
+/* Each card stands in a pool of its tier's colour: the one hint of what is face down. */
+.d-fan .d-place {
+  filter: drop-shadow(0 22px 26px color-mix(in oklch, var(--tone) 50%, transparent))
+    drop-shadow(0 10px 14px oklch(0 0 0 / 0.5));
+}
+
+.h-facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  max-width: 1240px;
+  margin: clamp(36px, 6vw, 80px) auto 0;
+  padding: 0 20px;
+  list-style: none;
+}
+.h-facts li {
+  padding: 22px 24px 24px;
+  border-radius: 22px;
+  background: color-mix(in oklch, var(--d-panel) 70%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--d-brand) 18%, var(--d-line));
+  backdrop-filter: blur(10px);
+}
+.h-facts strong {
+  display: block;
+  font-size: clamp(38px, 4.4vw, 60px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+.h-facts span {
+  display: block;
+  margin-top: 10px;
+  color: var(--d-dim);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.h-section {
+  max-width: 1240px;
+  margin: clamp(72px, 10vw, 140px) auto 0;
+  padding: 0 20px;
+}
+.h-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px 32px;
+  margin-bottom: 28px;
+}
+.h-section h2 {
+  max-width: 16ch;
+  font-size: clamp(32px, 4.6vw, 60px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+.h-head p {
+  max-width: 44ch;
+  margin-top: 14px;
+  color: var(--d-dim);
+  font-size: 17px;
+}
+
+/* The five openers on one stage: a row of tabs, and whichever is picked running under it. */
+.h-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.h-tabs button {
+  height: 46px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 14px;
+  background: color-mix(in oklch, var(--d-panel) 80%, transparent);
+  box-shadow: inset 0 0 0 1px var(--d-line);
+  color: var(--d-dim);
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    translate 0.15s;
+}
+.h-tabs button:hover {
+  color: var(--d-ink);
+  translate: 0 -1px;
+}
+.h-tabs button[aria-selected="true"] {
+  background: linear-gradient(100deg, var(--d-brand), var(--d-pink));
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.3),
+    0 12px 28px -12px color-mix(in oklch, var(--d-brand) 85%, transparent);
+  color: oklch(0.99 0.01 300);
+}
+.h-frame {
+  position: relative;
+  padding: clamp(10px, 1.6vw, 18px);
+  border-radius: 34px;
+  background: color-mix(in oklch, var(--d-panel) 60%, transparent);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklch, var(--d-brand) 24%, var(--d-line)),
+    0 50px 120px -60px color-mix(in oklch, var(--d-brand) 80%, black);
+}
+.h-frame > .d-stage {
+  border-radius: 24px;
+}
+.h-frame-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 16px 10px 6px;
+  color: var(--d-dim);
+  font-size: 15.5px;
+}
+
+.h-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  align-items: center;
+  gap: clamp(28px, 5vw, 72px);
+}
+.h-split p {
+  margin-top: 16px;
+  color: var(--d-dim);
+  font-size: 17px;
+}
+
+/* The one place the site sells something: a slab of the site's own violet. */
+.h-promo {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) auto;
+  align-items: end;
+  gap: 28px 48px;
+  max-width: 1200px;
+  margin: clamp(72px, 10vw, 140px) auto 0;
+  padding: clamp(30px, 5vw, 64px);
+  overflow: hidden;
+  border-radius: clamp(28px, 4vw, 48px);
+  background:
+    radial-gradient(80% 120% at 100% 0%, oklch(0.72 0.22 345 / 0.55), transparent 60%),
+    linear-gradient(135deg, oklch(0.55 0.25 292), oklch(0.44 0.24 284));
+  color: oklch(0.99 0.01 300);
+}
+.h-promo h2 {
+  max-width: 14ch;
+  font-size: clamp(34px, 5vw, 68px);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+}
+.h-promo p {
+  max-width: 50ch;
+  margin-top: 18px;
+  color: oklch(0.95 0.03 300 / 0.86);
+  font-size: 17px;
+}
+.h-promo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.h-promo .d-pill {
+  height: 50px;
+  padding: 0 24px;
+  border: 0;
+  background: oklch(1 0 0 / 0.14);
+  box-shadow: inset 0 0 0 1px oklch(1 0 0 / 0.3);
+  color: inherit;
+  font-size: 16px;
+}
+.h-promo .d-pill-hype {
+  background: oklch(0.99 0.01 300);
+  box-shadow: none;
+  color: oklch(0.3 0.15 292) !important;
+}
+/* In the narrow half of a split the two packages are two rows, name over what it holds. */
+.h-split .d-packages {
+  grid-template-columns: minmax(0, 1fr);
+}
+.h-split .d-packages li {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (max-width: 860px) {
+  .h-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .h-split,
+  .h-promo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .d-fan li {
+    width: 23vw;
+    margin: 0 -5.6vw;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .d-fan li {
+    transition: none;
+  }
 }
