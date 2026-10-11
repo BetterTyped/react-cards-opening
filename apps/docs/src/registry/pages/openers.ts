@@ -479,8 +479,8 @@ const effectLayer: DocPage = {
     {
       kind: "code",
       language: "tsx",
-      code: `import { EffectLayer, type EffectLayerHandle } from "@react-cards-opening/ui";
-import "@react-cards-opening/ui/styles.css";
+      code: `import { EffectLayer, type EffectLayerHandle } from "@react-cards-opening/effects";
+import "@react-cards-opening/effects/styles.css";
 
 function Reward() {
   const layer = useRef<EffectLayerHandle>(null);
@@ -504,6 +504,10 @@ function Reward() {
     {
       kind: "p",
       text: "The layer comes first in its parent, so what follows it is drawn over the effects: a burst comes out from behind the prize. Put the layer last to play in front instead.",
+    },
+    {
+      kind: "note",
+      text: "`EffectLayer` comes from `@react-cards-opening/effects`, which the ui package brings along and re-exports. Import it from either. On its own, the effects package needs only GSAP.",
     },
     { kind: "h2", text: "play" },
     {
@@ -539,7 +543,11 @@ function Reward() {
     { kind: "h2", text: "Props" },
     propsTable<EffectLayerProps>({
       handle: ["Ref<EffectLayerHandle>", "`play(effects, options)`, `clear()` and `element()`.", "optional"],
-      theme: ["CardTheme", "On a light theme the lights are painted instead of added up.", "optional"],
+      theme: [
+        "{ bg: string }",
+        "The ground the layer is on: a theme, or just its `bg`. On a light one the lights are painted instead of added up.",
+        "optional",
+      ],
       tone: ["string", "The colour effects wear when a play does not name one.", "optional"],
       className: ["string", "A class for the layer.", "optional"],
       style: ["CSSProperties", "Inline styles for the layer.", "optional"],
@@ -552,7 +560,7 @@ function Reward() {
     {
       kind: "code",
       language: "ts",
-      code: `import { clearEffects, playEffects } from "@react-cards-opening/ui";
+      code: `import { clearEffects, playEffects } from "@react-cards-opening/effects";
 
 const timeline = playEffects(layer, "nova", { at: button, tone: "#22d3ee" });
 timeline.timeScale(0.5);`,

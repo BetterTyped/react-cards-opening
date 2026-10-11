@@ -14,6 +14,7 @@
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",
     "@react-cards-opening/core": "workspace:*",
+    "@react-cards-opening/effects": "workspace:*",
     "@react-cards-opening/ui": "workspace:*",
     "@tanstack/react-router": "^1.170.17",
     "@tanstack/react-start": "^1.168.27",

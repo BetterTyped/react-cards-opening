@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 
 import { CardBackContent, CardContent } from "./card";
 import { type CardOpeningClassNames, cn } from "./class-names";
-import { clearEffects, type EffectPlan, effectsFor, playSteps, SIGNATURE_EFFECTS } from "./effects";
+import { type EffectPlan, effectsFor, playSteps, SIGNATURE_EFFECTS } from "./effects";
 import { CARD_OPENING_LABELS, type CardOpeningLabels } from "./labels";
 import { type CardTheme, DEFAULT_THEME, rarityColor, themeStyle } from "./theme";
 import type { CardFaceInfo, CardLaunch, CardShow, GlyphCard } from "./types";
@@ -20,6 +20,7 @@ import {
   showFor,
   tierOf,
 } from "@react-cards-opening/core";
+import { clearEffects } from "@react-cards-opening/effects";
 
 const BURST = 22;
 const SPARKLES = 16;

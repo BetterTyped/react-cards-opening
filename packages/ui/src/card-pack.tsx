@@ -4,7 +4,7 @@ import { type CSSProperties, type ReactNode, useRef, useState } from "react";
 import { Card } from "./card";
 import { CardOpening } from "./card-opening";
 import { type CardPackClassNames, cn } from "./class-names";
-import { clearEffects, type EffectPlan, effectsFor, playSteps, SIGNATURE_EFFECTS } from "./effects";
+import { type EffectPlan, effectsFor, playSteps, SIGNATURE_EFFECTS } from "./effects";
 import { GLYPHS, type PixelArt } from "./glyphs";
 import { AgainIcon } from "./icons";
 import { CARD_PACK_LABELS, type CardPackLabels, type PackState } from "./labels";
@@ -21,6 +21,7 @@ import {
   useCardOpening,
   useCardPack,
 } from "@react-cards-opening/core";
+import { clearEffects } from "@react-cards-opening/effects";
 
 /** Sparks a turning card throws, and the ones the pack throws when it bursts. */
 const BITS = 12;

@@ -13,8 +13,8 @@ const introduction: DocPage = {
     "What react-cards-opening is: a headless core that holds the rules of opening cards, and a ui package that draws the reveal, from a hop to a legendary foil.",
   lead: "react-cards-opening is the moment a card is opened, as a library. A card lifts out of wherever it was, flies to the middle of the screen face down, hums, turns over, stays as long as it takes to read, and lands where it belongs. How loud that is depends on how rare the card is.",
   blocks: [
-    { kind: "preview", demo: { type: "tiers" }, caption: "Four cards, one a tier. Press them left to right." },
-    { kind: "h2", text: "Two packages" },
+    { kind: "preview", demo: { type: "tiers" }, caption: "Six cards, one a tier. Press them left to right." },
+    { kind: "h2", text: "Three packages" },
     {
       kind: "table",
       head: ["Package", "What it holds"],
@@ -22,7 +22,7 @@ const introduction: DocPage = {
     },
     {
       kind: "p",
-      text: "Most apps install both and render one component. The split is there for the other cases: a game with its own art direction keeps `core` and draws the reveal itself, and a server deals cards with the same [seeded roll](/docs/core/rolls/) the browser shows.",
+      text: "Most apps install `ui` and `core` and render one component; `effects` comes with `ui`. The split is there for the other cases: a game with its own art direction keeps `core` and draws the reveal itself, a server deals cards with the same [seeded roll](/docs/core/rolls/) the browser shows, and a page with no cards at all takes `effects` alone for a [shockwave or confetti](/docs/effects/library/) on anything.",
     },
     { kind: "h2", text: "What you get" },
     {
@@ -55,11 +55,11 @@ const installation: DocPage = {
   path: "/docs/installation/",
   section: "get-started",
   title: "Installation",
-  tagline: "two packages and GSAP",
+  tagline: "two installs and GSAP",
   nav: "Installation",
   description:
     "Install react-cards-opening with pnpm, npm, yarn or bun, import its one stylesheet, and check what it needs: React 18 or 19 and GSAP 3.13 or newer.",
-  lead: "Installing react-cards-opening is two packages, one peer dependency and one stylesheet. The packages are always released together under one version number, so the pair you install is a pair that was tested together.",
+  lead: "Installing react-cards-opening is two packages, one peer dependency and one stylesheet. A third package, the effects, comes with `ui`. The packages are always released together under one version number, so what you install was tested together.",
   blocks: [
     { kind: "h2", text: "Install" },
     { kind: "code", language: "bash", code: INSTALL },

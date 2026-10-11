@@ -39,11 +39,18 @@ const library: DocPage = {
       demo: { type: "effects" },
       caption: "Every effect, on a button. Pick a tier to change the colour they play in.",
     },
+    { kind: "h2", text: "A package of its own" },
+    {
+      kind: "p",
+      text: "The effects live in `@react-cards-opening/effects`. The ui package brings it along and carries its stylesheet, so with the card components installed there is nothing to add, and everything on this page can be imported from either. For effects without cards, install it alone: nothing in it knows what a card is.",
+    },
+    { kind: "code", language: "bash", code: "pnpm add @react-cards-opening/effects gsap" },
+    { kind: "code", language: "tsx", code: `import "@react-cards-opening/effects/styles.css";` },
     { kind: "h2", text: "Playing one" },
     {
       kind: "code",
       language: "tsx",
-      code: `import { EffectLayer, type EffectLayerHandle } from "@react-cards-opening/ui";
+      code: `import { EffectLayer, type EffectLayerHandle } from "@react-cards-opening/effects";
 
 const layer = useRef<EffectLayerHandle>(null);
 
@@ -70,7 +77,7 @@ layer.current?.play(["flash", "nova", "embers"], { at: cardElement, tone: "#f5c4
     {
       kind: "code",
       language: "ts",
-      code: `import { emit, part, playEffects, type Effect } from "@react-cards-opening/ui";
+      code: `import { emit, part, playEffects, type Effect } from "@react-cards-opening/effects";
 
 const hearts: Effect = {
   name: "hearts",
@@ -123,7 +130,7 @@ playEffects(layer, [hearts, "flash"]);`,
     {
       kind: "code",
       language: "ts",
-      code: `import { corners, drawing, type Effect } from "@react-cards-opening/ui";
+      code: `import { corners, drawing, type Effect } from "@react-cards-opening/effects";
 
 // A triangle thrown out from the card, drawn with the hex wave's own styles.
 const triangle: Effect = {

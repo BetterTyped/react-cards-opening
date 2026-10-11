@@ -1,4 +1,4 @@
-import { corners, drawing, type Effect, type EffectStage, part, piece } from "./fx-stage";
+import { corners, drawing, type Effect, type EffectStage, part, piece } from "./stage";
 
 // Effects made of one shape getting bigger: shockwaves, ripples, rings in every outline. Elements the stylesheet
 // draws (`.rco-fx-<name>`), scaled up by a timeline until they are gone.

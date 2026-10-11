@@ -1,5 +1,4 @@
-import type { Particle, ParticleField, ParticleShape, Polar } from "./fx-particles";
-import { mixColors } from "./theme";
+import type { Particle, ParticleField, ParticleShape, Polar } from "./particles";
 
 // What an effect is given to work with, and the two ways it has of drawing: particles on the layer's canvas, and
 // parts, which are plain elements styled by the stylesheet and moved by a timeline.
@@ -42,6 +41,24 @@ export interface Effect<Name extends string = string> {
 }
 
 const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
+
+const channels = (hex: string): number[] => {
+  const value = hex.replace("#", "");
+  const full = value.length === 3 ? [...value].map((char) => char + char).join("") : value;
+  return [0, 2, 4].map((at) => Number.parseInt(full.slice(at, at + 2), 16) || 0);
+};
+
+/** `amount` of the way from one hex colour to another: 0 is the first, 1 the second. */
+function mixColors(from: string, to: string, amount: number): string {
+  const b = channels(to);
+  return `#${channels(from)
+    .map((channel, index) =>
+      Math.round(Math.min(255, Math.max(0, channel + ((b[index] ?? 0) - channel) * amount)))
+        .toString(16)
+        .padStart(2, "0"),
+    )
+    .join("")}`;
+}
 
 /** A colour a share of the way to white. A colour that is not a plain hex is handed back as it came. */
 export const tint = (colour: string, amount: number) =>

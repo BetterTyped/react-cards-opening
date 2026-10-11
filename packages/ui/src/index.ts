@@ -23,44 +23,17 @@ export type {
   ScanGridClassNames,
   SpinReelClassNames,
 } from "./class-names";
-export { EffectLayer, type EffectLayerHandle, type EffectLayerProps } from "./effect-layer";
 export {
-  clearEffects,
-  EFFECT_KINDS,
-  EFFECT_LIST,
   EFFECT_SETS,
-  EFFECTS,
   effectsFor,
-  isEffectName,
-  playEffects,
   playSteps,
   SIGNATURE_EFFECTS,
   type EffectCue,
-  type EffectInput,
   type EffectMoment,
-  type EffectName,
   type EffectPlan,
   type EffectSetId,
   type EffectStep,
-  type PlayOptions,
 } from "./effects";
-export type { Particle, ParticleShape } from "./fx-particles";
-export {
-  corners,
-  drawing,
-  emit,
-  figure,
-  onEdge,
-  part,
-  piece,
-  shade,
-  spawn,
-  tint,
-  type Effect,
-  type EffectKind,
-  type EffectStage,
-  type Spawn,
-} from "./fx-stage";
 export { GLYPHS, type GlyphId, type PixelArt } from "./glyphs";
 export {
   CARD_CASE_LABELS,
@@ -102,3 +75,7 @@ export {
   type ThemeMode,
 } from "./theme";
 export type { CardFaceInfo, CardLaunch, CardShow, GlyphCard } from "./types";
+
+// The effects are a package of their own, and this one brings it along: everything it exports is here too, so a
+// page that already imports from the ui package has nothing to change.
+export * from "@react-cards-opening/effects";

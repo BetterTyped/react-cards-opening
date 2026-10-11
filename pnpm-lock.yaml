@@ -199,6 +199,9 @@ importers:
       '@react-cards-opening/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@react-cards-opening/effects':
+        specifier: workspace:*
+        version: link:../../packages/effects
       '@react-cards-opening/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -236,6 +239,9 @@ importers:
       '@react-cards-opening/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@react-cards-opening/effects':
+        specifier: workspace:*
+        version: link:../../packages/effects
       '@react-cards-opening/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -262,8 +268,23 @@ importers:
         specifier: ^18.0.0 || ^19.0.0
         version: 19.3.0
 
+  packages/effects:
+    dependencies:
+      gsap:
+        specifier: ^3.13.0
+        version: 3.15.0
+      react:
+        specifier: ^18.0.0 || ^19.0.0
+        version: 19.3.0
+      react-dom:
+        specifier: ^18.0.0 || ^19.0.0
+        version: 19.3.0(react@19.3.0)
+
   packages/ui:
     dependencies:
+      '@react-cards-opening/effects':
+        specifier: workspace:*
+        version: link:../effects
       gsap:
         specifier: ^3.13.0
         version: 3.15.0

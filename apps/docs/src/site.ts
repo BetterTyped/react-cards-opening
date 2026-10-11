@@ -40,8 +40,12 @@ export const PACKAGES = [
       "The rules without a look: the queue, what each press means, rarity tiers, seeded rolls, opened-card storage.",
   },
   {
+    name: "@react-cards-opening/effects",
+    holds: "64 effects and a layer to play them on. Works on its own: nothing in it knows what a card is.",
+  },
+  {
     name: "@react-cards-opening/ui",
-    holds: "The look: the pack, the wheel, the reel, the case and the hunt, 64 effects, ten themes, one stylesheet.",
+    holds: "The look: the pack, the wheel, the reel, the case and the hunt, ten themes, and the effects brought along.",
   },
 ] as const;
 

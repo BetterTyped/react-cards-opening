@@ -15,7 +15,7 @@ pnpm add @react-cards-opening/ui @react-cards-opening/core gsap
 - [Effects library](https://bettertyped.github.io/react-cards-opening/docs/effects/library/)
 - [Examples](https://bettertyped.github.io/react-cards-opening/docs/examples/)
 
-Both packages are released together under one version number. Install the same version of each.
+All the packages are released together under one version number. Install the same version of each.
 
 ## License
 

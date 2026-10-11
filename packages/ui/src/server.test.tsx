@@ -7,13 +7,13 @@ import { CardOpening } from "./card-opening";
 import { CardPack } from "./card-pack";
 import { CardSpin } from "./card-spin";
 import { CardWheel } from "./card-wheel";
-import { EffectLayer } from "./effect-layer";
-import { EFFECT_SETS, playEffects } from "./effects";
+import { EFFECT_SETS } from "./effects";
 import { GLYPHS } from "./glyphs";
 import { themeOf } from "./theme";
 import type { GlyphCard } from "./types";
 // @vitest-environment node
 import { rollCards, useCardOpening } from "@react-cards-opening/core";
+import { EffectLayer, playEffects } from "@react-cards-opening/effects";
 
 const CARDS: GlyphCard[] = [
   { id: "fox", name: "Lantern Fox", rarity: "rare", line: "Knows a shortcut.", art: GLYPHS.fox },

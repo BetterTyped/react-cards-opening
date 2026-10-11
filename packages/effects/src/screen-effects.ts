@@ -1,4 +1,4 @@
-import { type Effect, part, piece } from "./fx-stage";
+import { type Effect, part, piece } from "./stage";
 
 // Effects that act on the whole stage: they move it, wash it, or lay something across all of it.
 

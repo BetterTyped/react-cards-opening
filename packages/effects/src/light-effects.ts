@@ -1,4 +1,4 @@
-import { corners, drawing, type Effect, type EffectStage, figure, part, piece } from "./fx-stage";
+import { corners, drawing, type Effect, type EffectStage, figure, part, piece } from "./stage";
 
 // Effects made of light: wheels of rays, beams, flashes, glows. Each is an element or two that the stylesheet
 // draws (`.rco-fx-<name>`, sized in `--rco-fx-u`, coloured by `--rco-tone`) and a timeline that moves it.

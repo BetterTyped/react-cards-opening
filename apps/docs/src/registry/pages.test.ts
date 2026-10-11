@@ -141,7 +141,7 @@ describe("the registries behind the pages", () => {
     expect(SECTIONS.filter((section) => section.pages.length === 0)).toEqual([]);
   });
 
-  it("says nothing the code samples contradict: every package named in a sample is one of the two", () => {
+  it("says nothing the code samples contradict: every package named in a sample is one of the three", () => {
     // Act
     const named = PAGES.flatMap((page) =>
       page.blocks.flatMap((block) =>
@@ -152,7 +152,11 @@ describe("the registries behind the pages", () => {
     );
 
     // Assert
-    expect([...new Set(named)].toSorted()).toEqual(["@react-cards-opening/core", "@react-cards-opening/ui"]);
+    expect([...new Set(named)].toSorted()).toEqual([
+      "@react-cards-opening/core",
+      "@react-cards-opening/effects",
+      "@react-cards-opening/ui",
+    ]);
   });
 });
 

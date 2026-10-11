@@ -121,8 +121,8 @@ function Home() {
             A pack in <em>eight lines</em>
           </h2>
           <p>
-            Two packages, released together under one version. The rules are in one, with React as their only
-            dependency. The look is in the other.
+            Three packages, released together under one version. The rules are in one, with React as their only
+            dependency. The effects are in another, and work without cards. The look brings both together.
           </p>
           <ul className="d-packages">
             {PACKAGES.map((entry) => (

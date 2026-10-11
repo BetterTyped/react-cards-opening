@@ -1,4 +1,4 @@
-import { type Effect, type EffectStage, emit, onEdge, shade, tint } from "./fx-stage";
+import { type Effect, type EffectStage, emit, onEdge, shade, tint } from "./stage";
 
 // Effects made of particles. Each is written for a card 300 pixels wide, in pixels and pixels a second, and the
 // stage scales it. Angles are in radians: zero points right, a quarter turn points down, so `UP` is negative.

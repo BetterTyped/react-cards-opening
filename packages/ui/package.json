@@ -67,5 +67,8 @@
   },
   "devDependencies": {
     "@react-cards-opening/core": "workspace:*"
+  },
+  "dependencies": {
+    "@react-cards-opening/effects": "workspace:*"
   }
 }

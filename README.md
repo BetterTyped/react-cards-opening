@@ -149,12 +149,14 @@ card and one button.
 
 ## Packages
 
-Two packages, released together under one version number. A pair with the same version always fits.
+Three packages, released together under one version number. Packages with the same version always fit. `ui` brings
+`effects` with it, so the install line above is still the whole of it.
 
-| Package                                                                                         | What it holds                                                                                                                                               |
-| ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`@react-cards-opening/core`](https://bettertyped.github.io/react-cards-opening/docs/core/)     | The rules without a look: the queue, a pack's stages, what each press means, rarity tiers, seeded rolls, opened-card storage. React is its only dependency. |
-| [`@react-cards-opening/ui`](https://bettertyped.github.io/react-cards-opening/docs/components/) | The look: the pack, the wheel, the reel, the case and the hunt, the reveal they share, 64 effects, ten themes, one stylesheet. GSAP inside.                 |
+| Package                                                                                                   | What it holds                                                                                                                                               |
+| --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`@react-cards-opening/core`](https://bettertyped.github.io/react-cards-opening/docs/core/)               | The rules without a look: the queue, a pack's stages, what each press means, rarity tiers, seeded rolls, opened-card storage. React is its only dependency. |
+| [`@react-cards-opening/effects`](https://bettertyped.github.io/react-cards-opening/docs/effects/library/) | 64 effects and a layer to play them on: particles, light, shockwaves, screen effects. Works on its own, without cards. GSAP inside.                         |
+| [`@react-cards-opening/ui`](https://bettertyped.github.io/react-cards-opening/docs/components/)           | The look: the pack, the wheel, the reel, the case and the hunt, the reveal they share, ten themes, one stylesheet. GSAP inside.                             |
 
 ## What is in it
 

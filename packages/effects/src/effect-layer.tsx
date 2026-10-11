@@ -1,9 +1,9 @@
-import { type CSSProperties, type Ref, useImperativeHandle, useRef } from "react";
+import { type CSSProperties, type Ref, useEffect, useImperativeHandle, useLayoutEffect, useRef } from "react";
 
-import { cn } from "./class-names";
 import { clearEffects, type EffectInput, playEffects, type PlayOptions } from "./effects";
-import type { CardTheme } from "./theme";
-import { useIsomorphicLayoutEffect } from "./use-gsap-effect";
+
+/** A layout effect in the browser, a plain one on a server, where a layout effect only earns a warning. */
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 export interface EffectLayerHandle {
   /** Plays one effect, or several at once. Answers the timeline, or nothing when the layer is not on the page. */
@@ -16,8 +16,11 @@ export interface EffectLayerHandle {
 
 export interface EffectLayerProps {
   handle?: Ref<EffectLayerHandle>;
-  /** The page's theme, when there is one: on a light theme the lights are painted, not added up. */
-  theme?: CardTheme;
+  /**
+   * The ground the layer is on, when you know it: a theme from the ui package, or just `{ bg }` as a plain hex. On
+   * a light ground the lights are painted, not added up.
+   */
+  theme?: { bg: string };
   /** The colour effects wear when a play does not name one. */
   tone?: string;
   className?: string;
@@ -63,7 +66,7 @@ export function EffectLayer({ handle, theme, tone, className, style }: EffectLay
   return (
     <div
       ref={ref}
-      className={cn("rco-fx-layer", className)}
+      className={className ? `rco-fx-layer ${className}` : "rco-fx-layer"}
       aria-hidden
       style={tone ? ({ "--rco-tone": tone, ...style } as CSSProperties) : style}
     />
