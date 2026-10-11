@@ -1,0 +1,15 @@
+{
+  "name": "@react-cards-opening/docs-e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "e2e": "playwright test",
+    "format": "pnpm --dir ../.. exec oxfmt --write apps/docs-e2e",
+    "typecheck": "pnpm --dir ../.. exec tsgo -p apps/docs-e2e/tsconfig.json --noEmit",
+    "lint": "pnpm --dir ../.. exec oxlint apps/docs-e2e"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.59.1"
+  }
+}

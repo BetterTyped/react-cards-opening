@@ -1,0 +1,1810 @@
+/*
+ * The docs site's own look. Plain CSS on its own tokens, in the manner of Hype Stack's storefront: a warm page, white
+ * panels with soft rings, tight semibold headings, one orange. Nothing here styles the library: its components bring
+ * their own stylesheet and are only ever placed, never restyled.
+ */
+@import "@fontsource-variable/inter";
+
+@font-face {
+  font-family: "JetBrains Mono Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url("/react-cards-opening/fonts/jetbrains-mono-latin-wght-normal.woff2") format("woff2");
+}
+
+:root {
+  color-scheme: light;
+  --d-page: oklch(0.938 0.016 78);
+  --d-panel: oklch(0.995 0.003 80);
+  --d-sunk: oklch(0.965 0.008 78);
+  --d-ink: oklch(0.16 0.01 75);
+  --d-dim: oklch(0.47 0.015 75);
+  --d-faint: oklch(0.6 0.015 75);
+  --d-line: oklch(0.9 0.01 75);
+  /* The site's own violet: the epic tier on the grape theme, the one a legendary's gold stands out on most. */
+  --d-brand: oklch(0.56 0.22 295);
+  --d-brand-ink: oklch(0.48 0.21 295);
+  --d-on-brand: oklch(0.99 0.01 295);
+  /* A legendary's gold, for the few places the site shows a tier. */
+  --d-gold: oklch(0.84 0.13 88);
+  /* Hype Stack's orange, for the one link that goes there. */
+  --d-hype: oklch(0.65 0.22 50);
+  --d-code: oklch(0.2 0.012 260);
+  --d-code-ink: oklch(0.92 0.01 260);
+  --d-radius: 28px;
+  --d-font: "Inter Variable", Inter, ui-sans-serif, system-ui, sans-serif;
+  --d-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --d-bar: 68px;
+}
+
+.dark {
+  color-scheme: dark;
+  --d-page: oklch(0.165 0.008 70);
+  --d-panel: oklch(0.21 0.008 70);
+  --d-sunk: oklch(0.25 0.008 70);
+  --d-ink: oklch(0.96 0.005 80);
+  --d-dim: oklch(0.74 0.012 78);
+  --d-faint: oklch(0.6 0.012 78);
+  --d-line: oklch(0.3 0.008 70);
+  --d-brand: oklch(0.74 0.17 297);
+  --d-brand-ink: oklch(0.81 0.13 297);
+  --d-on-brand: oklch(0.17 0.05 295);
+  --d-hype: oklch(0.72 0.19 52);
+  --d-code: oklch(0.15 0.008 260);
+}
+
+/* The site's own small reset. The library does not lean on it: it resets its own roots (see its reset.css). */
+*,
+::before,
+::after {
+  box-sizing: border-box;
+}
+:where(h1, h2, h3, h4, p, ul, ol, dl, dd, figure, pre) {
+  margin: 0;
+}
+:where(ul, ol) {
+  padding: 0;
+}
+:where(button, input) {
+  font: inherit;
+  color: inherit;
+}
+:where(svg, img) {
+  display: block;
+}
+
+html {
+  line-height: 1.5;
+  scroll-padding-top: calc(var(--d-bar) + 24px);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  /* The library's pieces wear the site's typeface. Their colours are their own: each takes a theme. */
+  --rco-font: var(--d-font);
+  margin: 0;
+  background: var(--d-page);
+  color: var(--d-ink);
+  font-family: var(--d-font);
+  font-size: 16px;
+  line-height: 1.6;
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+.d-skip {
+  position: absolute;
+  left: 16px;
+  top: -80px;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--d-ink);
+  color: var(--d-panel);
+  font-weight: 600;
+}
+.d-skip:focus {
+  top: 12px;
+}
+
+:where(.d-bar, .d-side, .d-foot, .d-article, .d-plain, .d-hero, .d-band, .d-promo, .d-toc, .d-drawer) a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:where(a, button):focus-visible {
+  outline: 2px solid var(--d-brand);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* ---------- the bar ---------- */
+
+.d-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  padding: 10px 16px 0;
+}
+.d-bar-inner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 1400px;
+  height: calc(var(--d-bar) - 14px);
+  margin: 0 auto;
+  padding: 0 10px 0 18px;
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--d-panel) 86%, transparent);
+  box-shadow:
+    0 0 0 1px var(--d-line),
+    0 8px 30px -18px oklch(0.2 0.02 60 / 0.5);
+  backdrop-filter: blur(14px) saturate(1.3);
+}
+.d-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-right: 14px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  white-space: nowrap;
+}
+.d-mark {
+  width: 30px;
+  height: 30px;
+  border-radius: 23%;
+}
+.d-brand b {
+  color: var(--d-brand);
+  font-weight: inherit;
+}
+.d-bar nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+.d-bar nav a {
+  padding: 7px 12px;
+  border-radius: 999px;
+  color: var(--d-dim);
+  font-size: 14.5px;
+  font-weight: 550;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+.d-bar nav a:hover,
+.d-bar nav a[aria-current="page"] {
+  background: var(--d-sunk);
+  color: var(--d-ink);
+}
+.d-bar-end {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+.d-icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--d-dim);
+  cursor: pointer;
+}
+.d-icon-button:hover {
+  background: var(--d-sunk);
+  color: var(--d-ink);
+}
+.d-icon-button svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.d-icon-button svg.d-fill {
+  fill: currentColor;
+  stroke: none;
+}
+.d-menu-button {
+  display: none;
+  margin-left: -8px;
+}
+
+.d-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--d-line);
+  background: var(--d-panel);
+  color: var(--d-ink);
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: transform 0.15s;
+}
+.d-pill:hover {
+  transform: translateY(-1px);
+}
+.d-pill svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.d-pill-solid {
+  background: var(--d-ink);
+  color: var(--d-panel) !important;
+  box-shadow: none;
+}
+.d-pill-brand {
+  height: 38px;
+  padding: 0 14px 0 16px;
+  background: var(--d-hype);
+  color: oklch(0.985 0 0) !important;
+  box-shadow: none;
+  font-size: 14px;
+}
+
+/* ---------- search ---------- */
+
+.d-search-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  margin-right: 4px;
+  padding: 0 10px 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--d-sunk);
+  color: var(--d-dim);
+  font-size: 14px;
+  cursor: pointer;
+}
+.d-search-button:hover {
+  color: var(--d-ink);
+}
+.d-search-button svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.d-search-button span {
+  min-width: 7.5em;
+  text-align: left;
+}
+.d-search-button kbd {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--d-panel);
+  box-shadow: 0 0 0 1px var(--d-line);
+  font-family: var(--d-mono);
+  font-size: 11.5px;
+}
+.d-search {
+  width: min(92vw, 620px);
+  max-height: min(78vh, 640px);
+  margin: 12vh auto auto;
+  padding: 0;
+  border: 0;
+  border-radius: 24px;
+  background: var(--d-panel);
+  color: var(--d-ink);
+  box-shadow:
+    0 0 0 1px var(--d-line),
+    0 40px 90px -30px oklch(0.15 0.02 60 / 0.6);
+}
+.d-search::backdrop {
+  background: oklch(0.15 0.01 70 / 0.5);
+}
+.d-search input::-webkit-search-cancel-button {
+  display: none;
+}
+.d-search-panel {
+  display: flex;
+  flex-direction: column;
+  max-height: inherit;
+}
+.d-search input {
+  width: 100%;
+  padding: 20px 24px;
+  border: 0;
+  border-bottom: 1px solid var(--d-line);
+  outline: none;
+  background: none;
+  font-size: 17px;
+}
+.d-search input::placeholder {
+  color: var(--d-faint);
+}
+.d-search ul {
+  margin: 0;
+  padding: 8px;
+  overflow-y: auto;
+  list-style: none;
+}
+.d-search li button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 12px;
+  width: 100%;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 14px;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+.d-search li button[aria-current="true"] {
+  background: var(--d-sunk);
+}
+.d-search strong {
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+.d-search small {
+  color: var(--d-faint);
+  font-size: 12.5px;
+}
+.d-search li span {
+  grid-column: 1 / -1;
+  overflow: hidden;
+  color: var(--d-dim);
+  font-size: 13.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.d-search-none {
+  padding: 18px 14px;
+  color: var(--d-dim);
+}
+
+/* ---------- docs layout ---------- */
+
+.d-docs {
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
+  gap: 12px;
+  max-width: 1432px;
+  margin: 0 auto;
+  padding: 16px 16px 0;
+}
+.d-side-rail {
+  position: sticky;
+  top: calc(var(--d-bar) + 12px);
+  align-self: start;
+  max-height: calc(100vh - var(--d-bar) - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 14px 6px 24px 8px;
+  scrollbar-width: thin;
+}
+.d-side section + section {
+  margin-top: 22px;
+}
+.d-side h2 {
+  margin: 0 0 6px;
+  padding: 0 10px;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--d-ink);
+}
+.d-side ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.d-side a {
+  display: block;
+  padding: 5px 10px;
+  border-radius: 10px;
+  color: var(--d-dim);
+  font-size: 14.5px;
+  line-height: 1.4;
+}
+.d-side a:hover {
+  color: var(--d-ink);
+}
+.d-side a[aria-current="page"] {
+  background: var(--d-panel);
+  box-shadow: 0 0 0 1px var(--d-line);
+  color: var(--d-ink);
+  font-weight: 600;
+}
+
+.d-docs-main {
+  min-width: 0;
+  padding: clamp(20px, 4vw, 56px);
+  border-radius: var(--d-radius);
+  background: var(--d-panel);
+  box-shadow: 0 0 0 1px var(--d-line);
+}
+.d-article-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 48px;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+.d-article {
+  min-width: 0;
+  max-width: 780px;
+}
+.d-toc {
+  display: none;
+}
+
+.d-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+}
+.d-drawer-shade {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: oklch(0.15 0.01 70 / 0.5);
+  cursor: pointer;
+}
+.d-drawer-panel {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: min(320px, 86vw);
+  overflow-y: auto;
+  padding: 24px 12px;
+  background: var(--d-page);
+  box-shadow: 0 0 0 1px var(--d-line);
+}
+
+/* ---------- article ---------- */
+
+.d-crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 18px;
+  padding: 0;
+  list-style: none;
+  color: var(--d-faint);
+  font-size: 14px;
+}
+.d-crumbs li + li::before {
+  content: "/";
+  margin-right: 6px;
+  opacity: 0.6;
+}
+.d-article .d-crumbs a {
+  color: inherit;
+  font-weight: inherit;
+  text-decoration: none;
+}
+.d-article .d-crumbs a:hover {
+  color: var(--d-ink);
+}
+
+/*
+ * Headings, paragraphs and links are styled as direct children of the site's own containers, never as "anything
+ * inside": a live preview sits inside these containers too, and a rule that reached into it would restyle the
+ * library's own headings.
+ */
+.d-article > :where(h1, h2, h3),
+.d-plain > :where(h1, h2),
+.d-hero-copy > h1,
+.d-band > h2,
+.d-split > div > h2 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+.d-article > h1,
+.d-plain > h1 {
+  font-size: clamp(2.25rem, 4.2vw, 3.25rem);
+}
+.d-lead {
+  margin: 18px 0 0;
+  color: var(--d-dim);
+  font-size: clamp(1.0625rem, 1.3vw, 1.1875rem);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+.d-article > h2 {
+  margin-top: 56px;
+  font-size: clamp(1.5rem, 2.2vw, 1.875rem);
+  letter-spacing: -0.035em;
+}
+.d-article > h2 a:hover::after {
+  content: " #";
+  color: var(--d-faint);
+}
+.d-article > h3 {
+  margin-top: 32px;
+  font-size: 1.1875rem;
+  letter-spacing: -0.02em;
+}
+.d-article > :where(p, ul, ol, dl) {
+  margin: 16px 0 0;
+  text-wrap: pretty;
+}
+.d-article > :where(ul, ol):not([class]) {
+  padding-left: 1.2em;
+}
+.d-article > :where(ul, ol):not([class]) > li + li,
+.d-steps li + li {
+  margin-top: 6px;
+}
+.d-article > :where(p, ul, ol, dl, aside, .d-table) a {
+  color: var(--d-brand-ink);
+  font-weight: 550;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklch, currentColor 35%, transparent);
+  text-underline-offset: 3px;
+}
+.d-article > :where(p, ul, ol, dl, aside, .d-table) a:hover {
+  text-decoration-color: currentColor;
+}
+.d-article > :where(p, ul, ol, dl, aside, .d-table) code,
+.d-plain > p code,
+.d-split > div code {
+  padding: 0.14em 0.4em;
+  border-radius: 7px;
+  background: var(--d-sunk);
+  font-family: var(--d-mono);
+  font-size: 0.875em;
+  overflow-wrap: anywhere;
+}
+
+.d-note {
+  margin-top: 20px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: color-mix(in oklch, var(--d-brand) 9%, var(--d-panel));
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--d-brand) 26%, transparent);
+}
+
+/* ---------- code ---------- */
+
+.d-code {
+  margin: 20px 0 0;
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--d-code);
+  color: var(--d-code-ink);
+}
+.d-code figcaption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 8px 0 18px;
+  color: oklch(0.72 0.015 260);
+  font-family: var(--d-mono);
+  font-size: 12.5px;
+}
+.d-code figcaption button {
+  height: 30px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: oklch(1 0 0 / 0.08);
+  color: inherit;
+  font: 600 12.5px var(--d-font);
+  cursor: pointer;
+}
+.d-code figcaption button:hover {
+  background: oklch(1 0 0 / 0.16);
+  color: #fff;
+}
+.d-code pre {
+  margin: 0;
+  padding: 10px 18px 18px;
+  overflow-x: auto;
+  font-family: var(--d-mono);
+  font-size: 13.5px;
+  line-height: 1.65;
+  tab-size: 2;
+}
+.d-code [data-token="comment"] {
+  color: oklch(0.62 0.02 260);
+  font-style: italic;
+}
+.d-code [data-token="string"] {
+  color: oklch(0.82 0.13 150);
+}
+.d-code [data-token="number"] {
+  color: oklch(0.82 0.13 70);
+}
+.d-code [data-token="keyword"] {
+  color: oklch(0.76 0.15 330);
+}
+.d-code [data-token="tag"] {
+  color: oklch(0.78 0.13 25);
+}
+.d-code [data-token="call"] {
+  color: oklch(0.8 0.12 240);
+}
+.d-code [data-token="property"] {
+  color: oklch(0.86 0.06 200);
+}
+
+/* ---------- tables ---------- */
+
+.d-table {
+  margin-top: 20px;
+  overflow-x: auto;
+  border-radius: 18px;
+  box-shadow: inset 0 0 0 1px var(--d-line);
+}
+.d-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+.d-table th {
+  padding: 12px 16px;
+  background: var(--d-sunk);
+  color: var(--d-dim);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+.d-table td {
+  padding: 12px 16px;
+  border-top: 1px solid var(--d-line);
+  vertical-align: top;
+}
+.d-table td:first-child {
+  white-space: nowrap;
+}
+
+/* ---------- previews ---------- */
+
+.d-preview {
+  margin: 28px 0 0;
+}
+.d-preview-plate {
+  padding: clamp(8px, 1.6vw, 14px);
+  border-radius: 22px;
+  background:
+    radial-gradient(120% 90% at 50% 0%, color-mix(in oklch, var(--d-brand) 7%, transparent), transparent 60%),
+    var(--d-sunk);
+  box-shadow: inset 0 0 0 1px var(--d-line);
+}
+.d-preview figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
+  margin-top: 12px;
+}
+.d-preview figcaption p {
+  margin: 0;
+  color: var(--d-dim);
+  font-size: 14.5px;
+}
+
+.d-look {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+.d-look-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.d-look-swatches button {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px oklch(0 0 0 / 0.14);
+  cursor: pointer;
+}
+.d-look-swatches button[aria-pressed="true"] {
+  box-shadow:
+    0 0 0 2px var(--d-panel),
+    0 0 0 4px var(--d-ink);
+}
+.d-look-chips {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--d-sunk);
+}
+.d-look-chips button {
+  height: 28px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--d-dim);
+  font: 600 13px var(--d-font);
+  cursor: pointer;
+}
+.d-look-chips button[aria-pressed="true"] {
+  background: var(--d-ink);
+  color: var(--d-panel);
+}
+
+/* ---------- cards and shelves ---------- */
+
+.d-cards,
+.d-shelf,
+.d-index,
+.d-related,
+.d-plain-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.d-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  gap: 12px;
+  margin-top: 24px !important;
+}
+.d-cards-wide {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.d-cards li {
+  margin: 0 !important;
+}
+.d-cards a,
+.d-shelf a {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  height: 100%;
+  padding: 10px 10px 14px;
+  border-radius: 20px;
+  background: var(--d-sunk);
+  color: var(--d-ink) !important;
+  font-weight: 400 !important;
+  text-decoration: none !important;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+.d-cards a:hover,
+.d-shelf a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px var(--d-line);
+}
+.d-card-tier {
+  width: 9px;
+  height: 9px;
+  margin: 7px 8px 9px;
+  border-radius: 2.5px;
+  rotate: 45deg;
+  background: var(--d-faint);
+}
+.d-card-tier[data-tier="rare"] {
+  background: oklch(0.7 0.14 255);
+}
+.d-card-tier[data-tier="epic"] {
+  background: var(--d-brand);
+}
+.d-card-tier[data-tier="legendary"] {
+  background: var(--d-gold);
+  box-shadow: 0 0 10px 1px color-mix(in oklch, var(--d-gold) 60%, transparent);
+}
+.d-cards strong,
+.d-shelf strong {
+  padding: 0 6px;
+  font-size: 15.5px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.d-cards a > span,
+.d-shelf a > span {
+  padding: 0 6px;
+  color: var(--d-dim);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.d-shelf {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.d-related {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px !important;
+}
+.d-related li {
+  margin: 0 !important;
+}
+.d-related a {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--d-sunk);
+  color: var(--d-ink) !important;
+  font-size: 14.5px;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+}
+.d-related a:hover {
+  box-shadow: inset 0 0 0 1px var(--d-line);
+}
+
+.d-pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 56px;
+}
+.d-pager a {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px 20px;
+  border-radius: 20px;
+  box-shadow: inset 0 0 0 1px var(--d-line);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.d-pager a[rel="next"] {
+  grid-column: 2;
+  text-align: right;
+}
+.d-pager a:hover {
+  background: var(--d-sunk);
+}
+.d-pager small {
+  color: var(--d-faint);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.d-meta {
+  margin-top: 28px !important;
+  color: var(--d-faint);
+  font-size: 13.5px;
+}
+
+.d-faq > div + div {
+  margin-top: 20px;
+}
+.d-faq dt {
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+.d-faq dd {
+  margin: 4px 0 0;
+  color: var(--d-dim);
+}
+
+/* ---------- pages outside the docs ---------- */
+
+.d-plain,
+.d-hero,
+.d-band {
+  max-width: 1400px;
+  margin: 16px auto 0;
+  padding: clamp(24px, 4.5vw, 64px);
+  border-radius: var(--d-radius);
+  background: var(--d-panel);
+  box-shadow: 0 0 0 1px var(--d-line);
+}
+main:has(> .d-plain, > .d-hero) {
+  padding: 0 16px;
+}
+.d-plain > p {
+  max-width: 62ch;
+}
+.d-plain > h2 {
+  margin-top: 64px;
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
+}
+.d-plain > h2 small {
+  color: var(--d-faint);
+  font-size: 1em;
+  font-weight: 600;
+}
+.d-plain > p a {
+  color: var(--d-brand-ink);
+  font-weight: 550;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.d-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 64px);
+  overflow: hidden;
+  background:
+    radial-gradient(60% 70% at 100% 0%, color-mix(in oklch, var(--d-brand) 14%, transparent), transparent 70%),
+    var(--d-panel);
+}
+.d-hero-kicker {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 6px;
+  margin: 0 0 22px;
+  padding: 7px 14px 7px 12px;
+  border-radius: 18px;
+  background: var(--d-sunk);
+  color: var(--d-dim);
+  font-size: 14px;
+  font-weight: 500;
+}
+.d-hero-kicker a {
+  color: var(--d-ink);
+  font-weight: 650;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklch, currentColor 30%, transparent);
+  text-underline-offset: 3px;
+}
+.d-dot {
+  width: 8px;
+  height: 8px;
+  margin-right: 2px;
+  border-radius: 999px;
+  background: var(--d-brand);
+  box-shadow: 0 0 0 4px color-mix(in oklch, var(--d-brand) 22%, transparent);
+}
+.d-hero-copy > h1 {
+  font-size: clamp(2.6rem, 5.8vw, 5rem);
+  letter-spacing: -0.055em;
+  line-height: 0.96;
+}
+.d-hero-copy > h1 em {
+  color: var(--d-brand);
+  font-style: normal;
+}
+.d-hero-lead {
+  max-width: 54ch;
+  margin: 24px 0 0;
+  color: var(--d-dim);
+  font-size: clamp(1.0625rem, 1.35vw, 1.25rem);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+.d-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+.d-hero .d-code {
+  max-width: 420px;
+  margin-top: 28px;
+}
+.d-hero-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  min-width: 0;
+}
+.d-hero-note {
+  margin: 0;
+  color: var(--d-faint);
+  font-size: 13.5px;
+  text-align: center;
+}
+
+.d-facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 1400px;
+  margin: 12px auto 0;
+}
+.d-facts p {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: clamp(18px, 2.4vw, 28px);
+  border-radius: 24px;
+  background: var(--d-panel);
+  box-shadow: 0 0 0 1px var(--d-line);
+}
+.d-facts strong {
+  font-size: clamp(2.25rem, 4.4vw, 3.5rem);
+  font-weight: 650;
+  letter-spacing: -0.06em;
+  line-height: 0.9;
+  font-variant-numeric: tabular-nums;
+}
+.d-facts span {
+  color: var(--d-dim);
+  font-size: 14.5px;
+  line-height: 1.35;
+}
+main:has(> .d-facts) > .d-facts {
+  margin-top: 12px;
+}
+
+.d-band {
+  margin-top: 12px;
+}
+.d-band > h2,
+.d-band-head h2,
+.d-split > div > h2,
+.d-promo h2 {
+  margin: 0;
+  font-size: clamp(1.9rem, 3.4vw, 2.9rem);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+.d-band-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px 40px;
+}
+.d-band-head > div {
+  max-width: 62ch;
+}
+.d-band-head p,
+.d-split > div > p,
+.d-promo p {
+  max-width: 58ch;
+  margin: 14px 0 0;
+  color: var(--d-dim);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+.d-band-head code,
+.d-split > div code {
+  padding: 0.14em 0.4em;
+  border-radius: 7px;
+  background: var(--d-sunk);
+  font-family: var(--d-mono);
+  font-size: 0.875em;
+}
+.d-band-more {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0 0;
+}
+.d-split {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 64px);
+}
+.d-split .d-code {
+  margin: 0;
+}
+
+.d-packages {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 40px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.d-packages li {
+  display: grid;
+  grid-template-columns: minmax(0, 13.5em) minmax(0, 1fr);
+  gap: 4px 16px;
+  padding: 11px 0;
+  border-top: 1px solid var(--d-line);
+  font-size: 14.5px;
+}
+.d-packages code {
+  font-family: var(--d-mono);
+  font-size: 13px;
+  font-weight: 600;
+}
+.d-packages span {
+  color: var(--d-dim);
+}
+
+/* The one place the site sells something: where the library runs for real. In Hype Stack's own colour. */
+.d-promo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px 48px;
+  max-width: 1400px;
+  margin: 12px auto 0;
+  padding: clamp(24px, 4.5vw, 56px);
+  border-radius: var(--d-radius);
+  background:
+    radial-gradient(70% 120% at 100% 0%, color-mix(in oklch, var(--d-hype) 26%, transparent), transparent 70%),
+    var(--d-panel);
+  box-shadow: 0 0 0 1px var(--d-line);
+}
+.d-promo > div:first-child {
+  max-width: 60ch;
+}
+.d-promo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.d-pill-hype {
+  background: var(--d-hype);
+  color: oklch(0.985 0 0) !important;
+  box-shadow: none;
+}
+
+/* ---------- footer ---------- */
+
+.d-foot {
+  padding: 28px 16px 36px;
+}
+.d-foot-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  color: var(--d-dim);
+  font-size: 14.5px;
+}
+.d-foot p {
+  margin: 0;
+}
+.d-foot p a {
+  color: var(--d-ink);
+  font-weight: 600;
+}
+.d-foot nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+}
+.d-foot a:hover {
+  color: var(--d-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---------- wider and narrower ---------- */
+
+@media (min-width: 1240px) {
+  .d-article-grid {
+    grid-template-columns: minmax(0, 1fr) 200px;
+  }
+  .d-toc {
+    display: block;
+    position: sticky;
+    top: calc(var(--d-bar) + 28px);
+    align-self: start;
+    font-size: 14px;
+  }
+  .d-toc h2 {
+    margin: 0 0 8px;
+    font-size: 13px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+  .d-toc ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .d-toc a {
+    display: block;
+    padding: 4px 0;
+    color: var(--d-dim);
+  }
+  .d-toc a:hover {
+    color: var(--d-ink);
+  }
+}
+
+@media (max-width: 900px) {
+  .d-docs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .d-side-rail {
+    display: none;
+  }
+  .d-menu-button {
+    display: inline-grid;
+  }
+  .d-bar-wide {
+    display: none;
+  }
+  .d-search-button span,
+  .d-search-button kbd {
+    display: none;
+  }
+  .d-search-button {
+    width: 38px;
+    padding: 0;
+    justify-content: center;
+    background: none;
+  }
+  .d-hero,
+  .d-split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .d-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .d-cards-wide {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .d-packages {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .d-bar nav {
+    display: none;
+  }
+  .d-brand {
+    margin-right: 0;
+    font-size: 15.5px;
+  }
+  .d-bar-inner {
+    padding-left: 12px;
+  }
+  .d-bar-end > a.d-icon-button {
+    display: none;
+  }
+  .d-pager {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .d-packages li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .d-cards-wide {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .d-pager a[rel="next"] {
+    grid-column: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+/* ---------- the library, on show ---------- */
+
+/* The ground a demo stands on: the theme's own, so a card looks the way it will in someone's page. */
+.d-stage {
+  padding: clamp(18px, 4vw, 44px);
+  border-radius: 18px;
+}
+.d-band > .d-stage,
+.d-band-stage {
+  margin-top: clamp(20px, 3vw, 32px);
+}
+.d-band > .d-stage {
+  border-radius: 24px;
+}
+.d-preview-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.d-chip-button {
+  height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--d-sunk);
+  box-shadow: inset 0 0 0 1px var(--d-line);
+  color: var(--d-ink);
+  font: 600 13.5px var(--d-font);
+  cursor: pointer;
+}
+.d-chip-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+/* On a stage a button takes the theme's own ink, whatever mode the site is in. */
+.d-stage .d-chip-button,
+.d-deal .d-chip-button {
+  background: color-mix(in oklch, currentColor 9%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, currentColor 18%, transparent);
+  color: inherit;
+}
+
+/* Cards lying on a shelf: four across, two on a phone. */
+.d-shelf-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(10px, 2vw, 22px);
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+.d-shelf-cards[data-count="3"] {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-width: 680px;
+}
+.d-shelf-cards[data-count="1"] {
+  grid-template-columns: minmax(0, 230px);
+  justify-content: center;
+}
+.d-place {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 9.4% / 7%;
+  background: none;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+.d-place:hover:not(:disabled) {
+  filter: brightness(1.14);
+}
+.d-place:disabled {
+  cursor: default;
+}
+/*
+ * Its card is in the air: the place is empty until it lands. Seen through, not hidden: a hidden button cannot take
+ * the focus back when a card that was being looked at is put away.
+ */
+.d-place[data-away] {
+  opacity: 0;
+}
+.d-cards-demo {
+  display: grid;
+  justify-items: center;
+  gap: 22px;
+}
+.d-cards-demo .d-shelf-cards {
+  width: 100%;
+}
+
+.d-scan-demo {
+  display: grid;
+  gap: 18px;
+}
+.d-scan-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13.5px;
+}
+.d-scan-actions span {
+  opacity: 0.6;
+}
+
+.d-glyphs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 22px 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.d-glyphs li {
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+}
+.d-glyphs code {
+  font: 500 12px var(--d-mono);
+  opacity: 0.65;
+}
+
+.d-themes-demo {
+  display: grid;
+  gap: clamp(20px, 3vw, 32px);
+}
+.d-themes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.d-themes button {
+  display: grid;
+  gap: 9px;
+  width: 100%;
+  padding: 12px;
+  border: 0;
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, currentColor 16%, transparent);
+  text-align: left;
+  cursor: pointer;
+}
+.d-themes button[aria-pressed="true"] {
+  box-shadow:
+    inset 0 0 0 2px currentColor,
+    0 10px 24px -14px black;
+}
+.d-theme-ramp {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 3px;
+}
+.d-theme-ramp i {
+  aspect-ratio: 1;
+  border-radius: 22%;
+}
+.d-theme-tiers {
+  display: flex;
+  gap: 5px;
+}
+.d-theme-tiers i {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+.d-themes strong {
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.d-themes code {
+  margin-top: -7px;
+  font: 500 11.5px var(--d-mono);
+  opacity: 0.6;
+}
+
+/* A reveal with none of the library's components: the rules, a div, transitions keyed off the phase. */
+.d-headless {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(20px, 4vw, 48px);
+}
+.d-headless-table {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  perspective: 900px;
+}
+.d-headless-card {
+  position: relative;
+  width: clamp(150px, 22vw, 200px);
+  aspect-ratio: 3 / 4;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  transform: rotateY(180deg);
+  transform-style: preserve-3d;
+  transition:
+    transform 0.42s cubic-bezier(0.34, 1.4, 0.64, 1),
+    opacity 0.3s;
+}
+.d-headless-card:disabled {
+  cursor: default;
+}
+.d-headless-card[data-phase="idle"] {
+  opacity: 0.4;
+}
+.d-headless-card[data-phase="hum"] {
+  animation: d-hum 0.3s 3;
+}
+.d-headless-card[data-up] {
+  transform: rotateY(0);
+}
+.d-headless-card[data-phase="land"] {
+  transform: rotateY(0) scale(0.6);
+  opacity: 0;
+}
+@keyframes d-hum {
+  25% {
+    transform: rotateY(180deg) translateX(4px);
+  }
+  75% {
+    transform: rotateY(180deg) translateX(-4px);
+  }
+}
+.d-headless-back,
+.d-headless-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  border-radius: 18px;
+  backface-visibility: hidden;
+}
+.d-headless-back {
+  place-items: center;
+  transform: rotateY(180deg);
+  background: var(--rco-card);
+  box-shadow: inset 0 0 0 2px color-mix(in oklch, var(--tone) 70%, transparent);
+  font-size: 44px;
+  font-weight: 700;
+  opacity: 0.9;
+}
+.d-headless-face {
+  align-content: end;
+  gap: 4px;
+  padding: 16px;
+  background: linear-gradient(165deg, color-mix(in oklch, var(--tone) 26%, var(--rco-card)), var(--rco-card) 62%);
+  box-shadow: inset 0 0 0 2px var(--tone);
+  text-align: left;
+}
+.d-headless-face strong {
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+.d-headless-face em {
+  color: var(--tone);
+  font-size: 12.5px;
+  font-style: normal;
+  font-weight: 600;
+}
+.d-headless-face small {
+  color: var(--rco-muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+.d-headless-phase {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.75;
+}
+.d-headless-phase code {
+  font-family: var(--d-mono);
+  font-weight: 600;
+}
+.d-headless-side {
+  display: grid;
+  gap: 18px;
+}
+.d-headless-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.d-headless-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+}
+.d-headless-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.5;
+}
+.d-headless-list li[data-open] {
+  opacity: 1;
+  font-weight: 600;
+}
+.d-headless-list i {
+  width: 9px;
+  height: 9px;
+  border-radius: 2.5px;
+  rotate: 45deg;
+}
+
+/*
+ * A face of the page's own. Sized in the card's unit, so it is the same picture in the reveal (where the unit is a
+ * pixel) and on a shelf (where it follows the card's width).
+ */
+.d-face-window {
+  display: grid;
+  flex: 1;
+  min-height: 0;
+  place-items: center;
+  border-radius: calc(16 * var(--rco-u, 1px));
+  background:
+    radial-gradient(circle at 50% 35%, color-mix(in oklch, var(--rco-tone) 34%, transparent), transparent 72%),
+    color-mix(in oklch, var(--rco-bg) 72%, black);
+  box-shadow: inset 0 0 0 calc(1.5 * var(--rco-u, 1px)) color-mix(in oklch, var(--rco-tone) 45%, transparent);
+}
+.d-face-name {
+  margin: calc(14 * var(--rco-u, 1px)) 0 0;
+  font-size: calc(22 * var(--rco-u, 1px));
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+}
+.d-face-kind {
+  margin: calc(4 * var(--rco-u, 1px)) 0 0;
+  font-size: calc(13 * var(--rco-u, 1px));
+  font-weight: 600;
+  line-height: 1.3;
+}
+.d-face-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: calc(6 * var(--rco-u, 1px));
+  margin: calc(12 * var(--rco-u, 1px)) 0 0;
+}
+.d-face-stats div {
+  padding: calc(7 * var(--rco-u, 1px)) 0;
+  border-radius: calc(10 * var(--rco-u, 1px));
+  background: color-mix(in oklch, var(--rco-tone) 12%, transparent);
+  text-align: center;
+}
+.d-face-stats dt {
+  color: var(--rco-muted);
+  font-size: calc(10.5 * var(--rco-u, 1px));
+  line-height: 1.2;
+}
+.d-face-stats dd {
+  margin: 0;
+  font-size: calc(17 * var(--rco-u, 1px));
+  font-weight: 650;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- the hero's table ---------- */
+
+.d-hero .d-code {
+  max-width: 540px;
+}
+.d-deal {
+  display: grid;
+  gap: 16px;
+  padding: clamp(14px, 2.2vw, 24px);
+  border-radius: 26px;
+  box-shadow: 0 40px 80px -50px oklch(0.25 0.14 295 / 0.9);
+}
+.d-deal-table {
+  display: grid;
+  place-items: center;
+  padding: clamp(14px, 4vh, 40px) 0 clamp(8px, 2vh, 20px);
+}
+.d-deal .d-shelf-cards {
+  width: 100%;
+}
+.d-deal .d-shelf-cards[data-count="1"] {
+  grid-template-columns: minmax(0, 270px);
+}
+/* The one card on the table asks to be pressed: a slow light under it while it lies face down. */
+.d-deal .d-place:has(.rco-card[data-down]) {
+  animation: d-invite 2.6s ease-in-out infinite;
+}
+@keyframes d-invite {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in oklch, var(--rco-accent, #c4a7ff) 0%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 70px 6px color-mix(in oklch, var(--rco-accent, #c4a7ff) 34%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .d-deal .d-place:has(.rco-card[data-down]) {
+    animation: none;
+  }
+}
+.d-deal-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.d-deal-tiers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.d-deal-tiers button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 13px 0 11px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: inherit;
+  font: 600 13.5px var(--d-font);
+  cursor: pointer;
+}
+.d-deal-tiers button:hover {
+  background: color-mix(in oklch, var(--tone) 10%, transparent);
+}
+.d-deal-tiers button[aria-pressed="true"] {
+  background: color-mix(in oklch, var(--tone) 18%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--tone) 50%, transparent);
+}
+.d-deal-tiers i {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  rotate: 45deg;
+  background: var(--tone);
+}
+
+@media (max-width: 900px) {
+  .d-headless {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+  }
+}
+@media (max-width: 640px) {
+  .d-shelf-cards,
+  .d-shelf-cards[data-count="3"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .d-preview figcaption {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+@media (max-width: 520px) {
+  .d-brand > span {
+    display: none;
+  }
+}
+
+/* Two packages read better as two rows than as a table of eight. */
+.d-split .d-packages {
+  grid-template-columns: minmax(0, 1fr);
+  margin-top: 22px;
+}
+.d-split .d-packages li {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  padding: 14px 0;
+}
+.d-split .d-packages code {
+  padding: 0;
+  background: none;
+  font-size: 13.5px;
+}
+.d-split .d-band-more {
+  justify-content: flex-start;
+}
