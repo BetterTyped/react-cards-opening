@@ -1,6 +1,6 @@
 {
   "name": "@react-cards-opening/ui",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Card opening components for React: a card that flies out, hums, flips and lands, a scan that hunts a grid for it, and rarity effects up to a legendary foil. GSAP inside, one stylesheet, no CSS framework.",
   "license": "MIT",
   "type": "module",
@@ -23,16 +23,20 @@
   ],
   "keywords": [
     "react",
+    "react-component",
     "cards",
-    "card opening",
-    "pack opening",
-    "card flip",
-    "loot",
+    "card-opening",
+    "pack-opening",
+    "card-flip",
+    "loot-box",
     "gacha",
     "rarity",
     "reveal",
+    "trading-cards",
+    "gamification",
+    "animation",
     "gsap",
-    "animation"
+    "typescript"
   ],
   "homepage": "https://bettertyped.github.io/react-cards-opening/",
   "bugs": "https://github.com/BetterTyped/react-cards-opening/issues",

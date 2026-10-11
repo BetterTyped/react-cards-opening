@@ -1,6 +1,6 @@
 {
   "name": "@react-cards-opening/core",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Headless card opening for React: the queue, the click rules, rarity tiers, seeded rolls and opened-card storage. Bring your own animation.",
   "license": "MIT",
   "type": "module",
@@ -21,13 +21,17 @@
   "keywords": [
     "react",
     "cards",
-    "card opening",
-    "pack opening",
-    "loot",
+    "card-opening",
+    "pack-opening",
+    "loot-box",
     "gacha",
     "rarity",
     "reveal",
-    "headless"
+    "trading-cards",
+    "gamification",
+    "headless",
+    "hooks",
+    "typescript"
   ],
   "homepage": "https://bettertyped.github.io/react-cards-opening/",
   "bugs": "https://github.com/BetterTyped/react-cards-opening/issues",
