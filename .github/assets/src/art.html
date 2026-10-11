@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>react-cards-opening art</title>
+    <!--
+      The source of the README banner, the social preview and the share images of the docs. One page, drawn with
+      the library's own shapes (the face, the foil border, the ray wheel, a pixel glyph) in plain CSS, and shot by
+      .github/scripts/art.mjs with ?title=...&line=... at the size each picture needs.
+    -->
+    <style>
+      @font-face {
+        font-family: "Inter Variable";
+        src: url("../../../node_modules/.pnpm/node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2")
+          format("woff2");
+        font-weight: 100 900;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        position: relative;
+        margin: 0;
+        overflow: hidden;
+        background: #110c1d;
+        color: #f4efff;
+        font-family: "Inter Variable", system-ui, sans-serif;
+        font-feature-settings: "cv11", "ss01";
+        -webkit-font-smoothing: antialiased;
+      }
+      .light {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(55% 80% at 4% 0%, rgba(98, 51, 184, 0.75), transparent 70%),
+          radial-gradient(45% 70% at 78% 55%, rgba(143, 92, 240, 0.4), transparent 70%),
+          radial-gradient(40% 60% at 100% 100%, rgba(59, 31, 115, 0.9), transparent 70%);
+      }
+      main {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 7.6vh 6vw;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 1.4vw;
+        font-size: max(2.85vw, 22px);
+        font-weight: 700;
+        letter-spacing: -0.045em;
+      }
+      header svg {
+        width: 5vw;
+        height: 5vw;
+        min-width: 44px;
+        min-height: 44px;
+      }
+      header b {
+        color: #c4a7ff;
+        font-weight: inherit;
+      }
+      h1 {
+        margin: 0;
+        max-width: 11.5ch;
+        font-size: 8.4vw;
+        font-weight: 650;
+        letter-spacing: -0.06em;
+        line-height: 0.95;
+        text-wrap: balance;
+      }
+      h1 em {
+        color: #ffd580;
+        font-style: normal;
+      }
+      p {
+        margin: 2vw 0 0;
+        max-width: 26ch;
+        color: #a497c2;
+        font-size: 2.6vw;
+        letter-spacing: -0.02em;
+        line-height: 1.25;
+      }
+
+      /* The table: a wheel of rays and three cards, the loudest in front. */
+      .table {
+        position: absolute;
+        top: 50%;
+        right: 5.5vw;
+        width: 34vw;
+        height: 34vw;
+        translate: 0 -50%;
+      }
+      .rays {
+        position: absolute;
+        inset: -30%;
+        border-radius: 50%;
+        background: repeating-conic-gradient(from 6deg, rgba(255, 213, 128, 0.3) 0deg 3deg, transparent 3deg 15deg);
+        -webkit-mask-image: radial-gradient(circle, black 15%, transparent 68%);
+        mask-image: radial-gradient(circle, black 15%, transparent 68%);
+      }
+      .card {
+        --u: calc(var(--w) / 300);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: var(--w);
+        height: calc(var(--w) * 4 / 3);
+        margin: calc(var(--w) * -2 / 3) 0 0 calc(var(--w) / -2);
+        border-radius: calc(28 * var(--u));
+      }
+      .face {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border-radius: inherit;
+        padding: calc(24 * var(--u));
+        background: linear-gradient(165deg, color-mix(in oklch, var(--tone) 26%, #1a1430), #1a1430 62%);
+        box-shadow:
+          inset 0 0 0 calc(2 * var(--u)) var(--tone),
+          0 calc(40 * var(--u)) calc(90 * var(--u)) calc(-20 * var(--u)) black;
+      }
+      .back {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        border-radius: inherit;
+        background: radial-gradient(circle at 50% 40%, color-mix(in oklch, #c4a7ff 18%, #1a1430), #110c1d 75%);
+        box-shadow:
+          inset 0 0 0 calc(2 * var(--u)) var(--tone),
+          0 0 calc(70 * var(--u)) calc(6 * var(--u)) color-mix(in oklch, var(--tone) 70%, transparent);
+      }
+      .foil {
+        position: absolute;
+        inset: calc(-4 * var(--u));
+        overflow: hidden;
+        border-radius: calc(32 * var(--u));
+        box-shadow: 0 0 calc(50 * var(--u)) calc(4 * var(--u)) color-mix(in oklch, var(--tone) 55%, transparent);
+      }
+      .foil i {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 200%;
+        height: 200%;
+        margin: -100% 0 0 -100%;
+        rotate: 38deg;
+        background: conic-gradient(
+          from 0deg,
+          var(--tone),
+          color-mix(in oklch, var(--tone) 35%, white),
+          var(--tone),
+          color-mix(in oklch, var(--tone) 60%, white),
+          white,
+          var(--tone)
+        );
+      }
+      .shine {
+        position: absolute;
+        inset: 0;
+        mix-blend-mode: screen;
+        background: linear-gradient(
+          115deg,
+          transparent 38%,
+          color-mix(in oklch, var(--tone) 50%, transparent) 47%,
+          rgb(255 255 255 / 0.7) 50%,
+          color-mix(in oklch, var(--tone) 45%, transparent) 53%,
+          transparent 62%
+        );
+      }
+      .art {
+        display: grid;
+        flex: 1;
+        place-items: center;
+      }
+      .glyph {
+        display: grid;
+        grid-template-columns: repeat(9, calc(var(--cell) * var(--u)));
+        gap: calc(var(--cell) / 4 * var(--u));
+      }
+      .glyph i {
+        height: calc(var(--cell) * var(--u));
+        border-radius: calc(2 * var(--u));
+        background: rgb(255 255 255 / 0.06);
+      }
+      .glyph i[data-on="1"] {
+        background: color-mix(in oklch, var(--tone) 50%, transparent);
+      }
+      .glyph i[data-on="2"] {
+        background: var(--tone);
+      }
+      .name {
+        font-size: calc(25 * var(--u));
+        font-weight: 600;
+        letter-spacing: -0.035em;
+        line-height: 1.05;
+      }
+      .rarity {
+        margin-top: calc(6 * var(--u));
+        color: var(--tone);
+        font-size: calc(14 * var(--u));
+        font-weight: 600;
+      }
+      .text {
+        margin-top: calc(8 * var(--u));
+        color: #a497c2;
+        font-size: calc(14 * var(--u));
+        line-height: 1.4;
+      }
+      .sparkle {
+        position: absolute;
+        width: 1.1vw;
+        height: 1.1vw;
+        border-radius: 0.2vw;
+        rotate: 45deg;
+        background: color-mix(in oklch, #ffd580 30%, white);
+        box-shadow: 0 0 1.2vw 0.3vw #ffd580;
+      }
+
+      /* A wide, short picture: the README's banner. The words sit beside the name instead of under it. */
+      body[data-shape="banner"] main {
+        justify-content: center;
+        gap: 3.4vh;
+        padding: 0 5vw;
+      }
+      body[data-shape="banner"] h1 {
+        max-width: 14ch;
+        font-size: 5.6vw;
+      }
+      body[data-shape="banner"] p {
+        margin-top: 1.2vw;
+        max-width: 46ch;
+        font-size: 1.75vw;
+      }
+      body[data-shape="banner"] header {
+        font-size: 1.9vw;
+        gap: 0.9vw;
+      }
+      body[data-shape="banner"] header svg {
+        width: 3.2vw;
+        height: 3.2vw;
+      }
+      /* The same table, smaller: three cards at full size are taller than the banner. */
+      body[data-shape="banner"] .table {
+        right: 3vw;
+        scale: 0.66;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="light"></div>
+    <div class="table" id="table">
+      <div class="rays"></div>
+      <div class="card" style="--w: 17vw; --tone: #f0abfc; rotate: -17deg; translate: -64% 5%">
+        <div class="back"><div class="glyph" data-glyph="question" style="--cell: 12; --tone: #c4a7ff"></div></div>
+      </div>
+      <div class="card" style="--w: 18.5vw; --tone: #7aa2ff; rotate: 15deg; translate: 62% 3%">
+        <div class="face">
+          <div class="art"><div class="glyph" data-glyph="fox" style="--cell: 14"></div></div>
+          <div class="name">Lantern Fox</div>
+          <div class="rarity">Rare</div>
+          <div class="text">Knows a shortcut. Will not say where it comes out.</div>
+        </div>
+      </div>
+      <div class="card" style="--w: 22vw; --tone: #ffd580; rotate: -3deg">
+        <div class="foil"><i></i></div>
+        <div class="face">
+          <div class="shine"></div>
+          <div class="art"><div class="glyph" data-glyph="dragon" style="--cell: 14"></div></div>
+          <div class="name">Vault Dragon</div>
+          <div class="rarity">Legendary</div>
+          <div class="text">Keeps one of every card ever dealt. This one is its own.</div>
+        </div>
+      </div>
+      <i class="sparkle" style="top: 2%; left: 16%"></i>
+      <i class="sparkle" style="top: 14%; right: -2%; scale: 0.7"></i>
+      <i class="sparkle" style="bottom: 4%; right: 12%; scale: 0.85"></i>
+      <i class="sparkle" style="bottom: 16%; left: -3%; scale: 0.6"></i>
+    </div>
+    <main>
+      <header>
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <radialGradient id="glow" cx="0.5" cy="0.42" r="0.62">
+              <stop offset="0" stop-color="#8f5cf0" stop-opacity="0.9" />
+              <stop offset="1" stop-color="#8f5cf0" stop-opacity="0" />
+            </radialGradient>
+            <linearGradient id="foil" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#ffd580" />
+              <stop offset="0.42" stop-color="#fff8e4" />
+              <stop offset="0.6" stop-color="#ffbe3d" />
+              <stop offset="1" stop-color="#ffe7a8" />
+            </linearGradient>
+            <linearGradient id="face" x1="0" y1="0" x2="0.5" y2="1">
+              <stop offset="0" stop-color="#3d2a6e" />
+              <stop offset="0.75" stop-color="#1a1430" />
+            </linearGradient>
+          </defs>
+          <rect width="64" height="64" rx="15" fill="#1c1433" />
+          <rect width="64" height="64" rx="15" fill="url(#glow)" />
+          <g transform="rotate(-10 32 32)">
+            <rect x="17.5" y="9.5" width="29" height="40" rx="7" fill="url(#foil)" />
+            <rect x="20.3" y="12.3" width="23.4" height="34.4" rx="4.6" fill="url(#face)" />
+            <path d="M32 19.5 34.7 26.8 42 29.5 34.7 32.2 32 39.5 29.3 32.2 22 29.5 29.3 26.8Z" fill="#ffd580" />
+          </g>
+          <path d="M52 8.5 53.5 12.5 57.5 14 53.5 15.5 52 19.5 50.5 15.5 46.5 14 50.5 12.5Z" fill="#fff8e4" />
+          <rect x="8.4" y="45.4" width="5.2" height="5.2" rx="1.1" transform="rotate(45 11 48)" fill="#c4a7ff" />
+        </svg>
+        <span>react<b>-</b>cards<b>-</b>opening</span>
+      </header>
+      <div>
+        <h1 id="title"></h1>
+        <p id="line"></p>
+      </div>
+    </main>
+    <script>
+      const query = new URLSearchParams(location.search);
+      document.body.dataset.shape = query.get("shape") ?? "share";
+      // *word* in a title is the word in gold.
+      const title = query.get("title") ?? "Card *opening* for React";
+      const heading = document.getElementById("title");
+      for (const part of title.split(/(\*[^*]+\*)/)) {
+        if (!part) continue;
+        if (part.startsWith("*")) {
+          const em = document.createElement("em");
+          em.textContent = part.slice(1, -1);
+          heading.append(em);
+        } else heading.append(part);
+      }
+      document.getElementById("line").textContent = query.get("line") ?? "";
+      // The glyphs are the library's own, handed in by the script that takes the picture.
+      window.drawGlyphs = (glyphs) => {
+        for (const holder of document.querySelectorAll("[data-glyph]")) {
+          for (const char of (glyphs[holder.dataset.glyph] ?? []).join("")) {
+            const pixel = document.createElement("i");
+            pixel.dataset.on = char === "x" ? "2" : char === "o" ? "1" : "0";
+            holder.append(pixel);
+          }
+        }
+      };
+    </script>
+  </body>
+</html>
