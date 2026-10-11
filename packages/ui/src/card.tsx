@@ -6,6 +6,9 @@ import { type CardTheme, DEFAULT_THEME, rarityColor, themeStyle } from "./theme"
 import type { CardFaceInfo, GlyphCard } from "./types";
 import { DEFAULT_RARITIES, type RarityTier, tierOf } from "@react-cards-opening/core";
 
+/** Holds a row open when it has nothing to say, so every card's rows line up. */
+const NBSP = "\u00A0";
+
 /**
  * The rows of the ready-made face: a glyph in the room that is left, then the name, the rarity as a word, a line of
  * text and a small note. Each row has the class `rco-line`, which is what rises in when a card turns over. Give your
@@ -31,9 +34,9 @@ export function CardContent({
     <>
       <div className="rco-line rco-card-art">{art ? <PixelGlyph art={art} colour={tone} cell={14} /> : null}</div>
       <p className="rco-line rco-card-name">{name}</p>
-      <p className="rco-line rco-card-rarity">{rarity ?? " "}</p>
+      <p className="rco-line rco-card-rarity">{rarity ?? NBSP}</p>
       <p className="rco-line rco-card-text">{line}</p>
-      <p className="rco-line rco-card-note">{note ?? " "}</p>
+      <p className="rco-line rco-card-note">{note ?? NBSP}</p>
     </>
   );
 }

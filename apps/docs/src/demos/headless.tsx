@@ -12,6 +12,9 @@ import {
 } from "@react-cards-opening/core";
 import { type CardTheme, rarityColor, themeStyle } from "@react-cards-opening/ui";
 
+/** A space that holds a line open while there is no card to name. */
+const NBSP = "\u00A0";
+
 /*
  * A reveal with none of the ui package's components: the rules from `core`, a `div`, and CSS transitions keyed off
  * the phase. The effect below is all a renderer owes the opening: say which phase the card is in, and be ready to
@@ -70,17 +73,18 @@ export function HeadlessDemo({ theme }: { theme: CardTheme }) {
         <button
           type="button"
           className="d-headless-card"
-          data-phase={phase}
-          data-up={faceUp ? "" : undefined}
           disabled={!run}
           onClick={hunt.pressCard}
           aria-label={faceUp ? "Keep this card" : "Turn the card over"}
         >
-          <span className="d-headless-back">?</span>
-          <span className="d-headless-face">
-            <strong>{current?.name ?? " "}</strong>
-            <em>{current ? tierOf(DEFAULT_RARITIES, current.rarity).label : " "}</em>
-            <small>{current?.line}</small>
+          {/* The turning happens one level in: a button flattens what is inside it, so it cannot hold two sides. */}
+          <span className="d-headless-turn" data-phase={phase} data-up={faceUp ? "" : undefined}>
+            <span className="d-headless-back">?</span>
+            <span className="d-headless-face">
+              <strong>{current?.name ?? NBSP}</strong>
+              <em>{current ? tierOf(DEFAULT_RARITIES, current.rarity).label : NBSP}</em>
+              <small>{current?.line}</small>
+            </span>
           </span>
         </button>
         <p className="d-headless-phase" aria-live="polite">
