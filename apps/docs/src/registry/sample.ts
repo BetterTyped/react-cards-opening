@@ -7,7 +7,7 @@ import { GLYPHS, type GlyphCard } from "@react-cards-opening/ui";
  */
 
 export interface SampleCard extends GlyphCard {
-  rarity: "common" | "rare" | "epic" | "legendary";
+  rarity: "common" | "uncommon" | "rare" | "epic" | "legendary" | "mythic";
   line: string;
   art: (typeof GLYPHS)[keyof typeof GLYPHS];
 }
@@ -30,14 +30,14 @@ export const SAMPLE_CARDS: readonly SampleCard[] = [
   {
     id: "window-plant",
     name: "Window Plant",
-    rarity: "common",
+    rarity: "uncommon",
     line: "Grows toward whatever you were about to do next.",
     art: GLYPHS.plant,
   },
   {
     id: "night-owl",
     name: "Night Owl",
-    rarity: "rare",
+    rarity: "uncommon",
     line: "Sees everything you shipped after midnight.",
     art: GLYPHS.owl,
   },
@@ -72,7 +72,7 @@ export const SAMPLE_CARDS: readonly SampleCard[] = [
   {
     id: "ash-phoenix",
     name: "Ash Phoenix",
-    rarity: "legendary",
+    rarity: "mythic",
     line: "Burns down once a century and starts again from the first line.",
     art: GLYPHS.phoenix,
   },
@@ -87,21 +87,23 @@ export const SAMPLE_CARDS: readonly SampleCard[] = [
 
 const byId = (id: string) => SAMPLE_CARDS.find((card) => card.id === id) as SampleCard;
 
-/** One card of each tier, quietest first: what the "four tiers" shelf turns over. */
+/** One card of each tier, quietest first: what the "six tiers" shelf turns over. */
 export const TIER_CARDS: readonly SampleCard[] = [
   byId("paper-duck"),
-  byId("night-owl"),
+  byId("window-plant"),
+  byId("lantern-fox"),
   byId("storm-bolt"),
+  byId("vault-dragon"),
   byId("ash-phoenix"),
 ];
 
-/** A deal of five, the way a hunt would hand them out: mostly quiet, one of each loud tier. */
+/** A deal of five, the way a lucky one would go: one quiet card, and it climbs from there to a mythic. */
 export const HUNT_DEAL: readonly SampleCard[] = [
   byId("moss-hedgehog"),
-  byId("lantern-fox"),
-  byId("ember-cat"),
+  byId("night-owl"),
   byId("tide-octopus"),
-  byId("vault-dragon"),
+  byId("ember-cat"),
+  byId("ash-phoenix"),
 ];
 
 /** The first card of a tier in the set. */

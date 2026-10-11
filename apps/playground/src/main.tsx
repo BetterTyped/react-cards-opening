@@ -4,7 +4,7 @@ import { gsap } from "gsap";
 import { StrictMode, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-import { cards, describeDay, found, hero, lead, levels, theme } from "./sample";
+import { cards, describeDay, everyCard, found, hero, lead, levels, theme } from "./sample";
 // oxlint-disable-next-line import/no-unassigned-import -- the page around the piece
 import "./page.css";
 import {
@@ -25,12 +25,14 @@ import {
 const params = new URLSearchParams(window.location.search);
 const view = params.get("view") ?? "hunt";
 const set = params.get("effects");
-const plan: EffectPlan | undefined =
-  set && set in EFFECT_SETS ? EFFECT_SETS[set as keyof typeof EFFECT_SETS] : undefined;
+// ?effects=none is the card's own show and nothing more; a set's name is that set; nothing is the signature shows.
+let plan: EffectPlan | false | undefined;
+if (set === "none") plan = false;
+else if (set && set in EFFECT_SETS) plan = EFFECT_SETS[set as keyof typeof EFFECT_SETS];
 
 /*
  * One piece on a bare page, set up from the address bar (see sample.ts): ?view=hunt (the default), spin, case,
- * pack or fx, and ?effects=mythic for a plan of extra effects. It is where the library is worked on, and what the
+ * pack or fx, and ?effects=storm for a set of effects (none for the card's own show alone). It is where the library is worked on, and what the
  * picture test in e2e/ plays frame by frame.
  */
 function Page() {
@@ -63,7 +65,7 @@ function Page() {
 function Effects() {
   const layer = useRef<EffectLayerHandle>(null);
   const card = useRef<HTMLDivElement>(null);
-  const shown = cards.find((one) => one.rarity === (params.get("tier") ?? "legendary")) ?? cards[0];
+  const shown = everyCard.find((one) => one.rarity === (params.get("tier") ?? "legendary")) ?? cards[0];
   const names = (params.get("fx") ?? "sparks").split(",").filter((name): name is EffectName => isEffectName(name));
   if (!shown) return null;
   return (

@@ -59,7 +59,7 @@ describe("Card", () => {
 
   it("opens a card of an unknown tier quietly, in the muted colour", () => {
     const theme = themeOf();
-    render(<Card card={{ ...DRAGON, rarity: "mythic" }} theme={theme} />);
+    render(<Card card={{ ...DRAGON, rarity: "relic" }} theme={theme} />);
 
     expect(document.querySelector(".rco-card")).toHaveAttribute("data-effect", "quiet");
     expect(document.querySelector<HTMLElement>(".rco-card")?.style.getPropertyValue("--rco-tone")).toBe(theme.muted);

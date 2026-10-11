@@ -21,7 +21,9 @@ const PHONE = { width: 390, height: 800 };
 
 async function start(page: Page, query: string) {
   await freeze(page);
-  await open(page, `/?${query}`);
+  // The reveal on its own: no tier's show on top. This is the motion that came from upstream (see UPSTREAM.md).
+  // The shows are pictured in openers.spec.ts.
+  await open(page, `/?effects=none&${query}`);
 }
 
 async function press(page: Page, name: string | RegExp) {

@@ -4,7 +4,7 @@ import { type CSSProperties, type ReactNode, useRef, useState } from "react";
 import { Card } from "./card";
 import { CardOpening } from "./card-opening";
 import { type CardPackClassNames, cn } from "./class-names";
-import { clearEffects, type EffectPlan, effectsFor, playEffects } from "./effects";
+import { clearEffects, type EffectPlan, effectsFor, playSteps, SIGNATURE_EFFECTS } from "./effects";
 import { GLYPHS, type PixelArt } from "./glyphs";
 import { AgainIcon } from "./icons";
 import { CARD_PACK_LABELS, type CardPackLabels, type PackState } from "./labels";
@@ -108,8 +108,12 @@ export interface CardPackProps<C extends GlyphCard> {
   renderFace?: (card: C, info: CardFaceInfo) => ReactNode;
   renderBack?: (card: C) => ReactNode;
   readingOf?: (card: C, info: CardFaceInfo) => readonly string[];
-  /** More to play as a card turns over: which effects each tier gets. One of `EFFECT_SETS`, or your own plan. */
-  effects?: EffectPlan;
+  /**
+   * What each tier plays on top of the card's own show. Left out, every tier gets its signature show
+   * (`SIGNATURE_EFFECTS`). Hand over one of `EFFECT_SETS` or a plan of your own, or `false` for the card's own
+   * show and nothing more.
+   */
+  effects?: EffectPlan | false;
   className?: string;
   /** A class of your own for each part of the pack, and of every card on its table. */
   classNames?: CardPackClassNames;
@@ -135,7 +139,7 @@ export function CardPack<C extends GlyphCard>({
   renderFace,
   renderBack,
   readingOf,
-  effects,
+  effects = SIGNATURE_EFFECTS,
   className,
   classNames: names = NONE,
   style,
@@ -262,15 +266,17 @@ export function CardPack<C extends GlyphCard>({
     );
     if (!root || reduced) return;
     const layer = root.querySelector<HTMLElement>(".rco-fx-layer");
-    const extra = effectsFor(effects, tierOf(rarities, card.rarity));
-    if (layer && extra.length > 0) {
-      playEffects(layer, extra, {
+    const steps = effectsFor(effects, tierOf(rarities, card.rarity));
+    if (layer && steps.length > 0) {
+      const where = {
         at: seat,
         tone: rarityColor(theme, card.rarity),
-        accent: theme.levels[4],
         subject: root.querySelector<HTMLElement>(".rco-pack-table"),
-        delay: 0.18,
-      });
+      };
+      // A card on the table turns the moment it is pressed: there is no hum to wait through. What a tier winds up
+      // with plays at the press, and the rest as the face comes round.
+      playSteps(layer, steps, { ...where, moment: "hum" });
+      playSteps(layer, steps, { ...where, moment: "turn", delay: 0.18 });
     }
     if (plan.jolt) {
       gsap.to(root.querySelector(".rco-pack-table"), {

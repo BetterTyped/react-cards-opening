@@ -7,7 +7,7 @@ import { DEFAULT_RARITIES } from "@react-cards-opening/core";
 import { rarityColor } from "@react-cards-opening/ui";
 
 /**
- * The first thing on the site: one card, face down, and the four tiers to deal it from. Pressing the card is the
+ * The first thing on the site: one card, face down, and the six tiers to deal it from. Pressing the card is the
  * whole pitch, so nothing else on the stage asks for attention.
  */
 export function HeroDeal() {

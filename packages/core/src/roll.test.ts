@@ -11,8 +11,8 @@ describe("chances", () => {
   it("shares a draw by tier weight across every card in the pool", () => {
     const odds = chances(pool({ common: 1, legendary: 1 }));
 
-    expect(odds.get("common-0")).toBeCloseTo(55 / 59);
-    expect(odds.get("legendary-0")).toBeCloseTo(4 / 59);
+    expect(odds.get("common-0")).toBeCloseTo(45 / 49);
+    expect(odds.get("legendary-0")).toBeCloseTo(4 / 49);
   });
 
   it("adds up to one", () => {
@@ -56,16 +56,18 @@ describe("rollCards", () => {
   });
 
   it("deals legendaries far less often than commons", () => {
-    const even = pool({ common: 1, rare: 1, epic: 1, legendary: 1 });
-    const first: Record<string, number> = { common: 0, rare: 0, epic: 0, legendary: 0 };
+    const even = pool({ common: 1, uncommon: 1, rare: 1, epic: 1, legendary: 1, mythic: 1 });
+    const first: Record<string, number> = { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 0, mythic: 0 };
     for (let round = 0; round < 4000; round += 1) {
       first[rollCards({ pool: even, count: 1, seed: `round-${round}` })[0].rarity] += 1;
     }
 
-    expect(first.common / 4000).toBeCloseTo(0.55, 1);
-    expect(first.rare / 4000).toBeCloseTo(0.28, 1);
+    expect(first.common / 4000).toBeCloseTo(0.45, 1);
+    expect(first.uncommon / 4000).toBeCloseTo(0.27, 1);
+    expect(first.rare / 4000).toBeCloseTo(0.15, 1);
     expect(first.legendary / 4000).toBeLessThan(0.07);
-    expect(first.legendary).toBeGreaterThan(0);
+    expect(first.legendary).toBeGreaterThan(first.mythic);
+    expect(first.mythic).toBeGreaterThan(0);
   });
 
   it("follows a custom tier list and leaves weightless tiers out", () => {
@@ -82,7 +84,22 @@ describe("rollCards", () => {
 
 describe("tierOf", () => {
   it("opens a card with an unknown tier quietly instead of throwing", () => {
-    expect(tierOf(DEFAULT_RARITIES, "mythic")).toEqual({ id: "mythic", label: "mythic", weight: 0, effect: "quiet" });
+    expect(tierOf(DEFAULT_RARITIES, "relic")).toEqual({ id: "relic", label: "relic", weight: 0, effect: "quiet" });
+  });
+
+  it("ships six tiers whose weights add up to a hundred, each rarer than the one before", () => {
+    const weights = DEFAULT_RARITIES.map((tier) => tier.weight);
+
+    expect(DEFAULT_RARITIES.map((tier) => tier.id)).toEqual([
+      "common",
+      "uncommon",
+      "rare",
+      "epic",
+      "legendary",
+      "mythic",
+    ]);
+    expect(weights.reduce((sum, weight) => sum + weight, 0)).toBe(100);
+    expect(weights).toEqual(weights.toSorted((a, b) => b - a));
   });
 });
 

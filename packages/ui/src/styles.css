@@ -643,10 +643,14 @@
   top: 50%;
   left: 50%;
   display: block;
-  width: 200%;
-  height: 200%;
-  margin-top: -100%;
-  margin-left: -100%;
+  /*
+   * A square wide enough to cover the border at every angle, centred on the card. It is placed with `translate`,
+   * which is measured against the square itself: a percentage margin is measured against the card's width, and on
+   * a card taller than it is wide that put the square too low and let its corners swing out of cover as it turned.
+   */
+  width: 260%;
+  aspect-ratio: 1 / 1;
+  translate: -50% -50%;
   background: conic-gradient(
     from 0deg,
     var(--rco-tone),
@@ -1843,6 +1847,65 @@
     0 0 0 calc(0.012 * var(--rco-fx-u)) color-mix(in oklch, var(--rco-tone) 55%, white),
     0 0 calc(0.1 * var(--rco-fx-u)) calc(0.045 * var(--rco-fx-u)) var(--rco-tone),
     0 0 calc(0.5 * var(--rco-fx-u)) calc(0.16 * var(--rco-fx-u)) color-mix(in oklch, var(--rco-tone) 55%, transparent);
+}
+
+.rco-fx-frost {
+  overflow: visible;
+  width: calc(3.3 * var(--rco-fx-u));
+  aspect-ratio: 1 / 1;
+  filter: drop-shadow(0 0 calc(0.03 * var(--rco-fx-u)) var(--rco-tone))
+    drop-shadow(0 0 calc(0.1 * var(--rco-fx-u)) color-mix(in oklch, var(--rco-tone) 60%, transparent));
+}
+
+.rco-fx-frost-line {
+  fill: none;
+  stroke: color-mix(in oklch, var(--rco-tone) 35%, white);
+  stroke-width: max(2px, calc(0.014 * var(--rco-fx-u)));
+  stroke-linecap: round;
+}
+
+.rco-fx-sigil {
+  overflow: visible;
+  width: calc(3 * var(--rco-fx-u));
+  aspect-ratio: 1 / 1;
+  filter: drop-shadow(0 0 calc(0.02 * var(--rco-fx-u)) var(--rco-tone))
+    drop-shadow(0 0 calc(0.09 * var(--rco-fx-u)) color-mix(in oklch, var(--rco-tone) 70%, transparent));
+}
+
+/* The second seal, inside the first. */
+.rco-fx-sigil-inner {
+  width: calc(2.06 * var(--rco-fx-u));
+}
+
+.rco-fx-sigil-line {
+  fill: none;
+  stroke: color-mix(in oklch, var(--rco-tone) 55%, white);
+  stroke-width: max(1.5px, calc(0.009 * var(--rco-fx-u)));
+  stroke-linejoin: round;
+}
+
+.rco-fx-sigil-dash {
+  fill: none;
+  stroke: color-mix(in oklch, var(--rco-tone) 80%, white);
+  stroke-width: max(1.5px, calc(0.008 * var(--rco-fx-u)));
+  stroke-dasharray: 2 5;
+  stroke-linecap: round;
+}
+
+.rco-fx-cracks {
+  overflow: visible;
+  width: calc(4.2 * var(--rco-fx-u));
+  aspect-ratio: 1 / 1;
+  filter: drop-shadow(0 0 calc(0.02 * var(--rco-fx-u)) var(--rco-tone))
+    drop-shadow(0 0 calc(0.08 * var(--rco-fx-u)) var(--rco-tone));
+}
+
+.rco-fx-cracks-line {
+  fill: none;
+  stroke: color-mix(in oklch, var(--rco-tone) 30%, white);
+  stroke-width: max(2px, calc(0.013 * var(--rco-fx-u)));
+  stroke-linecap: round;
+  stroke-linejoin: bevel;
 }
 
 /* --- waves --- */

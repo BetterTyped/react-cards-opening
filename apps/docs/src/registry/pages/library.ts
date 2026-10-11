@@ -1,5 +1,6 @@
 import type { Block, DocPage } from "../../content/types";
-import { EFFECT_KINDS, EFFECT_LIST, EFFECT_SETS } from "@react-cards-opening/ui";
+import { DEFAULT_RARITIES } from "@react-cards-opening/core";
+import { EFFECT_KINDS, EFFECT_LIST, EFFECT_SETS, type EffectStep, SIGNATURE_EFFECTS } from "@react-cards-opening/ui";
 
 const UPDATED = "2026-10-11";
 
@@ -168,6 +169,26 @@ const triangle: Effect = {
 
 const names = (list: readonly string[]) => list.map((name) => `\`${name}\``).join(", ");
 
+/** A tier's steps as people read them: the wind-up, then what plays as the card turns, later ones with their delay. */
+function showRow(tier: string, label: string): readonly string[] {
+  const steps: readonly EffectStep[] = SIGNATURE_EFFECTS[tier as keyof typeof SIGNATURE_EFFECTS] ?? [];
+  const cues = steps.map((step) =>
+    typeof step === "object" && "effect" in step
+      ? {
+          name: String(typeof step.effect === "string" ? step.effect : step.effect.name),
+          on: step.on ?? "turn",
+          delay: step.delay ?? 0,
+        }
+      : { name: String(typeof step === "string" ? step : step.name), on: "turn", delay: 0 },
+  );
+  const list = (moment: string) =>
+    cues
+      .filter((cue) => cue.on === moment)
+      .map((cue) => (cue.delay > 0 ? `\`${cue.name}\` +${cue.delay}s` : `\`${cue.name}\``))
+      .join(", ") || "nothing";
+  return [label, list("hum"), list("turn")];
+}
+
 const plans: DocPage = {
   path: "/docs/effects/plans/",
   section: "effects",
@@ -175,13 +196,23 @@ const plans: DocPage = {
   tagline: "which tier gets which effects",
   nav: "Effect plans",
   description:
-    "Give every opener an effects plan: which of the library's effects each rarity tier plays as its card turns over. Six ready-made sets ship, or write your own.",
-  lead: "Every opener takes `effects`: a plan that says which effects each tier plays as its card turns over, on top of the card's own show. Six plans ship, each a mood. A plan is a plain object, so writing your own is a few lines.",
+    "Every rarity tier plays a show of its own as its card turns over, from a common's puff of dust to a mythic's cataclysm. See what is in each and change any of it.",
+  lead: "Every opener plays a show for each tier, on top of the card's own reveal: a wind-up while the card waits face down, and the hit as it turns. Out of the box that is `SIGNATURE_EFFECTS`, a different show for each of the six tiers. `effects` swaps it for one of six ready-made sets, a plan of your own, or nothing.",
   blocks: [
+    { kind: "preview", demo: { type: "tiers" }, caption: "The six signature shows. Open them left to right." },
+    { kind: "h2", text: "The signature shows" },
     {
-      kind: "preview",
-      demo: { type: "effect-sets" },
-      caption: "The same pack under each plan. Turn the legendary last.",
+      kind: "p",
+      text: "Each tier is built from different effects, so a card is known by how it arrives and not only by its colour. No two tiers share more than a couple of effects, and the shows get longer as the tiers get rarer.",
+    },
+    {
+      kind: "table",
+      head: ["Tier", "While it waits face down", "As it turns over"],
+      rows: DEFAULT_RARITIES.map((tier) => showRow(tier.id, tier.label)),
+    },
+    {
+      kind: "p",
+      text: "A tier of your own that is not one of the six gets the show of what it does: a `quiet` tier a common's, a `loud` one an epic's, and so on up.",
     },
     { kind: "h2", text: "Usage" },
     {
@@ -189,12 +220,20 @@ const plans: DocPage = {
       language: "tsx",
       code: `import { CardPack, EFFECT_SETS } from "@react-cards-opening/ui";
 
-<CardPack cards={cards} opened={opened} onOpen={open} effects={EFFECT_SETS.storm} />;`,
+// The signature shows: nothing to pass.
+<CardPack cards={cards} opened={opened} onOpen={open} />;
+
+// One of the ready-made sets instead.
+<CardPack cards={cards} opened={opened} onOpen={open} effects={EFFECT_SETS.storm} />;
+
+// The card's own reveal and nothing more.
+<CardPack cards={cards} opened={opened} onOpen={open} effects={false} />;`,
     },
     {
       kind: "p",
-      text: "`CardPack`, `CardSpin`, `CardCase`, `CardHunt` and `CardOpening` all take it. Left out, nothing is added: the reveal plays exactly its own [thirteen effects](/docs/effects/).",
+      text: "`CardPack`, `CardSpin`, `CardCase`, `CardHunt` and `CardOpening` all take it. With `false`, the reveal plays exactly its own [thirteen effects](/docs/effects/).",
     },
+    { kind: "preview", demo: { type: "effect-sets" }, caption: "The same pack under each ready-made set." },
     { kind: "h2", text: "The six sets" },
     {
       kind: "table",
@@ -209,19 +248,29 @@ const plans: DocPage = {
     { kind: "h2", text: "A plan of your own" },
     {
       kind: "p",
-      text: "A key is either what a tier does (`quiet`, `loud`, `legendary`, from its `effect` in your [tiers](/docs/rarity-tiers/)) or a tier's own id. An id wins when both are there, so one plan fits a game with three tiers or seven, and one tier can still be singled out.",
+      text: "A key is either a tier's own id or what a tier does (`quiet`, `loud`, `legendary`, `mythic`, from its `effect` in your [tiers](/docs/rarity-tiers/)). An id wins when both are there, so one plan fits a game with three tiers or seven, and one tier can still be singled out. A plan with no `mythic` key gives a mythic its `legendary` steps.",
+    },
+    {
+      kind: "p",
+      text: 'A step is an effect\'s name, which plays as the card turns, or a cue that says when: `on: "hum"` plays while the card waits face down, and `delay` holds it back by that many seconds.',
     },
     {
       kind: "code",
       language: "tsx",
-      code: `import type { EffectPlan } from "@react-cards-opening/ui";
+      code: `import { SIGNATURE_EFFECTS, type EffectPlan } from "@react-cards-opening/ui";
 
 const plan: EffectPlan = {
-  quiet: ["sparks"],
-  loud: ["shockwave", "sparks", "punch"],
-  legendary: ["flash", "nova", "pillar", "embers", "quake"],
-  // This one tier, whatever it does:
-  mythic: ["negative", "lightning", "heatwave", "fireworks"],
+  // Keep the signature shows, and change two tiers.
+  ...SIGNATURE_EFFECTS,
+  rare: ["shockwave", "sparks", { effect: "glitter", delay: 0.3 }],
+  mythic: [
+    { effect: "implosion", on: "hum" },
+    "negative",
+    "nova",
+    "quake",
+    { effect: "fireworks", delay: 0.2 },
+    { effect: "flames", delay: 0.4 },
+  ],
 };
 
 <CardHunt cards={cards} opened={opened} onOpen={open} levels={levels} effects={plan} />;`,
@@ -234,9 +283,9 @@ const plan: EffectPlan = {
     {
       kind: "list",
       items: [
-        "**As the card turns over**, with the card's own burst: 0.2 seconds into the flip in the reveal, and on the press in a pack.",
+        "**In two moments.** `hum` steps start as the card stops in the middle of the screen, face down. `turn` steps start with the card's own burst, 0.2 seconds into the flip. A card in a pack turns the moment it is pressed, so both play at the press.",
         "**Behind the card**, on a layer of its own (`.rco-fx-layer`, the `effects` key of `classNames`), centred on the card and sized to it.",
-        "**In the tier's colour.** The theme's accent is the second colour, for effects that use two.",
+        "**In the tier's colour**, with a lighter tint of it as the second colour for effects that use two.",
         "**Never under reduced motion.** The card still turns, and nothing else moves.",
       ],
     },

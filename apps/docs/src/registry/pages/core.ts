@@ -272,7 +272,7 @@ const hand = rollCards({ pool: allCards, count: 5, seed: \`\${userId}:2026-10-11
       rows: [
         ["`pool`", "`readonly C[]`", "The cards that can come up."],
         ["`count`", "`number`", "How many to deal. Never more than the pool holds."],
-        ["`rarities?`", "`readonly RarityTier[]`", "Your tiers. The four defaults otherwise."],
+        ["`rarities?`", "`readonly RarityTier[]`", "Your tiers. The six defaults otherwise."],
         ["`seed?`", "`string`", "Leave it out for a roll that differs every time."],
       ],
     },

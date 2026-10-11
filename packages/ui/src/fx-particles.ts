@@ -18,7 +18,8 @@ export type ParticleShape =
   | "ring"
   | "petal"
   | "puff"
-  | "coin";
+  | "coin"
+  | "flame";
 
 /** A particle that circles a point instead of flying straight. */
 export interface Polar {
@@ -147,6 +148,17 @@ function draw(ctx: CanvasRenderingContext2D, p: Particle, add: boolean): void {
   const x = p.snap ? Math.round(p.x / p.snap) * p.snap : p.x;
   const y = p.snap ? Math.round(p.y / p.snap) * p.snap : p.y;
   const turn = p.flip ? Math.cos(p.age * p.flip * TAU + p.phase) : 1;
+
+  if (p.shape === "flame") {
+    // A tongue of fire is light with no hard middle: where many of them cross, they add up to white heat.
+    const sprite = glowSprite(p.colour);
+    if (!sprite) return;
+    const reach = size * 1.7;
+    ctx.globalCompositeOperation = add ? "lighter" : "source-over";
+    ctx.globalAlpha = Math.min(1, alpha);
+    ctx.drawImage(sprite, x - reach, y - reach * 1.25, reach * 2, reach * 2.5);
+    return;
+  }
 
   if (p.glow > 0 || p.shape === "mote" || p.shape === "puff") {
     const sprite = glowSprite(p.colour);

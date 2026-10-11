@@ -114,6 +114,62 @@ test.describe("a case", () => {
   });
 });
 
+test.describe("the six tiers", () => {
+  test("each plays a show of its own as its card turns, and none of them looks like another", async ({ page }) => {
+    // Arrange
+    test.setTimeout(120_000);
+    const errors = watchErrors(page);
+    await page.goto(at("/docs/rarity-tiers/"));
+    await hydrated(page, ".d-place");
+    const places = page.locator(".d-preview").first().locator(".d-place");
+    await expect(places).toHaveCount(6);
+    const shows: string[][] = [];
+
+    // Act: open each, turn it early with a press, and note what is on the stage behind it.
+    for (let index = 0; index < 6; index += 1) {
+      // oxlint-disable-next-line no-await-in-loop -- one card after another, as a visitor would
+      await places.nth(index).click();
+      const card = page.getByRole("button", { name: "Turn the card over, then keep it" });
+      // oxlint-disable-next-line no-await-in-loop
+      await card.click();
+      const layer = page.locator(".rco-stage .rco-fx-layer");
+      // oxlint-disable-next-line no-await-in-loop
+      await expect(layer.locator(".rco-fx-play").first()).toBeAttached();
+      // oxlint-disable-next-line no-await-in-loop
+      await page.waitForTimeout(650);
+      // oxlint-disable-next-line no-await-in-loop
+      const parts = await layer
+        .locator("[class*='rco-fx-']")
+        .evaluateAll((all) => [
+          ...new Set(
+            all
+              .flatMap((part) => Array.from(part.classList))
+              .filter((name) => /^rco-fx-(?!play|cover|canvas)/.test(name)),
+          ),
+        ]);
+      shows.push(parts);
+      // A second press sends it home, and the stage is cleared for the next.
+      // oxlint-disable-next-line no-await-in-loop
+      await card.click();
+      // oxlint-disable-next-line no-await-in-loop
+      await expect(page.locator(".rco-backdrop")).toHaveCSS("pointer-events", "none");
+    }
+
+    // Assert: the last four tiers each put parts on the stage that no other tier does. (The first two are made
+    // mostly of particles, which are on the canvas.)
+    const own = (index: number) =>
+      (shows[index] ?? []).filter((name) => shows.every((other, tier) => tier === index || !other.includes(name)));
+    expect(own(2)).toContain("rco-fx-frost");
+    expect(own(3)).toContain("rco-fx-sigil");
+    expect(own(4)).toContain("rco-fx-pillar");
+    expect(own(5)).toContain("rco-fx-cracks");
+    expect(own(5)).toContain("rco-fx-nova");
+    expect(shows[0]).toContain("rco-fx-slam");
+    expect(shows[1]).toContain("rco-fx-ripples");
+    expect(errors).toEqual([]);
+  });
+});
+
 test.describe("the effects library", () => {
   test("has a button for every effect, and each one plays and cleans up", async ({ page }) => {
     // Arrange
@@ -161,7 +217,7 @@ test.describe("the effects library", () => {
     expect(lit).toBeGreaterThan(200);
   });
 
-  test("plays a plan on a pack as its legendary turns", async ({ page }) => {
+  test("plays a set on a pack as its mythic turns", async ({ page }) => {
     // Arrange
     const errors = watchErrors(page);
     await page.goto(at("/docs/effects/plans/"));
@@ -171,9 +227,9 @@ test.describe("the effects library", () => {
     await expect(pack.locator(".rco-pack-deal").last()).toHaveCSS("opacity", "1");
 
     // Act
-    await pack.locator('.rco-pack-seat[data-effect="legendary"] .rco-pack-press').click();
+    await pack.locator('.rco-pack-seat[data-effect="mythic"] .rco-pack-press').click();
 
-    // Assert: the mythic plan's legendary show, on the pack's own layer.
+    // Assert: the radiant set has no steps for a mythic, so it gets the set's loudest, on the pack's own layer.
     await expect(pack.locator(".rco-fx-layer .rco-fx-nova")).toBeAttached();
     await expect(pack.locator(".rco-fx-layer .rco-fx-pillar")).toBeAttached();
     await expect(pack.locator(".rco-fx-play")).toHaveCount(0, { timeout: 9_000 });

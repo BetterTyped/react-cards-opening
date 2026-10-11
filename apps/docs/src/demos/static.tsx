@@ -37,7 +37,7 @@ export function GlyphsDemo({ theme }: { theme: CardTheme }) {
   );
 }
 
-/** Every theme as a tile: its ramp, its four rarity colours, its name. Picking one changes every preview. */
+/** Every theme as a tile: its ramp, its rarity colours, its name. Picking one changes every preview. */
 export function ThemesDemo({ theme }: { theme: CardTheme }) {
   const { look, setLook } = useLook();
   return (

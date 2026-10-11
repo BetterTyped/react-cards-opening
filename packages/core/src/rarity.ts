@@ -2,7 +2,10 @@
  * How loud a tier's show is. Colour is not part of it: two quiet tiers look alike except for their colour, which is
  * what keeps the loud ones special.
  */
-export type RarityEffect = "quiet" | "loud" | "legendary";
+export type RarityEffect = "quiet" | "loud" | "legendary" | "mythic";
+
+/** Whether a tier gets the full show: the flash, the shockwaves, the foil border. Legendary and mythic do. */
+export const isTopEffect = (effect: RarityEffect): boolean => effect === "legendary" || effect === "mythic";
 
 export interface RarityTier {
   id: string;
@@ -13,12 +16,18 @@ export interface RarityTier {
   effect: RarityEffect;
 }
 
-/** The four tiers most card games ship with. A legendary comes up about once in twenty-five. */
+/**
+ * The six tiers loot is sorted into almost everywhere: common, uncommon, rare, epic, legendary and mythic. The
+ * weights add up to a hundred, so each is its tier's share of a deal with one card of every tier: a legendary is
+ * four cards in a hundred, a mythic is one.
+ */
 export const DEFAULT_RARITIES = [
-  { id: "common", label: "Common", weight: 55, effect: "quiet" },
-  { id: "rare", label: "Rare", weight: 28, effect: "quiet" },
-  { id: "epic", label: "Epic", weight: 13, effect: "loud" },
+  { id: "common", label: "Common", weight: 45, effect: "quiet" },
+  { id: "uncommon", label: "Uncommon", weight: 27, effect: "quiet" },
+  { id: "rare", label: "Rare", weight: 15, effect: "quiet" },
+  { id: "epic", label: "Epic", weight: 8, effect: "loud" },
   { id: "legendary", label: "Legendary", weight: 4, effect: "legendary" },
+  { id: "mythic", label: "Mythic", weight: 1, effect: "mythic" },
 ] as const satisfies readonly RarityTier[];
 
 export type DefaultRarity = (typeof DEFAULT_RARITIES)[number]["id"];

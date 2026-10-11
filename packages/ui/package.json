@@ -1,7 +1,7 @@
 {
   "name": "@react-cards-opening/ui",
   "version": "1.0.0",
-  "description": "Card opening components for React: a pack that bursts, a reel that spins, a case that opens and a scan that hunts, one reveal for all of them, and 59 effects from sparks to shockwaves. GSAP inside, one stylesheet, no CSS framework.",
+  "description": "Card opening components for React: a pack that bursts, a reel that spins, a case that opens and a scan that hunts, one reveal for all of them, and 64 effects from sparks to shockwaves. GSAP inside, one stylesheet, no CSS framework.",
   "license": "MIT",
   "type": "module",
   "sideEffects": [

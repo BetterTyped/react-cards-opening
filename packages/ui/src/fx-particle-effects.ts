@@ -622,4 +622,111 @@ export const PARTICLE_EFFECTS = [
       });
     },
   },
+  {
+    name: "leaves",
+    kind: "particles",
+    label: "Leaves",
+    about: "Leaves lifted off the card's edge by an updraft, turning over as they climb and drift apart.",
+    seconds: 2.8,
+    play: (stage, tl) => {
+      emit(stage, tl, {
+        count: 54,
+        shape: "petal",
+        colours: [stage.tone, tint(stage.tone, 0.35), shade(stage.tone, 0.3), tint(stage.tone, 0.65)],
+        from: around(stage, 0.86, 1.08),
+        angle: (_index, _count, random) => UP + between(-0.75, 0.75, random),
+        speed: [140, 420],
+        gravity: -90,
+        drag: 0.55,
+        life: [1.5, 2.6],
+        delay: [0, 0.55],
+        size: [9, 17],
+        spin: [-3, 3],
+        flip: [0.6, 1.6],
+        sway: [50, 120],
+        swayHz: [0.5, 1.1],
+        fadeIn: 0.08,
+        fadeOut: 0.3,
+      });
+    },
+  },
+  {
+    name: "flames",
+    kind: "particles",
+    label: "Flames",
+    about:
+      "The card burns: fire climbs its sides, closes over the top of it and tears off, with sparks riding the heat.",
+    seconds: 3,
+    play: (stage, tl) => {
+      const foot = 150 * stage.ratio;
+      // Where fire is born: mostly up the two sides, some along the top edge, a little under the foot.
+      const born = (_index: number, _count: number, random: () => number): readonly [number, number] => {
+        const pick = random();
+        if (pick < 0.14) return [between(-150, 150, random), foot + between(-4, 12, random)];
+        if (pick < 0.4) return [between(-150, 150, random), -foot + between(-14, 10, random)];
+        return [(random() < 0.5 ? -1 : 1) * between(138, 164, random), between(-foot, foot, random)];
+      };
+      // Fire leans in as it climbs, which is what closes a flame to a point.
+      const lean = (_index: number, _count: number, random: () => number) => UP + between(-0.28, 0.28, random);
+      // The body: wide tongues in the tier's colour that thin to nothing on the way up.
+      emit(stage, tl, {
+        count: 380,
+        shape: "flame",
+        colours: [stage.tone, stage.tone, shade(stage.tone, 0.15), tint(stage.tone, 0.2)],
+        from: born,
+        angle: lean,
+        speed: [220, 620],
+        gravity: -320,
+        drag: 0.45,
+        life: [0.45, 1],
+        delay: [0, 2.2],
+        size: [22, 46],
+        grow: 0.1,
+        alpha: [0.6, 0.95],
+        sway: [14, 50],
+        swayHz: [1.5, 3.5],
+        fadeIn: 0.1,
+        fadeOut: 0.5,
+      });
+      // The heart of it: smaller, hotter, and gone sooner.
+      emit(stage, tl, {
+        count: 190,
+        shape: "flame",
+        colours: [tint(stage.tone, 0.55), tint(stage.tone, 0.8)],
+        from: born,
+        angle: lean,
+        speed: [260, 680],
+        gravity: -320,
+        drag: 0.45,
+        life: [0.3, 0.65],
+        delay: [0, 2.2],
+        size: [9, 20],
+        grow: 0.1,
+        alpha: [0.6, 0.95],
+        sway: [10, 36],
+        swayHz: [2, 4],
+        fadeIn: 0.1,
+        fadeOut: 0.5,
+      });
+      // What tears off the top of it.
+      emit(stage, tl, {
+        at: 0.15,
+        count: 60,
+        shape: "square",
+        colours: [tint(stage.tone, 0.5), tint(stage.tone, 0.8)],
+        from: (_index, _count, random) => [between(-160, 160, random), between(-foot - 40, -foot * 0.3, random)],
+        angle: (_index, _count, random) => UP + between(-0.5, 0.5, random),
+        speed: [220, 640],
+        gravity: -140,
+        drag: 0.5,
+        life: [0.8, 1.7],
+        delay: [0, 2],
+        size: [2.5, 5.5],
+        spin: [-8, 8],
+        twinkle: [5, 10],
+        fadeOut: 0.5,
+        glow: 0.9,
+      });
+    },
+  },
 ] as const satisfies readonly Effect[];

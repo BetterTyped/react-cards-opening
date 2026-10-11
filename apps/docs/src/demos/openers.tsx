@@ -39,7 +39,7 @@ const SETS = Object.keys(EFFECT_SETS) as EffectSetId[];
 
 /** The same pack under each ready-made plan of effects. Picking a plan seals the pack again. */
 export function EffectSetsDemo({ theme }: { theme: CardTheme }) {
-  const [set, setSet] = useState<EffectSetId>("mythic");
+  const [set, setSet] = useState<EffectSetId>("radiant");
   return (
     <div className="d-fx">
       <div className="d-fx-chips" role="group" aria-label="Effect set">

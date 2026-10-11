@@ -1,7 +1,18 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
-import { customTheme, DEFAULT_THEME, isThemeId, rarityColor, THEME_LIST, themeOf, themeStyle } from "./theme";
+import {
+  customTheme,
+  DEFAULT_THEME,
+  isThemeId,
+  RARITY_ON_DARK,
+  RARITY_ON_LIGHT,
+  rarityColor,
+  THEME_LIST,
+  themeOf,
+  themeStyle,
+} from "./theme";
+import { DEFAULT_RARITIES } from "@react-cards-opening/core";
 
 describe("themes", () => {
   it("ships ten, each in dark and light", () => {
@@ -25,20 +36,30 @@ describe("themes", () => {
     expect(light.rarity.legendary).not.toBe(themeOf("grape", "dark").rarity.legendary);
   });
 
-  it("makes a whole theme from one colour, with gold for the top tier", () => {
+  it("makes a whole theme from one colour, and leaves rarity its six", () => {
     const theme = customTheme("#ff5a36", "dark");
 
     expect(theme.levels[4]).toBe("#ff5a36");
-    expect(theme.rarity.legendary).toBe("#f2cc60");
-    expect(new Set(Object.values(theme.rarity)).size).toBe(4);
+    expect(theme.rarity).toBe(RARITY_ON_DARK);
+    expect(customTheme("#ff5a36", "light").rarity).toBe(RARITY_ON_LIGHT);
   });
 
-  it("gives a gold accent its own light tint for legendary, so the two never blur", () => {
-    expect(customTheme("#f2b500", "dark").rarity.legendary).not.toBe("#f2cc60");
+  it("gives every default tier a colour of its own on every theme, in both modes", () => {
+    for (const { id } of THEME_LIST) {
+      for (const mode of ["dark", "light"] as const) {
+        const colours = DEFAULT_RARITIES.map((tier) => rarityColor(themeOf(id, mode), tier.id));
+
+        expect(new Set(colours).size, `${id} ${mode}`).toBe(DEFAULT_RARITIES.length);
+        expect(
+          colours.every((colour) => /^#[0-9a-f]{6}$/.test(colour)),
+          `${id} ${mode}`,
+        ).toBe(true);
+      }
+    }
   });
 
   it("dresses a tier it has no colour for in the muted tone", () => {
-    expect(rarityColor(DEFAULT_THEME, "mythic")).toBe(DEFAULT_THEME.muted);
+    expect(rarityColor(DEFAULT_THEME, "relic")).toBe(DEFAULT_THEME.muted);
   });
 
   it("hands the colours over as custom properties", () => {

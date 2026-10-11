@@ -108,7 +108,7 @@ test.describe("the rules on their own", () => {
     await demo.getByRole("button", { name: "Skip the show" }).click();
 
     // Assert
-    await expect(demo.locator(".d-headless-list li[data-open]")).toHaveCount(4);
+    await expect(demo.locator(".d-headless-list li[data-open]")).toHaveCount(6);
     await expect(demo.getByText("phase: idle")).toBeVisible();
   });
 });

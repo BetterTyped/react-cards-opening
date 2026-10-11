@@ -50,8 +50,12 @@ export interface CardHuntProps<C extends GlyphCard> {
   renderBack?: (card: C) => ReactNode;
   /** Every run of text on a face of your own, so the card stays up long enough to read. */
   readingOf?: (card: C, info: CardFaceInfo) => readonly string[];
-  /** More to play as a card turns over: which effects each tier gets. One of `EFFECT_SETS`, or your own plan. */
-  effects?: EffectPlan;
+  /**
+   * What each tier plays on top of the card's own show. Left out, every tier gets its signature show
+   * (`SIGNATURE_EFFECTS`). Hand over one of `EFFECT_SETS` or a plan of your own, or `false` for the card's own
+   * show and nothing more.
+   */
+  effects?: EffectPlan | false;
   className?: string;
   /** A class of your own for each part: the panel's, the grid's and the reveal's. */
   classNames?: CardHuntClassNames;

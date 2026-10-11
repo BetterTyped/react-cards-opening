@@ -12,7 +12,7 @@ export type Demo =
   | { type: "hunt"; only?: readonly string[]; hero?: boolean }
   /** One card of a tier, opened from a button and landing on a shelf. */
   | { type: "open"; tier: string }
-  /** Four buttons, one a tier, to open the same card each way. */
+  /** One card of every tier on a shelf, to open each its own way. */
   | { type: "tiers" }
   /** A card standing still, per tier. */
   | { type: "cards"; faceDown?: boolean }

@@ -76,8 +76,8 @@ function Home() {
           <span>effects, each with its own page and the numbers behind it</span>
         </p>
         <p>
-          <strong>3</strong>
-          <span>levels of show, for four tiers or as many as you have</span>
+          <strong>6</strong>
+          <span>tiers from common to mythic, each with a show of its own</span>
         </p>
         <p>
           <strong>10</strong>

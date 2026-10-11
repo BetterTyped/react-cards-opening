@@ -7,7 +7,14 @@ export {
   type OpeningRun,
   type OpeningState,
 } from "./opening";
-export { DEFAULT_RARITIES, tierOf, type DefaultRarity, type RarityEffect, type RarityTier } from "./rarity";
+export {
+  DEFAULT_RARITIES,
+  isTopEffect,
+  tierOf,
+  type DefaultRarity,
+  type RarityEffect,
+  type RarityTier,
+} from "./rarity";
 export { holdSeconds, readingSeconds, wordsToRead } from "./reading";
 export { prefersReducedMotion, usePrefersReducedMotion } from "./reduced-motion";
 export { createRng, type Rng } from "./rng";

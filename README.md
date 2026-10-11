@@ -58,19 +58,22 @@
 ## What it is
 
 react-cards-opening is the moment a card is opened, as a library. A card lifts out of wherever it was, flies to the
-middle of the screen face down, hums, turns over, stays as long as it takes to read, and lands where it belongs. How
-loud that is depends on how rare the card is: a common hops, an epic opens a wheel of rays, a legendary gets a foil
-border, a shine and the whole screen.
+middle of the screen face down, hums, turns over, stays as long as it takes to read, and lands where it belongs.
+
+How it arrives depends on how rare it is. Six tiers ship (common, uncommon, rare, epic, legendary, mythic) and each has
+a show of its own: a common is set down in a puff of dust, a rare arrives in ice, an epic over a turning sigil, a
+legendary in a pillar of light, and a mythic puts the lights out and arrives in an impact frame with the air cracking
+around it.
 
 There are four ways to get to that moment: a sealed **pack** that bursts and deals its cards face down, a **reel** that
 races under a marker and stops on your card, a **case** that opens and gives its cards up one by one, and a **hunt**
-that scans a grid for them. On top sits a library of 59 effects (particles, light, shockwaves, screen effects) to play
+that scans a grid for them. On top sits a library of 64 effects (particles, light, shockwaves, screen effects) to play
 on any of them, or on anything else.
 
 It was built for the year in review inside
 [Hype Stack](https://www.hype-stack.dev/wrapped?utm_source=react-cards-opening&utm_medium=referral&utm_campaign=readme),
-where it turns achievements into cards. This is that code with the product taken out, checked against the original pixel
-for pixel.
+where it turns achievements into cards. The reveal started there; the pack, the reel, the case, the six tiers and the
+effects grew here.
 
 <p align="center">
   <a href="https://bettertyped.github.io/react-cards-opening/">
@@ -151,7 +154,7 @@ Two packages, released together under one version number. A pair with the same v
 | Package                                                                                         | What it holds                                                                                                                                               |
 | ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`@react-cards-opening/core`](https://bettertyped.github.io/react-cards-opening/docs/core/)     | The rules without a look: the queue, a pack's stages, what each press means, rarity tiers, seeded rolls, opened-card storage. React is its only dependency. |
-| [`@react-cards-opening/ui`](https://bettertyped.github.io/react-cards-opening/docs/components/) | The look: the pack, the reel, the case and the hunt, the reveal they share, 59 effects, ten themes, one stylesheet. GSAP inside.                            |
+| [`@react-cards-opening/ui`](https://bettertyped.github.io/react-cards-opening/docs/components/) | The look: the pack, the reel, the case and the hunt, the reveal they share, 64 effects, ten themes, one stylesheet. GSAP inside.                            |
 
 ## What is in it
 
@@ -162,7 +165,7 @@ Two packages, released together under one version number. A pair with the same v
 | `CardCase`                         | A case that shakes, opens, and gives up its cards one after another onto a shelf                                                                   | [CardCase](https://bettertyped.github.io/react-cards-opening/docs/components/card-case/)       |
 | `CardHunt`                         | A grid with cards hidden in it, the scan that finds them, and the list of finds, in one component                                                  | [CardHunt](https://bettertyped.github.io/react-cards-opening/docs/components/card-hunt/)       |
 | `CardOpening`                      | The reveal they all end in. A card leaves an element you name, turns over in the middle of the screen and lands on another                         | [CardOpening](https://bettertyped.github.io/react-cards-opening/docs/components/card-opening/) |
-| 59 effects                         | Sparks, confetti, embers, fireworks, rays, lens flares, lightning, shockwaves, novas, screen shake, glitch and more. One name each, and they stack | [Effects library](https://bettertyped.github.io/react-cards-opening/docs/effects/library/)     |
+| 64 effects                         | Sparks, confetti, embers, fireworks, rays, lens flares, lightning, shockwaves, novas, screen shake, glitch and more. One name each, and they stack | [Effects library](https://bettertyped.github.io/react-cards-opening/docs/effects/library/)     |
 | `effects`                          | A plan on any opener: which tier plays which effects as its card turns. Six ready-made sets, or your own                                           | [Effect plans](https://bettertyped.github.io/react-cards-opening/docs/effects/plans/)          |
 | `EffectLayer`                      | A sheet to play any effect on anything: a level-up, a purchase, a streak                                                                           | [EffectLayer](https://bettertyped.github.io/react-cards-opening/docs/components/effect-layer/) |
 | `Card`                             | A card standing still, at any size, for a collection or a shop. A legendary keeps its foil on CSS alone                                            | [Card](https://bettertyped.github.io/react-cards-opening/docs/components/card/)                |
@@ -200,7 +203,7 @@ import { CardPack, EFFECT_SETS } from "@react-cards-opening/ui";
 
 export function Pack({ cards }: { cards: GlyphCard[] }) {
   const { opened, open } = useOpenedCards("pack:42");
-  return <CardPack cards={cards} opened={opened} onOpen={open} effects={EFFECT_SETS.mythic} />;
+  return <CardPack cards={cards} opened={opened} onOpen={open} effects={EFFECT_SETS.radiant} />;
 }
 ```
 

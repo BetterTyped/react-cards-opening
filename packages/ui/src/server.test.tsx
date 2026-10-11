@@ -40,7 +40,7 @@ describe("on a server, where there is no window", () => {
   });
 
   it("renders a sealed pack, and a pack somebody already started as dealt", () => {
-    const sealed = renderToString(<CardPack cards={CARDS} opened={[]} onOpen={noop} effects={EFFECT_SETS.mythic} />);
+    const sealed = renderToString(<CardPack cards={CARDS} opened={[]} onOpen={noop} effects={EFFECT_SETS.radiant} />);
     const started = renderToString(<CardPack cards={CARDS} opened={["fox"]} onOpen={noop} />);
 
     expect(sealed).toContain('data-stage="sealed"');

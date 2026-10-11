@@ -1426,6 +1426,16 @@ main:has(> .d-facts) > .d-facts {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   max-width: 680px;
 }
+.d-shelf-cards[data-count="6"] {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: clamp(8px, 1.4vw, 16px);
+  max-width: 1040px;
+}
+@media (max-width: 760px) {
+  .d-shelf-cards[data-count="6"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
 .d-shelf-cards[data-count="1"] {
   grid-template-columns: minmax(0, 230px);
   justify-content: center;

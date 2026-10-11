@@ -21,7 +21,7 @@ const overview: DocPage = {
   nav: "Overview",
   description:
     "The components of @react-cards-opening/ui: a pack, a reel, a case and a hunt to open cards with, the reveal they share, and a library of effects.",
-  lead: "`@react-cards-opening/ui` is the look: four ways to open cards, the reveal they share, a library of effects, ten themes and one stylesheet. Every component is the one running in Hype Stack's Wrapped, checked against it pixel for pixel, and each one takes a `theme` and draws itself with no CSS framework on the page.",
+  lead: "`@react-cards-opening/ui` is the look: four ways to open cards, the reveal they share, a library of effects, ten themes and one stylesheet. The reveal at the heart of it started as the one in Hype Stack's Wrapped, and each component takes a `theme` and draws itself with no CSS framework on the page.",
   blocks: [
     { kind: "code", language: "bash", code: INSTALL },
     { kind: "code", language: "tsx", code: `import "@react-cards-opening/ui/styles.css";` },
@@ -102,10 +102,10 @@ const overview: DocPage = {
       kind: "list",
       items: [
         "**`theme`**: a [CardTheme](/docs/theming/). `moss` in the dark when left out.",
-        "**`rarities`**: your [tiers](/docs/rarity-tiers/). The four defaults when left out.",
+        "**`rarities`**: your [tiers](/docs/rarity-tiers/). The six defaults when left out.",
         "**Their own ground rules.** Each resets only the elements it renders, at one class of specificity, so a page's `button` or `p` styles do not reach in and nothing leaks out.",
         "**Pixels, not rems.** A page with a 10 pixel root font gets the same card as one with 16.",
-        "**`effects`**: a [plan](/docs/effects/plans/) of extra effects per tier, from a [library of dozens](/docs/effects/library/).",
+        "**`effects`**: what each tier plays on top of its reveal. Six [signature shows](/docs/effects/plans/) by default, from a [library of dozens](/docs/effects/library/).",
         "**`classNames`**: a class of your own for any part, and a stylesheet where every rule weighs one class, so yours wins. [Styling by hand](/docs/guides/styling/) has the Tailwind setup.",
       ],
     },
@@ -162,7 +162,7 @@ function Shop({ cards }) {
     propsTable<CardOpeningProps<GlyphCard>>({
       opening: ["Opening", "The rules, from `useCardOpening`."],
       theme: ["CardTheme", "The colours. `moss` in the dark by default.", "optional"],
-      rarities: ["readonly RarityTier[]", "Your tiers. The four defaults otherwise.", "optional"],
+      rarities: ["readonly RarityTier[]", "Your tiers. The six defaults otherwise.", "optional"],
       launch: [
         "(card, show) => HTMLElement | CardLaunch | null",
         "Where the card comes out of. Asked once per card. With nothing, the card grows out of the middle of the screen.",
@@ -187,8 +187,8 @@ function Shop({ cards }) {
       ],
       labels: ["Partial<CardOpeningLabels>", "What a screen reader and a tooltip say.", "optional"],
       effects: [
-        "EffectPlan",
-        "More to play as a card turns: [which effects each tier gets](/docs/effects/plans/).",
+        "EffectPlan | false",
+        "What each tier plays on top of the card's own reveal. The [signature shows](/docs/effects/plans/) when left out, `false` for none.",
         "optional",
       ],
       classNames: [
@@ -328,8 +328,8 @@ function Hunt({ cards, activity }) {
       onRunChange: ["(running: boolean) => void", "A scan started or came to rest.", "optional"],
       labels: ["Partial<CardHuntLabels>", "Every word in the panel.", "optional"],
       effects: [
-        "EffectPlan",
-        "More to play as a card turns: [which effects each tier gets](/docs/effects/plans/).",
+        "EffectPlan | false",
+        "What each tier plays on top of the card's own reveal. The [signature shows](/docs/effects/plans/) when left out, `false` for none.",
         "optional",
       ],
       landing: [

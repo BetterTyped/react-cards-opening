@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 
 import { CardBackContent, CardContent } from "./card";
 import { type CardOpeningClassNames, cn } from "./class-names";
-import { clearEffects, type EffectPlan, effectsFor, playEffects } from "./effects";
+import { clearEffects, type EffectPlan, effectsFor, playSteps, SIGNATURE_EFFECTS } from "./effects";
 import { CARD_OPENING_LABELS, type CardOpeningLabels } from "./labels";
 import { type CardTheme, DEFAULT_THEME, rarityColor, themeStyle } from "./theme";
 import type { CardFaceInfo, CardLaunch, CardShow, GlyphCard } from "./types";
@@ -12,6 +12,7 @@ import { useGsapEffect } from "./use-gsap-effect";
 import {
   DEFAULT_RARITIES,
   holdSeconds,
+  isTopEffect,
   type Opening,
   type OpeningCard,
   prefersReducedMotion,
@@ -54,6 +55,20 @@ function legendLoops(stage: HTMLElement): gsap.core.Animation[] {
       },
     ),
   ];
+}
+
+/**
+ * The shake of a card that is about to turn. A short hum is the five moves it always was. A long one, a mythic's,
+ * keeps shaking for all of it, a little harder every time: something is building.
+ */
+function shiver(x: number, seconds: number): { x: number }[] {
+  if (seconds <= 0.75) return [{ x: x - 5 }, { x: x + 5 }, { x: x - 4 }, { x: x + 4 }, { x }];
+  const moves = Math.round(seconds / 0.065);
+  return Array.from({ length: moves }, (_unused, index) => {
+    if (index === moves - 1) return { x };
+    const far = 3 + (index / moves) * 9;
+    return { x: x + (index % 2 === 0 ? -far : far) };
+  });
 }
 
 /** Waits a few frames for an element React is about to render. */
@@ -121,10 +136,11 @@ export interface CardOpeningProps<C extends OpeningCard> {
   readingOf?: (card: C, info: CardFaceInfo) => readonly string[];
   labels?: Partial<CardOpeningLabels>;
   /**
-   * More to play as a card turns over, on top of its own show: which effects each tier gets. One of
-   * `EFFECT_SETS`, or a plan of your own. Nothing more unless told.
+   * What each tier plays on top of the card's own show. Left out, every tier gets its signature show
+   * (`SIGNATURE_EFFECTS`). Hand over one of `EFFECT_SETS` or a plan of your own, or `false` for the card's own
+   * show and nothing more.
    */
-  effects?: EffectPlan;
+  effects?: EffectPlan | false;
   /** A class of your own for each part of the reveal. */
   classNames?: CardOpeningClassNames;
   /** The card's width in pixels at the middle of the screen. Narrow screens get 78% of their width at most. */
@@ -151,7 +167,7 @@ export function CardOpening<C extends OpeningCard>({
   noteOf,
   readingOf,
   labels,
-  effects,
+  effects = SIGNATURE_EFFECTS,
   classNames: names = NONE,
   width: cardWidth = CARD_WIDTH,
   ratio = CARD_RATIO,
@@ -264,8 +280,24 @@ export function CardOpening<C extends OpeningCard>({
         },
         "<",
       );
+      // What the tier adds to the card's own show, and where it is played: behind the card, in its colour.
+      const steps = reduced ? [] : effectsFor(props.effects, tier);
+      const cue = (moment: "hum" | "turn") =>
+        safe(() => {
+          const layer = find(".rco-fx-layer");
+          if (!layer) return;
+          playSteps(layer, steps, {
+            moment,
+            at: flyer,
+            size: width,
+            ratio,
+            tone: colour,
+            subject: stage,
+          });
+        });
       // It hums before it turns: longer and louder the rarer it is.
       tl.addLabel("hum");
+      if (steps.length > 0) tl.call(cue("hum"), undefined, "hum");
       tl.to(back, {
         boxShadow: `inset 0 0 0 2px ${colour}, 0 0 70px 12px ${colour}`,
         duration: 0.5,
@@ -276,9 +308,7 @@ export function CardOpening<C extends OpeningCard>({
           flyer,
           {
             keyframes:
-              plan.hum.kind === "shake"
-                ? [{ x: centre.x - 5 }, { x: centre.x + 5 }, { x: centre.x - 4 }, { x: centre.x + 4 }, { x: centre.x }]
-                : [{ y: centre.y - 8 }, { y: centre.y }],
+              plan.hum.kind === "shake" ? shiver(centre.x, plan.hum.seconds) : [{ y: centre.y - 8 }, { y: centre.y }],
             duration: plan.hum.seconds,
             ease: "none",
           },
@@ -303,25 +333,7 @@ export function CardOpening<C extends OpeningCard>({
         },
         "<0.2",
       );
-      const extra = effectsFor(props.effects, tier);
-      if (extra.length > 0 && !reduced) {
-        tl.call(
-          safe(() => {
-            const layer = find(".rco-fx-layer");
-            if (!layer) return;
-            playEffects(layer, extra, {
-              at: flyer,
-              size: width,
-              ratio,
-              tone: colour,
-              accent: props.theme.levels[4],
-              subject: stage,
-            });
-          }),
-          undefined,
-          "<",
-        );
-      }
+      if (steps.length > 0) tl.call(cue("turn"), undefined, "<");
       if (plan.rays) {
         tl.fromTo(rays, { autoAlpha: 0, rotate: 0, scale: 0.6 }, { autoAlpha: 0.9, scale: 1, duration: 0.5 }, "<");
         tl.to(rays, { rotate: 60, duration: 2.6, ease: "none" }, "<");
@@ -582,7 +594,7 @@ export function CardOpening<C extends OpeningCard>({
   const target = container ?? document.body;
   const tier = current ? tierOf(rarities, current.rarity) : null;
   const tone = current ? rarityColor(theme, current.rarity) : theme.fg;
-  const legendary = tier?.effect === "legendary";
+  const legendary = tier ? isTopEffect(tier.effect) : false;
   const info: CardFaceInfo | null = current && tier ? { tone, tier, note: noteOf?.(current) } : null;
   const words = { ...CARD_OPENING_LABELS, ...labels };
 

@@ -5,7 +5,7 @@ import { GLYPHS, type PixelArt } from "./glyphs";
 import { PixelGlyph } from "./pixel-glyph";
 import { type CardTheme, DEFAULT_THEME, rarityColor, themeStyle } from "./theme";
 import type { CardFaceInfo, GlyphCard } from "./types";
-import { DEFAULT_RARITIES, type RarityTier, tierOf } from "@react-cards-opening/core";
+import { DEFAULT_RARITIES, isTopEffect, type RarityTier, tierOf } from "@react-cards-opening/core";
 
 /** Holds a row open when it has nothing to say, so every card's rows line up. */
 const NBSP = "\u00A0";
@@ -103,7 +103,7 @@ export function Card({
 }: CardProps) {
   const tier = tierOf(rarities, rarity ?? card?.rarity ?? "");
   const info: CardFaceInfo = { tone: tone ?? rarityColor(theme, tier.id), tier, note };
-  const legendary = tier.effect === "legendary";
+  const legendary = isTopEffect(tier.effect);
   let face: ReactNode = null;
   if (typeof children === "function") face = children(info);
   else if (children !== undefined && children !== null) face = children;

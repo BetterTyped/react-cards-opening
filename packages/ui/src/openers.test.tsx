@@ -132,7 +132,7 @@ describe("the new openers", () => {
 
     it("plays its plan of effects as a card turns, in that card's colour", async () => {
       const user = userEvent.setup();
-      render(<Game kind="pack" effects={EFFECT_SETS.mythic} />);
+      render(<Game kind="pack" effects={EFFECT_SETS.radiant} />);
       await user.click(screen.getByRole("button", { name: "Open the pack" }));
       await play(2);
 

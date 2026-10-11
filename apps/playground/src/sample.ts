@@ -17,7 +17,7 @@ export const hero = params.has("hero");
 export const found = list("found");
 
 export interface SampleCard extends GlyphCard {
-  rarity: "common" | "rare" | "epic" | "legendary";
+  rarity: "common" | "uncommon" | "rare" | "epic" | "legendary" | "mythic";
   line: string;
 }
 
@@ -59,8 +59,29 @@ const ALL: SampleCard[] = [
   },
 ];
 
+/** The two tiers that came later. They are dealt only when asked for by name, so the deal of five stays the deal. */
+const LATER: SampleCard[] = [
+  {
+    id: "window-plant",
+    name: "Window Plant",
+    rarity: "uncommon",
+    line: "Grew toward whatever you were about to do next.",
+    art: GLYPHS.plant,
+  },
+  {
+    id: "ash-phoenix",
+    name: "Ash Phoenix",
+    rarity: "mythic",
+    line: "Burned down once and started again from the first line.",
+    art: GLYPHS.phoenix,
+  },
+];
+
+/** Every sample card there is, for the views that show one of a tier. */
+export const everyCard = [...ALL, ...LATER];
+
 const only = list("only");
-export const cards = only.length > 0 ? ALL.filter((card) => only.includes(card.id)) : ALL;
+export const cards = only.length > 0 ? [...ALL, ...LATER].filter((card) => only.includes(card.id)) : ALL;
 
 /** A year of days, quiet weekends and a busy autumn, the same on every load. */
 const rng = createRng("playground-year");

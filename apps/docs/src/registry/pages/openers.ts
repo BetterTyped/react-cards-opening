@@ -54,14 +54,14 @@ function Pack({ cards }) {
     { kind: "h2", text: "What each tier does" },
     {
       kind: "p",
-      text: "Every card throws sparks as it turns. A loud tier opens rays behind itself and jolts the table. A legendary lights the whole table. Add `effects` and any of the [fifty nine effects](/docs/effects/library/) plays on top, per tier.",
+      text: "Every card throws sparks as it turns. A loud tier opens rays behind itself and jolts the table. A legendary lights the whole table. On top of that each tier plays its [signature show](/docs/effects/plans/), and `effects` swaps it for a set or a plan of your own.",
     },
     {
       kind: "code",
       language: "tsx",
       code: `import { CardPack, EFFECT_SETS } from "@react-cards-opening/ui";
 
-<CardPack cards={cards} opened={opened} onOpen={open} effects={EFFECT_SETS.mythic} />;`,
+<CardPack cards={cards} opened={opened} onOpen={open} effects={EFFECT_SETS.radiant} />;`,
     },
     { kind: "h2", text: "Props" },
     propsTable<CardPackProps<GlyphCard>>({
@@ -72,7 +72,7 @@ function Pack({ cards }) {
       ],
       onOpen: ["(id: string) => void", "A card was turned face up for the first time."],
       theme: ["CardTheme", "The colours. `moss` in the dark when left out.", "optional"],
-      rarities: ["readonly RarityTier[]", "Your tiers. The four defaults when left out.", "optional"],
+      rarities: ["readonly RarityTier[]", "Your tiers. The six defaults when left out.", "optional"],
       emblem: ["PixelArt", "The glyph on the front of the sealed pack. A question mark when left out.", "optional"],
       onDone: ["() => void", "Every card is turned and Done was pressed.", "optional"],
       labels: ["Partial<CardPackLabels>", "Every word the pack says, and what a screen reader hears.", "optional"],
@@ -84,7 +84,11 @@ function Pack({ cards }) {
         "The text on a face of your own, so a card brought up close stays long enough to read.",
         "optional",
       ],
-      effects: ["EffectPlan", "More to play as a card turns: which effects each tier gets.", "optional"],
+      effects: [
+        "EffectPlan | false",
+        "What each tier plays on top of the card's own reveal. The [signature shows](/docs/effects/plans/) when left out, `false` for none.",
+        "optional",
+      ],
       className: ["string", "A class for the pack's root.", "optional"],
       classNames: ["CardPackClassNames", "A class of your own for each part.", "optional"],
       style: ["CSSProperties", "Inline styles for the root: the place for `--rco-pack-width`.", "optional"],
@@ -167,7 +171,11 @@ function Spins({ won, catalog }) {
         "The text on a face of your own, so the card stays up long enough to read.",
         "optional",
       ],
-      effects: ["EffectPlan", "More to play as a card turns: which effects each tier gets.", "optional"],
+      effects: [
+        "EffectPlan | false",
+        "What each tier plays on top of the card's own reveal. The [signature shows](/docs/effects/plans/) when left out, `false` for none.",
+        "optional",
+      ],
       className: ["string", "A class for the panel.", "optional"],
       classNames: [
         "CardSpinClassNames",
@@ -258,7 +266,7 @@ function Chest({ cards }) {
       opened: ["readonly string[]", "Ids already out of the case."],
       onOpen: ["(id: string) => void", "A card was turned face up for the first time."],
       theme: ["CardTheme", "The colours. `moss` in the dark when left out.", "optional"],
-      rarities: ["readonly RarityTier[]", "Your tiers. The four defaults when left out.", "optional"],
+      rarities: ["readonly RarityTier[]", "Your tiers. The six defaults when left out.", "optional"],
       emblem: ["PixelArt", "The glyph on the front of the case.", "optional"],
       actions: ["ReactNode", "Extra buttons in the header, next to the open button.", "optional"],
       onRunChange: ["(running: boolean) => void", "The case started giving up its cards, or came to rest.", "optional"],
@@ -275,7 +283,11 @@ function Chest({ cards }) {
         "The text on a face of your own, so the card stays up long enough to read.",
         "optional",
       ],
-      effects: ["EffectPlan", "More to play as a card turns: which effects each tier gets.", "optional"],
+      effects: [
+        "EffectPlan | false",
+        "What each tier plays on top of the card's own reveal. The [signature shows](/docs/effects/plans/) when left out, `false` for none.",
+        "optional",
+      ],
       className: ["string", "A class for the panel.", "optional"],
       classNames: [
         "CardCaseClassNames",

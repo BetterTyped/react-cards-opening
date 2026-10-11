@@ -222,6 +222,20 @@ export function drawing(
   return lines;
 }
 
+/**
+ * A drawn part made of more than outlines: circles, dashes, whatever the markup says. The markup is the effect's
+ * own, written in the library, never anything a page passed in.
+ */
+export function figure(stage: EffectStage, name: string, markup: string): SVGElement {
+  const svg = document.createElementNS(SVG, "svg");
+  svg.setAttribute("class", `rco-fx rco-fx-${name}`);
+  svg.setAttribute("viewBox", "-100 -100 200 200");
+  svg.setAttribute("aria-hidden", "true");
+  svg.innerHTML = markup;
+  stage.root.append(svg);
+  return svg;
+}
+
 /** The corners of a shape with this many sides, as SVG points, its first corner straight up. */
 export function corners(sides: number, radius = 100): string {
   return Array.from({ length: sides }, (_unused, index) => {

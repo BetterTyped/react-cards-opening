@@ -1,4 +1,4 @@
-import { drawing, type Effect, type EffectStage, part, piece } from "./fx-stage";
+import { corners, drawing, type Effect, type EffectStage, figure, part, piece } from "./fx-stage";
 
 // Effects made of light: wheels of rays, beams, flashes, glows. Each is an element or two that the stylesheet
 // draws (`.rco-fx-<name>`, sized in `--rco-fx-u`, coloured by `--rco-tone`) and a timeline that moves it.
@@ -312,6 +312,126 @@ export const LIGHT_EFFECTS = [
       tl.to(rim, { opacity: 0.45, scale: 1, duration: 0.3, ease: "sine.inOut" }, 0.18);
       tl.to(rim, { opacity: 1, scale: 1.05, duration: 0.22, ease: "sine.inOut" }, 0.48);
       tl.to(rim, { opacity: 0, scale: 1.1, duration: 0.9, ease: "power1.out" }, 0.7);
+    },
+  },
+  {
+    name: "frost",
+    kind: "light",
+    label: "Frost",
+    about: "A six-armed ice crystal that grows out from behind the card, turns a notch and melts away.",
+    seconds: 2,
+    play: (stage, tl) => {
+      // Six arms, and two pairs of barbs on each.
+      const lines = drawing(stage, "frost", { tag: "polyline", count: 6 * 5 });
+      const svg = lines[0]?.parentElement;
+      if (!svg) return;
+      for (let arm = 0; arm < 6; arm += 1) {
+        const angle = (arm / 6) * TAU - Math.PI / 2;
+        const at = (reach: number, turn = 0, far = 0): Point => [
+          Math.cos(angle) * reach + Math.cos(angle + turn) * far,
+          Math.sin(angle) * reach + Math.sin(angle + turn) * far,
+        ];
+        lines[arm * 5]?.setAttribute("points", asPoints([at(14), at(98)]));
+        for (const [index, [reach, far]] of [
+          [56, 20],
+          [78, 14],
+        ].entries()) {
+          lines[arm * 5 + 1 + index * 2]?.setAttribute("points", asPoints([at(reach), at(reach, 0.95, far)]));
+          lines[arm * 5 + 2 + index * 2]?.setAttribute("points", asPoints([at(reach), at(reach, -0.95, far)]));
+        }
+      }
+      tl.fromTo(
+        svg,
+        { opacity: 0, scale: 0.25, rotate: -30 },
+        { opacity: 1, scale: 1, rotate: 0, duration: 0.5, ease: "back.out(1.5)" },
+        0,
+      );
+      tl.to(svg, { rotate: 12, duration: 1.5, ease: "none" }, 0.5);
+      tl.to(svg, { opacity: 0, scale: 1.12, duration: 0.7, ease: "power1.in" }, 1.3);
+    },
+  },
+  {
+    name: "sigil",
+    kind: "light",
+    label: "Sigil",
+    about:
+      "A circle of power drawn behind the card: two rings, a six-pointed star and a second seal turning against it.",
+    seconds: 2.6,
+    play: (stage, tl) => {
+      const ticks = Array.from({ length: 24 }, (_unused, index) => {
+        const angle = (index / 24) * TAU;
+        const from = index % 2 === 0 ? 84 : 88;
+        return `<line class="rco-fx-sigil-line" x1="${(Math.cos(angle) * from).toFixed(1)}" y1="${(Math.sin(angle) * from).toFixed(1)}" x2="${(Math.cos(angle) * 94).toFixed(1)}" y2="${(Math.sin(angle) * 94).toFixed(1)}" vector-effect="non-scaling-stroke" />`;
+      }).join("");
+      const outer = figure(
+        stage,
+        "sigil",
+        `<circle class="rco-fx-sigil-line" r="98" vector-effect="non-scaling-stroke" />
+         <circle class="rco-fx-sigil-dash" r="80" vector-effect="non-scaling-stroke" />
+         ${ticks}
+         <polygon class="rco-fx-sigil-line" points="${corners(3, 80)}" vector-effect="non-scaling-stroke" />
+         <polygon class="rco-fx-sigil-line" points="${corners(3, 80)}" transform="rotate(180)" vector-effect="non-scaling-stroke" />`,
+      );
+      const inner = figure(
+        stage,
+        "sigil rco-fx-sigil-inner",
+        `<circle class="rco-fx-sigil-line" r="96" vector-effect="non-scaling-stroke" />
+         <polygon class="rco-fx-sigil-dash" points="${corners(4, 96)}" vector-effect="non-scaling-stroke" />
+         <polygon class="rco-fx-sigil-line" points="${corners(4, 96)}" transform="rotate(45)" vector-effect="non-scaling-stroke" />`,
+      );
+      tl.fromTo(
+        outer,
+        { opacity: 0, scale: 0.3, rotate: -60 },
+        { opacity: 1, scale: 1, rotate: 0, duration: 0.6, ease: "expo.out" },
+        0,
+      );
+      tl.to(outer, { rotate: 70, duration: 2, ease: "none" }, 0.6);
+      tl.fromTo(
+        inner,
+        { opacity: 0, scale: 0.2, rotate: 90 },
+        { opacity: 1, scale: 1, rotate: 0, duration: 0.7, ease: "expo.out" },
+        0.1,
+      );
+      tl.to(inner, { rotate: -120, duration: 1.8, ease: "none" }, 0.8);
+      tl.to([outer, inner], { opacity: 0, scale: 1.15, duration: 0.6, ease: "power1.in" }, 2);
+    },
+  },
+  {
+    name: "cracks",
+    kind: "light",
+    label: "Cracks",
+    about: "The air around the card splits: glowing fractures race outward, fork, and burn out slowly.",
+    seconds: 1.9,
+    play: (stage, tl) => {
+      const count = 9;
+      const lines = drawing(stage, "cracks", { tag: "polyline", count: count * 2 });
+      const svg = lines[0]?.parentElement;
+      if (!svg) return;
+      const lean = stage.random() * TAU;
+      for (let index = 0; index < count; index += 1) {
+        const angle = lean + (index / count) * TAU + (stage.random() - 0.5) * 0.4;
+        const main = bolt(stage, {
+          from: [Math.cos(angle) * 20, Math.sin(angle) * 20],
+          angle,
+          length: 52 + stage.random() * 46,
+          steps: 6,
+        });
+        const knee = main[2 + Math.floor(stage.random() * 3)] ?? main[0] ?? [0, 0];
+        const fork = bolt(stage, {
+          from: knee,
+          angle: angle + (stage.random() > 0.5 ? 0.75 : -0.75),
+          length: 20 + stage.random() * 22,
+          steps: 3,
+        });
+        lines[index]?.setAttribute("points", asPoints(main));
+        lines[count + index]?.setAttribute("points", asPoints(fork));
+      }
+      // They are there in an instant and spread a little as they open. Then the light drains out of them.
+      tl.fromTo(svg, { opacity: 1, scale: 0.55 }, { scale: 1, duration: 0.16, ease: "expo.out" }, 0);
+      tl.to(svg, { scale: 1.06, duration: 1.7, ease: "none" }, 0.16);
+      tl.to(svg, { opacity: 0.55, duration: 0.12 }, 0.2);
+      tl.to(svg, { opacity: 1, duration: 0.08 }, 0.36);
+      tl.to(svg, { opacity: 0, duration: 1.3, ease: "power2.in" }, 0.55);
     },
   },
 ] as const satisfies readonly Effect[];

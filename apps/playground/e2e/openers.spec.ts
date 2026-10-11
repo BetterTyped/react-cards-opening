@@ -83,6 +83,30 @@ test("a case: shut, and open with its light on", async ({ page }) => {
   await shot(page, "case-open.png");
 });
 
+/*
+ * The six signature shows, each caught a third of a second after its card began to turn. The times are from the
+ * press that starts the scan: a quiet or loud tier hums for 0.4 seconds, a legendary for 0.7, a mythic for 1.15.
+ */
+const SHOWS = [
+  { tier: "common", card: "night-owl", at: 6608 },
+  { tier: "uncommon", card: "window-plant", at: 6608 },
+  { tier: "rare", card: "trailblazer", at: 6608 },
+  { tier: "epic", card: "firestarter", at: 6608 },
+  { tier: "legendary", card: "dragon-hoard", at: 6912 },
+  { tier: "mythic", card: "ash-phoenix", at: 7360 },
+] as const;
+
+for (const show of SHOWS) {
+  test(`the ${show.tier} show`, async ({ page }) => {
+    await start(page, `only=${show.card}`);
+
+    await press(page, ".rco-button-main");
+    await advance(page, show.at);
+
+    await shot(page, `show-${show.tier}.png`);
+  });
+}
+
 const STACKS = [
   { name: "hit", effects: "flash,nova,pillar,stardust", at: 304 },
   { name: "storm", effects: "lightning,shockwave,comets,sparks", at: 160 },

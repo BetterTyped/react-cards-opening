@@ -35,6 +35,20 @@ picture (`apps/playground/e2e`). Those pictures were first checked against the o
 Tailwind next to the library, both driven by the same clock and the same random seed, and every frame of every tier
 matched, on a desktop and a phone, in dark and light, through a whole five-card deal and its replay.
 
+## Where the library has moved on
+
+The reveal's motion is still the original's. Three things around it are the library's own now, so the pictures are no
+longer a copy of the original's:
+
+- **Six tiers, six colours.** The original has four tiers coloured per theme. The library ships common, uncommon, rare,
+  epic, legendary and mythic, in the same six colours on every theme.
+- **A show for each tier.** On top of the reveal, every tier plays its own effects (`SIGNATURE_EFFECTS`). Pass
+  `effects={false}` and the reveal is the original's again; the picture test in `look.spec.ts` runs that way, so it
+  still guards the motion that came from upstream.
+- **The foil border is centred.** The original places the turning foil with a percentage margin, which is measured
+  against the card's width and so sits too low on a card taller than it is wide: a corner of it swings out of cover as
+  it turns. Here it is placed with `translate`. Worth carrying back.
+
 ## Carrying a change across
 
 When the original changes, change the same lines here: the timeline in `packages/ui/src/card-opening.tsx` and
