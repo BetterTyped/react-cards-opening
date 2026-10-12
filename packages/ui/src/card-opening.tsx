@@ -259,6 +259,7 @@ export function CardOpening<C extends OpeningCard>({
       tl.addLabel("flight", from?.lead ? "+=0.15" : undefined);
       tl.call(measureStart, undefined, "flight");
       tl.set(backdrop, { pointerEvents: "auto" }, "<");
+      tl.call(() => stage.setAttribute("data-open", ""), undefined, "<");
       tl.to(backdrop, { autoAlpha: 1, duration: 0.4 }, "<");
       tl.fromTo(
         flyer,
@@ -293,7 +294,9 @@ export function CardOpening<C extends OpeningCard>({
             size: width,
             ratio,
             tone: colour,
-            subject: stage,
+            // What a shake moves is the scene, not the whole stage: the backdrop blurs the page behind it, and a
+            // blur that is moved is a blur worked out again, on every frame, over the whole screen.
+            subject: find(".rco-scene"),
           });
         });
       // It hums before it turns: longer and louder the rarer it is.
@@ -398,6 +401,7 @@ export function CardOpening<C extends OpeningCard>({
           killLoops();
           gsap.to([backdrop, flyer, rays, ...all(".rco-legend-rays")], { autoAlpha: 0, duration: 0.25 });
           gsap.set(backdrop, { pointerEvents: "none" });
+          stage.removeAttribute("data-open");
           from?.release?.();
           detach();
         }),
@@ -413,6 +417,7 @@ export function CardOpening<C extends OpeningCard>({
         if (!aliveRef.current) return;
         const finish = () => {
           gsap.set(backdrop, { pointerEvents: "none" });
+          stage.removeAttribute("data-open");
           from?.release?.();
           detach();
           opening.landed();
@@ -500,6 +505,7 @@ export function CardOpening<C extends OpeningCard>({
       gsap.set(inner, { rotateY: 0 });
       gsap.set(rays, { autoAlpha: 0 });
       gsap.set(backdrop, { pointerEvents: "auto" });
+      stage.setAttribute("data-open", "");
 
       const tl = gsap.timeline();
       timelineRef.current = tl;
@@ -556,6 +562,7 @@ export function CardOpening<C extends OpeningCard>({
         tl.kill();
         killLoops();
         gsap.set(backdrop, { pointerEvents: "none" });
+        stage.removeAttribute("data-open");
         const out = gsap.timeline({ onComplete: opening.closed });
         timelineRef.current = out;
         out.to(backdrop, { autoAlpha: 0, duration: 0.3 });
@@ -607,62 +614,65 @@ export function CardOpening<C extends OpeningCard>({
       style={{ ...themeStyle(theme), "--rco-tone": tone } as CSSProperties}
     >
       <div className={cn("rco-backdrop", names.backdrop)} aria-hidden onClick={opening.pressBackdrop} />
-      <div className={cn("rco-rays", names.rays)} aria-hidden />
-      {legendary ? (
-        <>
-          <div className={cn("rco-legend-rays", names.legendRays)} aria-hidden />
-          <div className={cn("rco-legend-flash", names.legendFlash)} aria-hidden />
-        </>
-      ) : null}
-      <div className={cn("rco-fx-layer", names.effects)} aria-hidden />
-      <div className={cn("rco-flyer", names.flyer)}>
+      {/* Everything that happens over the dimmed page. A shake moves this, and leaves the dimming where it is. */}
+      <div className="rco-scene">
+        <div className={cn("rco-rays", names.rays)} aria-hidden />
         {legendary ? (
           <>
-            {[0, 1].map((wave) => (
-              <i key={wave} className={cn("rco-legend-wave", names.wave)} aria-hidden />
-            ))}
-            <span className="rco-sparkles" aria-hidden>
-              {Array.from({ length: SPARKLES }, (_unused, index) => {
-                const angle = (index / SPARKLES) * Math.PI * 2;
-                const reach = 0.62 + ((index * 37) % 20) / 100;
-                return (
-                  <i
-                    // oxlint-disable-next-line react/no-array-index-key -- sparkles are positional
-                    key={index}
-                    className={cn("rco-sparkle", names.sparkle)}
-                    style={{
-                      left: `${50 + Math.cos(angle) * reach * 100}%`,
-                      top: `${50 + Math.sin(angle) * reach * 80}%`,
-                    }}
-                  />
-                );
-              })}
-            </span>
-            <div className={cn("rco-legend-border", names.foilBorder)} aria-hidden>
-              <i className="rco-legend-spin" />
-            </div>
+            <div className={cn("rco-legend-rays", names.legendRays)} aria-hidden />
+            <div className={cn("rco-legend-flash", names.legendFlash)} aria-hidden />
           </>
         ) : null}
-        <span className="rco-burst" aria-hidden>
-          {Array.from({ length: BURST }, (_unused, index) => (
-            // oxlint-disable-next-line react/no-array-index-key -- burst particles are positional
-            <i key={index} className={cn("rco-burst-bit", names.burst)} />
-          ))}
-        </span>
-        <button
-          type="button"
-          className={cn("rco-flyer-press", names.press)}
-          aria-label={peek ? words.closeCard : words.turnCard}
-          title={peek ? words.closeCardHint : words.turnCardHint}
-          onClick={opening.pressCard}
-        />
-        <div className="rco-flyer-inner">
-          <div className={cn("rco-face", names.face)}>
-            {legendary ? <i className={cn("rco-foil", names.shine)} aria-hidden /> : null}
-            {current && info ? (renderFace ? renderFace(current, info) : defaultFace(current, info, names)) : null}
-          </div>
-          <div className={cn("rco-back", names.back)}>
-            {current && renderBack ? renderBack(current) : <CardBackContent theme={theme} />}
+        <div className={cn("rco-fx-layer", names.effects)} aria-hidden />
+        <div className={cn("rco-flyer", names.flyer)}>
+          {legendary ? (
+            <>
+              {[0, 1].map((wave) => (
+                <i key={wave} className={cn("rco-legend-wave", names.wave)} aria-hidden />
+              ))}
+              <span className="rco-sparkles" aria-hidden>
+                {Array.from({ length: SPARKLES }, (_unused, index) => {
+                  const angle = (index / SPARKLES) * Math.PI * 2;
+                  const reach = 0.62 + ((index * 37) % 20) / 100;
+                  return (
+                    <i
+                      // oxlint-disable-next-line react/no-array-index-key -- sparkles are positional
+                      key={index}
+                      className={cn("rco-sparkle", names.sparkle)}
+                      style={{
+                        left: `${50 + Math.cos(angle) * reach * 100}%`,
+                        top: `${50 + Math.sin(angle) * reach * 80}%`,
+                      }}
+                    />
+                  );
+                })}
+              </span>
+              <div className={cn("rco-legend-border", names.foilBorder)} aria-hidden>
+                <i className="rco-legend-spin" />
+              </div>
+            </>
+          ) : null}
+          <span className="rco-burst" aria-hidden>
+            {Array.from({ length: BURST }, (_unused, index) => (
+              // oxlint-disable-next-line react/no-array-index-key -- burst particles are positional
+              <i key={index} className={cn("rco-burst-bit", names.burst)} />
+            ))}
+          </span>
+          <button
+            type="button"
+            className={cn("rco-flyer-press", names.press)}
+            aria-label={peek ? words.closeCard : words.turnCard}
+            title={peek ? words.closeCardHint : words.turnCardHint}
+            onClick={opening.pressCard}
+          />
+          <div className="rco-flyer-inner">
+            <div className={cn("rco-face", names.face)}>
+              {legendary ? <i className={cn("rco-foil", names.shine)} aria-hidden /> : null}
+              {current && info ? (renderFace ? renderFace(current, info) : defaultFace(current, info, names)) : null}
+            </div>
+            <div className={cn("rco-back", names.back)}>
+              {current && renderBack ? renderBack(current) : <CardBackContent theme={theme} />}
+            </div>
           </div>
         </div>
       </div>

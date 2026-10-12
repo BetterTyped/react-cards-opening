@@ -16,6 +16,15 @@ export interface EffectStage {
   size: number;
   /** `size / 300`: what a design pixel is worth here. */
   scale: number;
+  /**
+   * How much smaller than life the parts are laid out: 1 on most screens. A screen that draws three pixels for
+   * every one it lays out keeps every part as a picture nine times its laid-out size, so there each part is laid
+   * out smaller and drawn back up to size by the stylesheet (`--rco-fx-up`). Particles are not parts and take no
+   * notice of it.
+   */
+  render: number;
+  /** `size * render`: the width of what is celebrated in the parts' own pixels. What a part moves by. */
+  unit: number;
   /** Height over width of what is celebrated. */
   ratio: number;
   /** The layer's own size. */
@@ -218,25 +227,54 @@ export function piece(parent: HTMLElement, name: string): HTMLElement {
 
 const SVG = "http://www.w3.org/2000/svg";
 
-/** A drawn part: outlines that stay one line thick however far they are stretched. */
+/** Every drawn part's lines are kept under a name of their own, so the copies of them can point at it. */
+let drawn = 0;
+
+/**
+ * The sheet a drawn part is on, and the group its lines go in. The lines are drawn four times over: three times
+ * wide and faint, in the tier's colour, and once as themselves. That is their glow. A blur filter would give the
+ * same light, and would have the browser blur a picture several screens wide again on every frame; lines drawn
+ * wider cost what lines cost. The copies follow the lines: change a line's points and its glow has moved too.
+ */
+function sheet(stage: EffectStage, name: string): { svg: SVGSVGElement; ink: SVGGElement } {
+  const svg = document.createElementNS(SVG, "svg");
+  svg.setAttribute("class", `rco-fx rco-fx-${name}`);
+  svg.setAttribute("viewBox", "-100 -100 200 200");
+  svg.setAttribute("aria-hidden", "true");
+  drawn += 1;
+  const id = `rco-fx-ink-${drawn}`;
+  const kept = document.createElementNS(SVG, "defs");
+  const ink = document.createElementNS(SVG, "g");
+  ink.setAttribute("id", id);
+  kept.append(ink);
+  svg.append(kept);
+  for (const layer of ["glow-far", "glow-mid", "glow-near", "ink"]) {
+    const copy = document.createElementNS(SVG, "use");
+    copy.setAttribute("href", `#${id}`);
+    copy.setAttribute("class", `rco-fx-${layer}`);
+    svg.append(copy);
+  }
+  stage.root.append(svg);
+  return { svg, ink };
+}
+
+/**
+ * A drawn part: outlines that stay one line thick however far they are stretched. The part itself, the thing to
+ * move and fade, is each line's `ownerSVGElement`.
+ */
 export function drawing(
   stage: EffectStage,
   name: string,
   { tag, count = 1 }: { tag: "polygon" | "polyline"; count?: number },
 ): SVGElement[] {
-  const svg = document.createElementNS(SVG, "svg");
-  svg.setAttribute("class", `rco-fx rco-fx-${name}`);
-  svg.setAttribute("viewBox", "-100 -100 200 200");
-  svg.setAttribute("aria-hidden", "true");
-  const lines = Array.from({ length: count }, () => {
+  const { ink } = sheet(stage, name);
+  return Array.from({ length: count }, () => {
     const line = document.createElementNS(SVG, tag);
-    line.setAttribute("class", `rco-fx-${name}-line`);
+    line.setAttribute("class", `rco-fx-${name.split(" ")[0]}-line`);
     line.setAttribute("vector-effect", "non-scaling-stroke");
-    svg.append(line);
+    ink.append(line);
     return line;
   });
-  stage.root.append(svg);
-  return lines;
 }
 
 /**
@@ -244,12 +282,8 @@ export function drawing(
  * own, written in the library, never anything a page passed in.
  */
 export function figure(stage: EffectStage, name: string, markup: string): SVGElement {
-  const svg = document.createElementNS(SVG, "svg");
-  svg.setAttribute("class", `rco-fx rco-fx-${name}`);
-  svg.setAttribute("viewBox", "-100 -100 200 200");
-  svg.setAttribute("aria-hidden", "true");
-  svg.innerHTML = markup;
-  stage.root.append(svg);
+  const { svg, ink } = sheet(stage, name);
+  ink.innerHTML = markup;
   return svg;
 }
 

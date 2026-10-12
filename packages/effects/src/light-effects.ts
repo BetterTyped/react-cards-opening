@@ -36,6 +36,7 @@ export const LIGHT_EFFECTS = [
     seconds: 2.6,
     play: (stage, tl) => {
       const rays = part(stage, "rays");
+      piece(rays, "rays-light");
       tl.fromTo(
         rays,
         { opacity: 0, scale: 0.5, rotate: 0 },
@@ -54,7 +55,7 @@ export const LIGHT_EFFECTS = [
     seconds: 3,
     play: (stage, tl) => {
       const beams = part(stage, "beams");
-      const back = piece(beams, "beams-back");
+      const back = piece(piece(beams, "beams-light"), "beams-back");
       tl.fromTo(
         beams,
         { opacity: 0, scale: 0.7, rotate: 0 },
@@ -74,6 +75,7 @@ export const LIGHT_EFFECTS = [
     seconds: 2.4,
     play: (stage, tl) => {
       const halo = part(stage, "halo");
+      piece(halo, "halo-light");
       tl.fromTo(halo, { opacity: 0, scale: 0.78 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out" }, 0);
       tl.to(halo, { scale: 1.09, duration: 0.45, ease: "sine.inOut", repeat: 3, yoyo: true }, 0.5);
       tl.to(halo, { opacity: 0, scale: 1.2, duration: 0.5, ease: "power1.in" }, 1.9);
@@ -113,7 +115,7 @@ export const LIGHT_EFFECTS = [
       const core = piece(flare, "flare-core");
       const near = piece(flare, "flare-ghost");
       const far = piece(flare, "flare-ghost");
-      const u = stage.size;
+      const u = stage.unit;
       tl.set(flare, { opacity: 1 }, 0);
       tl.fromTo(core, { scale: 0, opacity: 1 }, { scale: 1, duration: 0.16, ease: "back.out(2)" }, 0);
       tl.to(core, { scale: 0.5, opacity: 0, duration: 1.1, ease: "power2.in" }, 0.2);
@@ -158,7 +160,7 @@ export const LIGHT_EFFECTS = [
     seconds: 3.2,
     play: (stage, tl) => {
       const aurora = part(stage, "aurora");
-      const u = stage.size;
+      const u = stage.unit;
       const bands = [
         { x: -0.5, y: -0.3, to: 0.35, turn: -14 },
         { x: 0.45, y: 0.05, to: -0.4, turn: 12 },
@@ -166,7 +168,8 @@ export const LIGHT_EFFECTS = [
       ];
       tl.set(aurora, { opacity: 1 }, 0);
       for (const [index, band] of bands.entries()) {
-        const blob = piece(aurora, index === 1 ? "aurora-band rco-fx-aurora-other" : "aurora-band");
+        const blob = piece(aurora, "aurora-band");
+        piece(blob, index === 1 ? "aurora-light rco-fx-aurora-other" : "aurora-light");
         tl.fromTo(
           blob,
           { x: band.x * u, y: band.y * u, rotate: band.turn, opacity: 0, scale: 0.7 },
@@ -202,6 +205,7 @@ export const LIGHT_EFFECTS = [
     seconds: 1.6,
     play: (stage, tl) => {
       const bloom = part(stage, "bloom");
+      piece(bloom, "bloom-light");
       tl.fromTo(bloom, { scale: 0.25 }, { scale: 1.25, duration: 1.6, ease: "expo.out" }, 0);
       tl.fromTo(
         bloom,
@@ -266,7 +270,7 @@ export const LIGHT_EFFECTS = [
       const count = 6;
       // Six bolts, and a fork off each of them.
       const lines = drawing(stage, "lightning", { tag: "polyline", count: count * 2 });
-      const svg = lines[0]?.parentElement;
+      const svg = lines[0]?.ownerSVGElement;
       if (!svg) return;
       const strike = () => {
         const lean = stage.random() * TAU;
@@ -323,7 +327,7 @@ export const LIGHT_EFFECTS = [
     play: (stage, tl) => {
       // Six arms, and two pairs of barbs on each.
       const lines = drawing(stage, "frost", { tag: "polyline", count: 6 * 5 });
-      const svg = lines[0]?.parentElement;
+      const svg = lines[0]?.ownerSVGElement;
       if (!svg) return;
       for (let arm = 0; arm < 6; arm += 1) {
         const angle = (arm / 6) * TAU - Math.PI / 2;
@@ -405,7 +409,7 @@ export const LIGHT_EFFECTS = [
     play: (stage, tl) => {
       const count = 9;
       const lines = drawing(stage, "cracks", { tag: "polyline", count: count * 2 });
-      const svg = lines[0]?.parentElement;
+      const svg = lines[0]?.ownerSVGElement;
       if (!svg) return;
       const lean = stage.random() * TAU;
       for (let index = 0; index < count; index += 1) {

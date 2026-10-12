@@ -524,6 +524,12 @@
   pointer-events: none;
 }
 
+/* The stage's size and place, for what is on it: the rays, the effects, the card. The backdrop is not in it. */
+.rco-scene {
+  position: absolute;
+  inset: 0;
+}
+
 .rco-backdrop {
   position: absolute;
   inset: 0;

@@ -8,7 +8,7 @@ function outline(name: string, sides: number, turn: number) {
   return (stage: EffectStage, tl: gsap.core.Timeline) => {
     for (const at of [0, 0.16]) {
       const [line] = drawing(stage, name, { tag: "polygon" });
-      const svg = line?.parentElement;
+      const svg = line?.ownerSVGElement;
       if (!line || !svg) return;
       line.setAttribute("points", corners(sides));
       tl.fromTo(
@@ -192,6 +192,7 @@ export const WAVE_EFFECTS = [
     seconds: 1,
     play: (stage, tl) => {
       const nova = part(stage, "nova");
+      piece(nova, "nova-light");
       tl.fromTo(
         nova,
         { opacity: 1, scale: 0.25, "--rco-fx-hole": 0 },

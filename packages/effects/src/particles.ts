@@ -88,18 +88,14 @@ export interface ParticleField {
 
 const easeOut = (t: number) => 1 - (1 - t) * (1 - t);
 
-/** A soft round light in one colour, drawn once and stamped for every particle that glows in it. */
-const sprites = new Map<string, HTMLCanvasElement>();
+/** What a particle's light is stamped from. */
+type Sprite = ImageBitmap | HTMLCanvasElement;
 
-function glowSprite(colour: string): HTMLCanvasElement | null {
-  const known = sprites.get(colour);
-  if (known) return known;
-  const sprite = document.createElement("canvas");
-  sprite.width = 64;
-  sprite.height = 64;
-  const ctx = sprite.getContext("2d");
-  if (!ctx) return null;
-  // The falloff is drawn as a mask, then filled: any colour CSS can name works, with no parsing.
+/** A soft round light in one colour, drawn once and stamped for every particle that glows in it. */
+const sprites = new Map<string, Sprite>();
+
+/** Draws the light: a falloff used as a mask, then filled, so any colour CSS can name works, with no parsing. */
+function paintGlow(ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, colour: string): void {
   const falloff = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
   falloff.addColorStop(0, "rgba(0, 0, 0, 1)");
   falloff.addColorStop(0.22, "rgba(0, 0, 0, 0.62)");
@@ -110,7 +106,44 @@ function glowSprite(colour: string): HTMLCanvasElement | null {
   ctx.globalCompositeOperation = "source-in";
   ctx.fillStyle = colour;
   ctx.fillRect(0, 0, 64, 64);
-  if (sprites.size > 48) sprites.clear();
+}
+
+/**
+ * The light as a picture that can no longer change. A canvas stamped onto another canvas is copied again for every
+ * stamp, in case it was drawn on in between, and a browser that sees a canvas read that often takes it, and the one
+ * it is stamped on, off the GPU: a burst then costs seconds. A bitmap is handed over once.
+ */
+function makeSprite(colour: string): Sprite | null {
+  if (typeof OffscreenCanvas !== "undefined") {
+    try {
+      const offscreen = new OffscreenCanvas(64, 64);
+      const ctx = offscreen.getContext("2d");
+      if (ctx) {
+        paintGlow(ctx, colour);
+        return offscreen.transferToImageBitmap();
+      }
+    } catch {
+      // A browser with the class and without a 2D context for it: the canvas below is what it gets.
+    }
+  }
+  const canvas = document.createElement("canvas");
+  canvas.width = 64;
+  canvas.height = 64;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  paintGlow(ctx, colour);
+  return canvas;
+}
+
+function glowSprite(colour: string): Sprite | null {
+  const known = sprites.get(colour);
+  if (known) return known;
+  const sprite = makeSprite(colour);
+  if (!sprite) return null;
+  if (sprites.size > 48) {
+    for (const old of sprites.values()) if ("close" in old) old.close();
+    sprites.clear();
+  }
   sprites.set(colour, sprite);
   return sprite;
 }
@@ -295,6 +328,9 @@ function draw(ctx: CanvasRenderingContext2D, p: Particle, add: boolean): void {
   ctx.restore();
 }
 
+/** The longest side a canvas is given, in its own pixels. */
+const MAX_SIDE = 8192;
+
 const NOWHERE: ParticleField = { emit: () => {}, clear: () => {}, destroy: () => {}, count: () => 0 };
 
 /**
@@ -323,8 +359,10 @@ export function createParticleField(layer: HTMLElement, add = true): ParticleFie
 
   const fit = () => {
     ratio = Math.min(window.devicePixelRatio || 1, 2);
-    const width = Math.round(layer.clientWidth * ratio);
-    const height = Math.round(layer.clientHeight * ratio);
+    // Never past what a screen could show. A layer without the stylesheet has no size of its own and takes the
+    // canvas's, which this would then double, and double again: a page with a forgotten import would freeze.
+    const width = Math.min(MAX_SIDE, Math.round(layer.clientWidth * ratio));
+    const height = Math.min(MAX_SIDE, Math.round(layer.clientHeight * ratio));
     if (canvas.width !== width || canvas.height !== height) {
       canvas.width = width;
       canvas.height = height;

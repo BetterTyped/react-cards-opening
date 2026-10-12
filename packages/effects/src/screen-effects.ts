@@ -106,7 +106,8 @@ export const SCREEN_EFFECTS = [
       const lines = part(stage, "scanlines", true);
       const band = piece(lines, "scanlines-band");
       tl.fromTo(lines, { opacity: 0 }, { opacity: 1, duration: 0.15 }, 0);
-      tl.fromTo(band, { top: "-18%" }, { top: "102%", duration: 1.05, ease: "none" }, 0.05);
+      // The band is 16% of the stage tall: from just above it to just below, by its own height, with no layout.
+      tl.fromTo(band, { yPercent: -112 }, { yPercent: 638, duration: 1.05, ease: "none" }, 0.05);
       tl.to(lines, { opacity: 0, duration: 0.25 }, 1.05);
     },
   },
@@ -133,7 +134,7 @@ export const SCREEN_EFFECTS = [
               height: `${(0.3 + stage.random() ** 2 * 4.2).toFixed(2)}%`,
               left: `${(stage.random() * 50).toFixed(1)}%`,
               width: `${(22 + stage.random() * 70).toFixed(1)}%`,
-              x: (stage.random() - 0.5) * 40 * stage.scale,
+              x: (stage.random() - 0.5) * 40 * stage.scale * stage.render,
               opacity: stage.random() > 0.4 ? 0.75 : 0,
             },
             at,
@@ -161,7 +162,7 @@ export const SCREEN_EFFECTS = [
       const split = part(stage, "chroma", true);
       const left = piece(split, "chroma-half");
       const right = piece(split, "chroma-half rco-fx-chroma-other");
-      const far = stage.size * 0.55;
+      const far = stage.unit * 0.55;
       tl.set(split, { opacity: 1 }, 0);
       tl.fromTo(left, { x: -far }, { x: 0, duration: 0.6, ease: "expo.out" }, 0);
       tl.fromTo(right, { x: far }, { x: 0, duration: 0.6, ease: "expo.out" }, 0);

@@ -14,7 +14,8 @@ export default defineConfig({
   resolve: {
     alias: {
       "@react-cards-opening/core": path.join(packages, "core/src/index.ts"),
-      // The stylesheet first: an alias matches by prefix, and the package's name is a prefix of its stylesheet's.
+      // The stylesheets first: an alias matches by prefix, and a package's name is a prefix of its stylesheet's.
+      "@react-cards-opening/ui/styles.css": path.join(packages, "ui/src/styles.css"),
       "@react-cards-opening/effects/styles.css": path.join(packages, "effects/src/styles.css"),
       "@react-cards-opening/effects": path.join(packages, "effects/src/index.ts"),
       "@react-cards-opening/ui": path.join(packages, "ui/src/index.ts"),

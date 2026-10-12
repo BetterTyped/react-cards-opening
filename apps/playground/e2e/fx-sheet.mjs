@@ -1,24 +1,17 @@
-// Not a test: draws every effect at three moments and lays them out on one sheet per kind, to be looked at.
-// node apps/playground/e2e/fx-sheet.mjs <out dir> [kind] (the playground must be serving on 4391)
+// Not a test: draws every effect at four moments and lays them out on one sheet per kind, to be looked at.
+// node apps/playground/e2e/fx-sheet.mjs <out dir> [kind|all] [names,comma,separated]
 import { chromium } from "@playwright/test";
 import * as path from "path";
+
+import { servePlayground } from "./serve.mjs";
 
 const out = process.argv[2];
 const onlyKind = process.argv[3];
 const only = process.argv[4]?.split(",");
 const SIZE = 640;
+const served = await servePlayground();
+const { origin, effects } = served;
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: SIZE, height: SIZE }, deviceScaleFactor: 1 });
-await page.goto("http://localhost:4391/?view=fx", { waitUntil: "networkidle" });
-const list = await page
-  .evaluate(async () => {
-    const ui =
-      await import("/@fs/Users/maciejpyrc/Praca/better-typed/open-source/react-cards-opening/packages/ui/src/effects.ts");
-    return ui.EFFECT_LIST.map((effect) => ({ name: effect.name, kind: effect.kind, seconds: effect.seconds }));
-  })
-  .catch(() => null);
-await page.close();
-const effects = list ?? [];
 const kinds = [...new Set(effects.map((effect) => effect.kind))].filter(
   (kind) => !onlyKind || onlyKind === "all" || kind === onlyKind,
 );
@@ -28,9 +21,13 @@ for (const kind of kinds) {
   for (let chunk = 0; chunk * 5 < mine.length; chunk += 1) {
     const rows = [];
     for (const effect of mine.slice(chunk * 5, chunk * 5 + 5)) {
-      const shot = await browser.newPage({ viewport: { width: SIZE, height: SIZE }, deviceScaleFactor: 1 });
+      // `FX_DPR=3` draws them as a phone would: the parts are laid out smaller there and drawn back up to size.
+      const shot = await browser.newPage({
+        viewport: { width: SIZE, height: SIZE },
+        deviceScaleFactor: Number(process.env.FX_DPR ?? 1),
+      });
       await shot.clock.install({ time: new Date("2026-03-14T10:00:00Z") });
-      await shot.goto(`http://localhost:4391/?view=fx&fx=${effect.name}&width=190${process.env.FX_QUERY ?? ""}`, {
+      await shot.goto(`${origin}/?view=fx&fx=${effect.name}&width=190${process.env.FX_QUERY ?? ""}`, {
         waitUntil: "networkidle",
       });
       await shot.evaluate(() => document.fonts.ready);
@@ -61,3 +58,6 @@ for (const kind of kinds) {
   }
 }
 await browser.close();
+served.close();
+// The build leaves helpers running that would keep this script from ending on its own.
+process.exit(0);

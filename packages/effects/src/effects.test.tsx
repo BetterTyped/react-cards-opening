@@ -232,6 +232,8 @@ const on = (random: () => number): EffectStage => ({
   y: 300,
   size: 150,
   scale: 0.5,
+  render: 1,
+  unit: 150,
   ratio: 4 / 3,
   width: 800,
   height: 600,

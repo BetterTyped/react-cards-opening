@@ -1,12 +1,16 @@
 // oxlint-disable-next-line import/no-unassigned-import -- the page's font
 import "@fontsource-variable/inter";
 import { gsap } from "gsap";
-import { StrictMode, useRef, useState } from "react";
+import { StrictMode, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 
 import { cards, describeDay, everyCard, found, hero, lead, levels, theme } from "./sample";
 // oxlint-disable-next-line import/no-unassigned-import -- the page around the piece
 import "./page.css";
+// The way an app brings the library's look in. Without this line a production build of the page has none of it:
+// the package is marked free of side effects, so a bundler drops the stylesheet its entry file imports.
+// oxlint-disable-next-line import/no-unassigned-import
+import "@react-cards-opening/ui/styles.css";
 import {
   Card,
   CardCase,
@@ -71,6 +75,19 @@ function Effects() {
   const card = useRef<HTMLDivElement>(null);
   const shown = everyCard.find((one) => one.rarity === (params.get("tier") ?? "legendary")) ?? cards[0];
   const names = (params.get("fx") ?? "sparks").split(",").filter((name): name is EffectName => isEffectName(name));
+  // For the measurements: plays any effects by name, without a reload in between (see e2e/fx-perf.mjs).
+  useEffect(() => {
+    const hook = window as unknown as { playFx?: (list: readonly EffectName[]) => void };
+    hook.playFx = (list) =>
+      void layer.current?.play(list, {
+        at: card.current,
+        tone: shown ? rarityColor(theme, shown.rarity) : undefined,
+        accent: theme.levels[4],
+      });
+    return () => {
+      delete hook.playFx;
+    };
+  }, [shown]);
   if (!shown) return null;
   return (
     <div className="fx-stage" style={{ background: theme.bg }}>
