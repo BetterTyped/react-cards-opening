@@ -138,8 +138,13 @@ test.describe("the home page", () => {
         .locator(".rco-backdrop")
         .evaluateAll((all) => all.filter((one) => getComputedStyle(one).pointerEvents === "auto").length);
     await expect.poll(up).toBe(1);
+    // While a card is up, the sky and the page's own animations hold still behind it.
+    await expect(page.locator("html")).toHaveAttribute("data-reveal", "");
+    await expect(page.locator(".rco-stage[data-open]")).toHaveCount(1);
     await page.mouse.click(8, 8);
     await expect.poll(up, { timeout: 30_000 }).toBe(0);
+    await expect(page.locator(".rco-stage[data-open]")).toHaveCount(0);
+    await expect(page.locator("html")).not.toHaveAttribute("data-reveal", "");
 
     // Act and assert: each tab puts its own opener on the stage.
     const tabs = page.getByRole("tab");

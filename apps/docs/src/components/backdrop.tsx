@@ -304,13 +304,29 @@ function paint(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, liv
 
   let frame = 0;
   let last = 0;
+  let held = false;
   const tick = (now: number) => {
+    frame = requestAnimationFrame(tick);
+    // Thirty pictures a second, on a screen that could show a hundred and twenty. The sky drifts: nobody can tell,
+    // and everything over it that looks through to it (the bar's glass, a reveal's effects) is redrawn a quarter
+    // as often.
+    if (last && now / 1000 - last < 1 / 31) return;
     const time = now / 1000;
+    // While a card is being opened the sky holds still. A reveal dims and blurs the page behind it, and a page
+    // that has stopped moving is blurred once, not thirty times a second. The page's own animations are told too.
+    const revealing = document.querySelector(".rco-stage[data-open]") !== null;
+    if (revealing !== held) {
+      held = revealing;
+      root.toggleAttribute("data-reveal", revealing);
+    }
+    if (revealing) {
+      last = time;
+      return;
+    }
     // A tab that was away comes back to the next moment, not to everything it missed.
-    const step = Math.min(0.05, last ? time - last : 0);
+    const step = Math.min(0.1, last ? time - last : 0);
     last = time;
     draw(time, step);
-    frame = requestAnimationFrame(tick);
   };
 
   fit();
@@ -319,6 +335,7 @@ function paint(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, liv
   if (!still) frame = requestAnimationFrame(tick);
   return () => {
     cancelAnimationFrame(frame);
+    root.removeAttribute("data-reveal");
     window.removeEventListener("resize", fit);
     window.removeEventListener("pointermove", move);
   };

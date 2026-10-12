@@ -40,6 +40,55 @@ function useNear<T extends Element>(margin: string) {
   return [ref, near] as const;
 }
 
+/**
+ * A wall plays a few tiles at a time, however many of them are on screen. Each tile asks for a turn and plays when
+ * it is given one, so what a wall costs is set by `limit` and not by how wide the window is.
+ */
+function turns(limit: number) {
+  let playing = 0;
+  const waiting: (() => void)[] = [];
+  const next = () => {
+    while (playing < limit) {
+      const start = waiting.shift();
+      if (!start) return;
+      playing += 1;
+      start();
+    }
+  };
+  return {
+    /**
+     * Stands in line. `go` is called when the turn comes, with what to call when it is over. Answers a way out:
+     * of the line, or of the turn if it has begun.
+     */
+    ask(go: (done: () => void) => void): () => void {
+      let state: "waiting" | "playing" | "over" = "waiting";
+      const done = () => {
+        if (state !== "playing") return;
+        state = "over";
+        playing -= 1;
+        next();
+      };
+      const start = () => {
+        state = "playing";
+        go(done);
+      };
+      waiting.push(start);
+      next();
+      return () => {
+        if (state === "waiting") {
+          state = "over";
+          const at = waiting.indexOf(start);
+          if (at !== -1) waiting.splice(at, 1);
+        } else done();
+      };
+    },
+  };
+}
+
+/** Three reveals at once on a wall of them, and five single effects on a wall of those. */
+const REVEALS = turns(3);
+const SINGLES_AT_ONCE = turns(5);
+
 type Moment = "hum" | "turn";
 
 /** Plays the steps of a stack that belong to one moment of a reveal, each after its own delay. */
@@ -58,6 +107,9 @@ function playMoment(
 const HUM = 0.7;
 const HOLD = 3.3;
 const GAP = 0.9;
+/** How long a tile keeps its turn: the loud part of what it plays. After that the next tile in line may start. */
+const LOUD = 2.2;
+const LOUD_SINGLE = 1.5;
 
 interface FxTileProps {
   name: string;
@@ -98,15 +150,14 @@ function FxTile({ name, names, tier, steps, theme, order, flip = false, size }: 
       if (flip) setUp(true);
       playMoment(handle, steps, { moment: "turn", ...options() });
     };
-    const play = () => {
-      if (document.visibilityState !== "visible") {
-        later(0.8, play);
-        return;
-      }
+    const line = flip ? REVEALS : SINGLES_AT_ONCE;
+    let leave: (() => void) | null = null;
+    // Plays once, now. `again` is what to do once it has played out: stand in line for the next round.
+    const play = (again: () => void) => {
       if (!flip) {
         playMoment(handle, steps, { moment: "hum", ...options() });
         turn();
-        if (!still) later(3.4, play);
+        if (!still) later(3.4, again);
         return;
       }
       setUp(false);
@@ -115,14 +166,27 @@ function FxTile({ name, names, tier, steps, theme, order, flip = false, size }: 
       // With reduced motion the card turns once and stays: nothing loops.
       if (still) return;
       later(HUM + HOLD, () => setUp(false));
-      later(HUM + HOLD + GAP, play);
+      later(HUM + HOLD + GAP, again);
     };
-    // A press plays at once. Left alone, a tile waits its turn: under reduced motion it waits for the press.
-    if (round > 0) play();
-    else if (!still) later(0.25 + (order % 6) * 0.32, play);
+    const queue = () => {
+      // Not in a hidden tab, and not behind a card somebody is opening: the wall waits for both.
+      if (document.visibilityState !== "visible" || document.querySelector(".rco-stage[data-open]")) {
+        later(0.8, queue);
+        return;
+      }
+      leave = line.ask((done) => {
+        later(flip ? LOUD : LOUD_SINGLE, done);
+        play(queue);
+      });
+    };
+    // A press plays at once, in line or not. Left alone, a tile waits its turn: under reduced motion it waits for
+    // the press.
+    if (round > 0) play(queue);
+    else if (!still) later(0.15 + (order % 6) * 0.12, queue);
     else if (flip) setUp(true);
     return () => {
       for (const timer of timers) clearTimeout(timer);
+      leave?.();
       handle?.clear();
     };
   }, [near, round, flip, steps, tone, accent, order]);

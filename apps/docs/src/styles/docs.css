@@ -1287,6 +1287,8 @@ main:has(> .d-facts) > .d-facts {
   overflow: hidden;
   border-radius: 16px;
   isolation: isolate;
+  /* What plays in a tile stays in it, and the browser is told so. */
+  contain: layout paint style;
 }
 .g-tile[data-size="small"] .g-stage {
   aspect-ratio: 1 / 1.04;
@@ -1306,7 +1308,8 @@ main:has(> .d-facts) > .d-facts {
   position: relative;
   z-index: 1;
   width: 29%;
-  filter: drop-shadow(0 14px 18px oklch(0 0 0 / 0.5));
+  border-radius: 9.4% / 7%;
+  box-shadow: 0 14px 20px -2px oklch(0 0 0 / 0.5);
 }
 .g-tile[data-size="small"] .g-card {
   width: 34%;
@@ -2207,12 +2210,15 @@ main:has(> .d-facts) > .d-facts {
   pointer-events: none;
   contain: strict;
 }
+/* Each light is laid out at half its size and drawn at twice it: a gradient that soft is the same picture, and
+   a phone keeps a quarter of the pixels for it. */
 .d-sky i {
   position: absolute;
-  width: 74vmax;
+  width: 37vmax;
   aspect-ratio: 1 / 1;
   border-radius: 50%;
   opacity: calc(0.2 * var(--d-glow));
+  transform: scale(2);
   will-change: transform;
   animation: d-sky-drift 38s ease-in-out infinite alternate;
 }
@@ -2220,28 +2226,28 @@ main:has(> .d-facts) > .d-facts {
   opacity: calc(0.36 * var(--d-glow));
 }
 .d-sky i:nth-child(1) {
-  top: -36vmax;
-  left: -24vmax;
+  top: -17.5vmax;
+  left: -5.5vmax;
   background: radial-gradient(circle, var(--d-brand), transparent 64%);
 }
 .d-sky i:nth-child(2) {
-  top: -40vmax;
-  right: -26vmax;
+  top: -21.5vmax;
+  right: -7.5vmax;
   background: radial-gradient(circle, var(--d-pink), transparent 64%);
   animation-duration: 47s;
   animation-delay: -14s;
   animation-direction: alternate-reverse;
 }
 .d-sky i:nth-child(3) {
-  bottom: -48vmax;
-  left: 4vw;
+  bottom: -29.5vmax;
+  left: calc(4vw + 18.5vmax);
   background: radial-gradient(circle, oklch(0.62 0.2 255), transparent 64%);
   animation-duration: 53s;
   animation-delay: -22s;
 }
 .d-sky i:nth-child(4) {
-  right: -30vmax;
-  bottom: -50vmax;
+  right: -11.5vmax;
+  bottom: -31.5vmax;
   background: radial-gradient(circle, var(--d-gold), transparent 60%);
   opacity: calc(0.12 * var(--d-glow));
   animation-duration: 44s;
@@ -2249,8 +2255,11 @@ main:has(> .d-facts) > .d-facts {
   animation-direction: alternate-reverse;
 }
 @keyframes d-sky-drift {
+  from {
+    transform: scale(2);
+  }
   to {
-    transform: translate3d(10vmax, 7vmax, 0) scale(1.18);
+    transform: translate3d(10vmax, 7vmax, 0) scale(2.36);
   }
 }
 .d-sky canvas {
@@ -2258,9 +2267,6 @@ main:has(> .d-facts) > .d-facts {
   inset: 0;
   width: 100%;
   height: 100%;
-}
-.dark .d-sky canvas {
-  mix-blend-mode: screen;
 }
 /* The corners fall away, so the eye stays in the middle of the window. */
 .d-sky::after {
@@ -2278,6 +2284,12 @@ main:has(> .d-facts) > .d-facts {
   .d-sky i {
     animation: none;
   }
+}
+/* While a card is being opened (the sky sets this, see backdrop.tsx) everything behind the reveal holds still. */
+[data-reveal] .d-sky i,
+[data-reveal] .h-stage::before,
+[data-reveal] .h-hero h1 span {
+  animation-play-state: paused;
 }
 
 /* The bar is glass with a lit edge. */
@@ -2414,7 +2426,6 @@ main:has(> .d-facts) > .d-facts {
   color: var(--d-dim);
   font-size: 14px;
   font-weight: 520;
-  backdrop-filter: blur(10px);
 }
 .h-kicker b {
   padding: 3px 11px;
@@ -2456,7 +2467,6 @@ main:has(> .d-facts) > .d-facts {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 0 34px color-mix(in oklch, var(--d-brand) calc(60% * var(--d-glow)), transparent));
   animation:
     h-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both,
     h-foil 7s ease-in-out 1.2s infinite;
@@ -2526,7 +2536,6 @@ main:has(> .d-facts) > .d-facts {
   box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--d-brand) 40%, transparent);
   color: var(--d-code-ink);
   cursor: pointer;
-  backdrop-filter: blur(12px);
   transition: box-shadow 0.2s;
 }
 .h-command:hover {
@@ -2625,14 +2634,16 @@ main:has(> .d-facts) > .d-facts {
 /* The floor under the hand: the six rarities' colours, left to right, as light. */
 .h-fan::before {
   position: absolute;
-  right: 12%;
-  bottom: 6px;
-  left: 12%;
-  height: 90px;
+  right: 4%;
+  bottom: -70px;
+  left: 4%;
+  height: 240px;
   border-radius: 50%;
   background: linear-gradient(90deg, #9aa4b2, #5fd66e, #4aa3ff, #b07cff, #ffa733, #ff4d5a);
-  filter: blur(54px);
-  opacity: calc(0.42 * var(--d-glow));
+  /* Soft by its mask, not by a blur: the same glow, and nothing for the browser to blur. */
+  -webkit-mask-image: radial-gradient(ellipse closest-side, black 0%, rgb(0 0 0 / 0.5) 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse closest-side, black 0%, rgb(0 0 0 / 0.5) 40%, transparent 100%);
+  opacity: calc(0.36 * var(--d-glow));
   content: "";
 }
 .h-fan li {
@@ -2674,8 +2685,11 @@ main:has(> .d-facts) > .d-facts {
   border-radius: 9.4% / 7%;
   background: none;
   cursor: pointer;
-  filter: drop-shadow(0 26px 30px color-mix(in oklch, var(--tone) 46%, transparent))
-    drop-shadow(0 12px 16px oklch(0 0 0 / 0.55));
+  /* A shadow of the card's own shape. A drop-shadow filter draws the same thing and is blurred again on every
+     frame the card moves in. */
+  box-shadow:
+    0 26px 34px -6px color-mix(in oklch, var(--tone) 46%, transparent),
+    0 12px 18px -2px oklch(0 0 0 / 0.55);
   transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -2717,9 +2731,8 @@ main:has(> .d-facts) > .d-facts {
 .h-facts li {
   padding: 22px 24px 24px;
   border-radius: 22px;
-  background: color-mix(in oklch, var(--d-panel) 70%, transparent);
+  background: color-mix(in oklch, var(--d-panel) 84%, transparent);
   box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--d-brand) 18%, var(--d-line));
-  backdrop-filter: blur(10px);
 }
 .h-facts strong {
   display: block;
