@@ -174,7 +174,7 @@ test.describe("a case", () => {
 test.describe("the six tiers", () => {
   test("each plays a show of its own as its card turns, and none of them looks like another", async ({ page }) => {
     // Arrange
-    test.setTimeout(120_000);
+    test.setTimeout(240_000);
     const errors = watchErrors(page);
     await page.goto(at("/docs/rarity-tiers/"));
     await hydrated(page, ".d-place");
@@ -183,33 +183,45 @@ test.describe("the six tiers", () => {
     const shows: string[][] = [];
 
     // Act: open each, turn it early with a press, and note what is on the stage behind it.
-    for (let index = 0; index < 6; index += 1) {
+    // Every part an effect puts on the page is written down the moment it is added, so nothing here depends on
+    // looking at the right time: a busy machine plays a reveal late, and a part is gone again within a second.
+    await page.evaluate(() => {
+      const seen = new Set<string>();
+      (window as unknown as { fxSeen: Set<string> }).fxSeen = seen;
+      new MutationObserver((records) => {
+        for (const record of records) {
+          for (const node of record.addedNodes) {
+            if (!(node instanceof Element)) continue;
+            for (const part of [node, ...node.querySelectorAll("[class*='rco-fx-']")]) {
+              for (const name of part.classList) if (/^rco-fx-(?!play|cover|canvas|layer)/.test(name)) seen.add(name);
+            }
+          }
+        }
+      }).observe(document.body, { childList: true, subtree: true });
+    });
+
+    // What only that tier's show puts on the stage, common to mythic.
+    const marks = ["slam", "ripples", "frost", "sigil", "pillar", "cracks"];
+    for (const [index, mark] of marks.entries()) {
       // oxlint-disable-next-line no-await-in-loop -- one card after another, as a visitor would
+      await page.evaluate(() => (window as unknown as { fxSeen: Set<string> }).fxSeen.clear());
+      // oxlint-disable-next-line no-await-in-loop
       await places.nth(index).click();
-      const card = page.getByRole("button", { name: "Turn the card over, then keep it" });
       // oxlint-disable-next-line no-await-in-loop
-      await card.click();
-      const layer = page.locator(".rco-stage .rco-fx-layer");
+      await page.waitForFunction(
+        (name) => (window as unknown as { fxSeen: Set<string> }).fxSeen.has(name),
+        `rco-fx-${mark}`,
+        { timeout: 30_000 },
+      );
       // oxlint-disable-next-line no-await-in-loop
-      await expect(layer.locator(".rco-fx-play").first()).toBeAttached();
+      shows.push(await page.evaluate(() => [...(window as unknown as { fxSeen: Set<string> }).fxSeen]));
+      // A press on the dimmed page sends the card home, and the stage is cleared for the next.
       // oxlint-disable-next-line no-await-in-loop
-      await page.waitForTimeout(650);
+      await page.mouse.click(8, 8);
       // oxlint-disable-next-line no-await-in-loop
-      const parts = await layer
-        .locator("[class*='rco-fx-']")
-        .evaluateAll((all) => [
-          ...new Set(
-            all
-              .flatMap((part) => Array.from(part.classList))
-              .filter((name) => /^rco-fx-(?!play|cover|canvas)/.test(name)),
-          ),
-        ]);
-      shows.push(parts);
-      // A second press sends it home, and the stage is cleared for the next.
+      await expect(page.locator(".rco-backdrop")).toHaveCSS("pointer-events", "none", { timeout: 30_000 });
       // oxlint-disable-next-line no-await-in-loop
-      await card.click();
-      // oxlint-disable-next-line no-await-in-loop
-      await expect(page.locator(".rco-backdrop")).toHaveCSS("pointer-events", "none");
+      await expect(page.locator(".rco-stage .rco-fx-play")).toHaveCount(0, { timeout: 30_000 });
     }
 
     // Assert: the last four tiers each put parts on the stage that no other tier does. (The first two are made
