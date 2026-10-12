@@ -141,15 +141,39 @@ test.describe("the bar", () => {
     await expect(html).toHaveClass(/(^|\s)dark(\s|$)/);
   });
 
-  test("the Hype Stack link says where the visitor came from", async ({ page }) => {
+  test("Hype Stack is a card beside the page, not a button in the bar, and its link says where the visitor came from", async ({
+    page,
+  }) => {
     // Act
-    await page.goto(at("/"));
-    const link = page.locator("header").getByRole("link", { name: "Hype Stack" });
+    await page.goto(at("/docs/installation/"));
+    const card = page.locator(".d-toc .d-hype-card");
 
-    // Assert
-    await expect(link).toHaveCount(1);
-    const href = (await link.getAttribute("href")) ?? "";
-    expect(href.startsWith("https://www.hype-stack.dev/"), `href is ${href}`).toBe(true);
-    expect(href).toContain("utm_source=react-cards-opening");
+    // Assert: one card, with its pictures, and nothing about Hype Stack in the bar.
+    await expect(card).toBeVisible();
+    await expect(card).toContainText("Build the rest with Hype Stack");
+    await expect(card.locator("img")).toHaveCount(3);
+    await expect(page.locator("header").getByRole("link", { name: /Hype Stack/ })).toHaveCount(0);
+    const href = (await card.getAttribute("href")) ?? "";
+    expect(href.startsWith("https://www.hype-stack.dev/?"), `href is ${href}`).toBe(true);
+    const query = new URL(href).searchParams;
+    expect(query.get("ref")).toBe("react-cards-opening");
+    expect(query.get("utm_source")).toBe("react-cards-opening");
+    expect(query.get("utm_campaign")).toBe("docs-sidebar");
+  });
+
+  test("on a phone the card closes the page", async ({ page }) => {
+    // Arrange
+    await page.setViewportSize({ width: 390, height: 844 });
+
+    // Act
+    await page.goto(at("/docs/installation/"));
+    const card = page.locator(".d-toc .d-hype-card");
+    await card.scrollIntoViewIfNeeded();
+
+    // Assert: the card is there, the list of headings is not, and nothing runs off the side.
+    await expect(card).toBeVisible();
+    await expect(page.locator(".d-toc nav")).toBeHidden();
+    const box = await card.boundingBox();
+    expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(390);
   });
 });

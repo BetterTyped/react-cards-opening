@@ -151,12 +151,6 @@ function Navbar({ onMenu }: { onMenu: () => void }) {
             </svg>
           </a>
           <ThemeToggle />
-          <a className="d-pill d-pill-brand" href={hypeStack("docs-navbar")} target="_blank" rel="noopener">
-            Hype Stack
-            <svg viewBox="0 0 24 24" aria-hidden>
-              <path d="M7 17 17 7M9 7h8v8" />
-            </svg>
-          </a>
         </div>
       </div>
     </header>

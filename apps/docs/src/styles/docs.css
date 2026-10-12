@@ -478,7 +478,12 @@ body {
   min-width: 0;
   max-width: 780px;
 }
+/* On a narrow screen there is no right column: the list of headings goes, and the card closes the page. */
 .d-toc {
+  max-width: 420px;
+  margin-top: 40px;
+}
+.d-toc nav {
   display: none;
 }
 
@@ -1233,14 +1238,25 @@ main:has(> .d-facts) > .d-facts {
 
 @media (min-width: 1240px) {
   .d-article-grid {
-    grid-template-columns: minmax(0, 1fr) 200px;
+    grid-template-columns: minmax(0, 1fr) 248px;
   }
   .d-toc {
-    display: block;
     position: sticky;
     top: calc(var(--d-bar) + 28px);
     align-self: start;
+    max-width: none;
+    margin-top: 0;
+    /* A long page's list scrolls inside the column, so the card under it is never pushed off the screen. */
+    max-height: calc(100vh - var(--d-bar) - 48px);
+    overflow-y: auto;
+    scrollbar-width: none;
     font-size: 14px;
+  }
+  .d-toc nav {
+    display: block;
+  }
+  .d-toc nav + .d-hype-card {
+    margin-top: 28px;
   }
   .d-toc h2 {
     margin: 0 0 8px;
@@ -1253,12 +1269,12 @@ main:has(> .d-facts) > .d-facts {
     padding: 0;
     list-style: none;
   }
-  .d-toc a {
+  .d-toc nav a {
     display: block;
     padding: 4px 0;
     color: var(--d-dim);
   }
-  .d-toc a:hover {
+  .d-toc nav a:hover {
     color: var(--d-ink);
   }
 }
@@ -2367,6 +2383,111 @@ body::after {
 }
 @media (prefers-reduced-motion: reduce) {
   .d-fan li {
+    transition: none;
+  }
+}
+
+/* ---------- the card that sends a reader to Hype Stack ---------- */
+
+.d-hype-card {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  padding: 0 16px 16px;
+  border-radius: 20px;
+  background: color-mix(in oklch, var(--d-panel) 82%, black);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklch, var(--d-hype) 22%, var(--d-line)),
+    0 24px 50px -30px color-mix(in oklch, var(--d-hype) 60%, black);
+  color: var(--d-ink);
+  transition:
+    translate 0.2s,
+    box-shadow 0.2s;
+}
+.d-hype-card:hover {
+  translate: 0 -2px;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklch, var(--d-hype) 50%, var(--d-line)),
+    0 30px 60px -30px color-mix(in oklch, var(--d-hype) 80%, black);
+}
+/* Three of its screens, leaning on each other and fading into the card. */
+.d-hype-shots {
+  position: relative;
+  display: block;
+  height: 128px;
+  margin: 0 -16px 12px;
+  -webkit-mask-image: linear-gradient(180deg, black 45%, transparent 100%);
+  mask-image: linear-gradient(180deg, black 45%, transparent 100%);
+}
+.d-hype-shots img {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  width: 70%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow:
+    0 0 0 1px oklch(1 0 0 / 0.1),
+    0 14px 30px -10px oklch(0 0 0 / 0.8);
+  transition: translate 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.d-hype-shots img:nth-child(1) {
+  translate: -104% 12px;
+  rotate: -8deg;
+  opacity: 0.8;
+}
+.d-hype-shots img:nth-child(2) {
+  z-index: 1;
+  translate: -50% 0;
+}
+.d-hype-shots img:nth-child(3) {
+  translate: 4% 12px;
+  rotate: 8deg;
+  opacity: 0.8;
+}
+.d-hype-card:hover .d-hype-shots img:nth-child(1) {
+  translate: -112% 8px;
+}
+.d-hype-card:hover .d-hype-shots img:nth-child(3) {
+  translate: 12% 8px;
+}
+.d-hype-card strong {
+  font-size: 16.5px;
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+.d-hype-text {
+  margin-top: 8px;
+  color: var(--d-dim);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.d-hype-cta {
+  display: grid;
+  height: 42px;
+  place-items: center;
+  margin-top: 16px;
+  border-radius: 12px;
+  background: oklch(0.985 0.005 300);
+  box-shadow: 0 0 0 3px oklch(1 0 0 / 0.14);
+  color: oklch(0.2 0.03 292);
+  font-size: 14.5px;
+  font-weight: 650;
+}
+.d-hype-card:hover .d-hype-cta {
+  background: var(--d-hype);
+  color: oklch(0.99 0.01 60);
+}
+.d-hype-card small {
+  margin-top: 12px;
+  color: var(--d-faint);
+  font-size: 12px;
+  text-align: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .d-hype-card,
+  .d-hype-shots img {
     transition: none;
   }
 }
