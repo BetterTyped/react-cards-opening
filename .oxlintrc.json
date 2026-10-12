@@ -32,7 +32,9 @@
     "**/vite.config.*.timestamp*",
     "**/vitest.config.*.timestamp*",
     "**/test-output/**",
-    "**/routeTree.gen.ts"
+    "**/routeTree.gen.ts",
+    ".agents/**",
+    ".claude/**"
   ],
   "settings": {
     "import/internal-regex": "^@react-cards-opening/",
