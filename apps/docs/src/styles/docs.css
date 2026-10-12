@@ -3042,11 +3042,18 @@ main:has(> .d-facts) > .d-facts {
 .d-ad:hover .d-ad-go {
   filter: brightness(1.08);
 }
-.d-ad-go i {
-  font-style: normal;
+.d-ad-go svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
   transition: translate 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.d-ad:hover .d-ad-go i {
+.d-ad:hover .d-ad-go svg {
   translate: 3px 0;
 }
 
@@ -3126,16 +3133,22 @@ main:has(> .d-facts) > .d-facts {
 .d-float[data-strip] .d-ad strong b {
   display: inline;
 }
+/* Folded, the button is the arrow alone: a round one, with the arrow in the middle of it. */
 .d-float[data-strip] .d-ad-go {
   grid-column: 2;
   grid-row: 1 / span 2;
   width: 40px;
   height: 40px;
   margin: 0;
-  font-size: 0;
+  border-radius: 999px;
+  box-shadow: 0 6px 18px -6px var(--hs);
 }
-.d-float[data-strip] .d-ad-go i {
-  font-size: 20px;
+.d-float[data-strip] .d-ad-go span {
+  display: none;
+}
+.d-float[data-strip] .d-ad-go svg {
+  width: 19px;
+  height: 19px;
 }
 @media (max-width: 640px) {
   .d-float,
@@ -3169,10 +3182,15 @@ main:has(> .d-facts) > .d-facts {
     width: 40px;
     height: 40px;
     margin: 0;
-    font-size: 0;
+    border-radius: 999px;
+    box-shadow: 0 6px 18px -6px var(--hs);
   }
-  .d-float .d-ad-go i {
-    font-size: 20px;
+  .d-float .d-ad-go span {
+    display: none;
+  }
+  .d-float .d-ad-go svg {
+    width: 19px;
+    height: 19px;
   }
   /* Room under the footer, so the strip never sits on its last line. */
   .d-foot {
@@ -3184,7 +3202,7 @@ main:has(> .d-facts) > .d-facts {
     animation: none;
   }
   .d-ad,
-  .d-ad-go i {
+  .d-ad-go svg {
     transition: none;
   }
 }
