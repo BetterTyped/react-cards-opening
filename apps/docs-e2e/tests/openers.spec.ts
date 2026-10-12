@@ -118,15 +118,28 @@ test.describe("a wheel", () => {
 });
 
 test.describe("the home page", () => {
-  test("holds a hand of six cards, and switches between the five openers", async ({ page }) => {
+  test("holds a hand of six cards that plays by itself, and switches between the five openers", async ({ page }) => {
     // Arrange
+    test.setTimeout(90_000);
     const errors = watchErrors(page);
     await page.goto(at("/"));
-    await hydrated(page, ".d-fan");
+    await hydrated(page, ".h-fan");
 
-    // Assert: one card of every tier, face down, and lights drifting behind them.
-    await expect(page.locator(".d-fan .rco-card[data-down]")).toHaveCount(6);
+    // Assert: one card of every tier, and left alone the hand starts turning them over, each with a show behind it.
+    await expect(page.locator(".h-fan .rco-card")).toHaveCount(6);
+    await expect(page.locator(".h-card[data-up]").first()).toBeAttached({ timeout: 15_000 });
     await expect(page.locator(".h-air canvas.rco-fx-canvas")).toHaveCount(1);
+
+    // Act: a card that is pressed opens for real, over the page.
+    await page.locator(".h-card:not([data-up])").last().click();
+    // The page holds more than one reveal (the hand's, and the opener's under it): one of them is up.
+    const up = () =>
+      page
+        .locator(".rco-backdrop")
+        .evaluateAll((all) => all.filter((one) => getComputedStyle(one).pointerEvents === "auto").length);
+    await expect.poll(up).toBe(1);
+    await page.mouse.click(8, 8);
+    await expect.poll(up, { timeout: 30_000 }).toBe(0);
 
     // Act and assert: each tab puts its own opener on the stage.
     const tabs = page.getByRole("tab");

@@ -56,6 +56,11 @@ export type Block =
   | { kind: "table"; head: readonly string[]; rows: readonly (readonly string[])[] }
   | { kind: "preview"; demo: Demo; caption?: string }
   | { kind: "faq"; items: readonly { question: string; answer: string }[] }
+  /**
+   * A wall of live tiles. `shows` is the six signature shows, `combos` the named stacks of effects, `effects`
+   * every effect in the library, `components` every component.
+   */
+  | { kind: "gallery"; show: "shows" | "combos" | "effects" | "components" }
   /** Links to other pages, as tiles. `tier` puts a dot in that tier's colour on the tile. */
   | { kind: "cards"; items: readonly { path: string; title: string; text: string; tier?: string }[] };
 
@@ -75,6 +80,8 @@ export interface DocPage {
   description: string;
   /** The first paragraph: what this is and when to reach for it. */
   lead: string;
+  /** A page that shows more than it says: it takes the whole width, with no column of headings beside it. */
+  wide?: boolean;
   blocks: readonly Block[];
   /** Paths of pages worth reading next. At least three on a finished page. */
   related: readonly string[];

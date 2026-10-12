@@ -478,7 +478,7 @@ body {
   min-width: 0;
   max-width: 780px;
 }
-.d-toc {
+.d-rail {
   display: none;
 }
 
@@ -1229,22 +1229,268 @@ main:has(> .d-facts) > .d-facts {
   text-underline-offset: 3px;
 }
 
+/* ---------- the galleries ---------- */
+
+/* A page that shows more than it says takes the whole panel. What it does say keeps a line that can be read. */
+.d-article-grid[data-wide],
+.d-article-grid[data-wide] .d-article {
+  max-width: none;
+}
+.d-article-grid[data-wide]
+  .d-article
+  > :where(h1, p, ul, ol, dl, pre, aside, .d-table, .d-code, .d-crumbs, .d-pager, .d-preview) {
+  max-width: 780px;
+}
+.g-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-top: 26px;
+  color: var(--d-faint);
+  font-size: 14px;
+}
+.g-wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+.g-wall[data-size="small"] {
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 10px;
+}
+.g-tile {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 10px;
+  padding: 8px 8px 14px;
+  border-radius: 22px;
+  background: var(--d-sunk);
+  box-shadow: 0 0 0 1px transparent;
+  transition:
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s;
+}
+.g-tile:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 0 0 1px color-mix(in oklch, var(--tone) 60%, transparent),
+    0 22px 50px -26px var(--tone);
+}
+/* The ground a tile plays on. What a stack throws about is cut at its edge. */
+.g-stage {
+  position: relative;
+  aspect-ratio: 1 / 0.86;
+  overflow: hidden;
+  border-radius: 16px;
+  isolation: isolate;
+}
+.g-tile[data-size="small"] .g-stage {
+  aspect-ratio: 1 / 1.04;
+  border-radius: 14px;
+}
+.g-room {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.g-card {
+  position: relative;
+  z-index: 1;
+  width: 29%;
+  filter: drop-shadow(0 14px 18px oklch(0 0 0 / 0.5));
+}
+.g-tile[data-size="small"] .g-card {
+  width: 34%;
+}
+.g-about {
+  display: grid;
+  gap: 7px;
+  padding: 0 8px;
+}
+.g-about b {
+  font-size: 15.5px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.g-tile[data-size="small"] .g-about {
+  gap: 2px;
+  padding: 0 4px;
+}
+.g-tile[data-size="small"] .g-about b {
+  font-size: 13.5px;
+}
+.g-names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.g-names i {
+  padding: 2px 7px;
+  border-radius: 7px;
+  background: color-mix(in oklch, var(--tone) 14%, transparent);
+  color: color-mix(in oklch, var(--tone) 55%, var(--d-ink));
+  font: 500 11.5px var(--d-mono);
+}
+.g-tile[data-size="small"] .g-names i {
+  padding: 0;
+  background: none;
+  color: var(--d-faint);
+}
+.g-kind {
+  margin-top: 34px;
+}
+.g-kind h3 {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.g-kind h3 small,
+.g-part header small {
+  color: var(--d-faint);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* The components, live: an opener takes the row, the pieces go two to a row. */
+.g-parts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 44px 20px;
+  margin-top: 22px;
+}
+.g-part {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 14px;
+}
+.g-part[data-wide] {
+  grid-column: 1 / -1;
+}
+.g-part header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 14px;
+}
+.g-part-name {
+  color: var(--d-ink);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  text-decoration: none;
+}
+.g-part header > span {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  color: var(--d-dim);
+  font-size: 15px;
+}
+.g-part-go {
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--d-brand) 16%, transparent);
+  color: var(--d-brand-ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.g-part-go:hover {
+  background: color-mix(in oklch, var(--d-brand) 30%, transparent);
+}
+.g-part-go::after {
+  margin-left: 6px;
+  content: "\203A";
+}
+/* Room is kept for a demo before it is there, so the page does not jump as it arrives. */
+.g-part-stage {
+  display: grid;
+  min-height: 280px;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 22px;
+  box-shadow:
+    0 0 0 1px color-mix(in oklch, var(--d-brand) 22%, var(--d-line)),
+    0 30px 70px -40px color-mix(in oklch, var(--d-brand) 70%, black);
+}
+.g-part[data-wide] .g-part-stage {
+  min-height: 420px;
+}
+/* A demo fills the room kept for it, and stands in the middle of it. */
+.g-part-stage > .d-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: center;
+}
+/* A demo centred with its own margins still takes the width it is given. */
+.g-part-stage > .d-stage > * {
+  width: 100%;
+}
+.g-part-stage > .g-tile {
+  height: 100%;
+  border-radius: 0;
+}
+.g-part-stage > .g-tile .g-stage {
+  flex: 1;
+  aspect-ratio: auto;
+  min-height: 240px;
+}
+@media (max-width: 860px) {
+  .g-parts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-tile {
+    transition: none;
+  }
+}
+
 /* ---------- wider and narrower ---------- */
 
 @media (min-width: 1240px) {
   .d-article-grid {
     grid-template-columns: minmax(0, 1fr) 248px;
   }
-  .d-toc {
-    display: block;
+  .d-article-grid[data-wide] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  /* The column beside the page: the list of headings, and under it the Hype Stack card. A long list scrolls. */
+  .d-rail {
     position: sticky;
     top: calc(var(--d-bar) + 28px);
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
     align-self: start;
-    /* The corner under the list belongs to the Hype Stack card: a long list scrolls above it, never under it. */
-    max-height: calc(100vh - var(--d-bar) - 48px - var(--d-hype-room, 0px));
+    max-height: calc(100vh - var(--d-bar) - 48px);
+  }
+  .d-rail .d-ad {
+    flex: none;
+  }
+  .d-toc {
+    display: block;
+    min-height: 0;
     overflow-y: auto;
     scrollbar-width: none;
     font-size: 14px;
+  }
+  /* Beside a docs page the card is in the column, so the one in the corner steps aside. */
+  .d-float[data-docs] {
+    display: none;
   }
   .d-toc h2 {
     margin: 0 0 8px;
@@ -1948,40 +2194,90 @@ main:has(> .d-facts) > .d-facts {
 
 /* ---------- the night the site is set in ---------- */
 
-/* Two lights behind everything, and a grid that fades out below the fold. Fixed, so the page scrolls over them. */
-body::before,
-body::after {
+/*
+ * A sky fixed to the window: the page scrolls over it and it stays where it is. Four slow lights in the site's
+ * colours, and a canvas over them for the stars, the rising lights and the sparkles (see backdrop.tsx).
+ */
+.d-sky {
   position: fixed;
   inset: 0;
   z-index: -1;
-  content: "";
+  overflow: hidden;
+  background: var(--d-page);
   pointer-events: none;
+  contain: strict;
 }
-body::before {
-  background:
-    radial-gradient(
-      55% 46% at 12% -4%,
-      color-mix(in oklch, var(--d-brand) calc(26% * var(--d-glow)), transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      46% 40% at 92% 4%,
-      color-mix(in oklch, var(--d-pink) calc(16% * var(--d-glow)), transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      70% 50% at 50% 108%,
-      color-mix(in oklch, var(--d-brand) calc(18% * var(--d-glow)), transparent),
-      transparent 70%
-    );
+.d-sky i {
+  position: absolute;
+  width: 74vmax;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  opacity: calc(0.2 * var(--d-glow));
+  will-change: transform;
+  animation: d-sky-drift 38s ease-in-out infinite alternate;
 }
-body::after {
-  background-image:
-    linear-gradient(color-mix(in oklch, var(--d-ink) 7%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in oklch, var(--d-ink) 7%, transparent) 1px, transparent 1px);
-  background-size: 64px 64px;
-  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent 78%);
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent 78%);
+.d-sky[data-lively] i {
+  opacity: calc(0.36 * var(--d-glow));
+}
+.d-sky i:nth-child(1) {
+  top: -36vmax;
+  left: -24vmax;
+  background: radial-gradient(circle, var(--d-brand), transparent 64%);
+}
+.d-sky i:nth-child(2) {
+  top: -40vmax;
+  right: -26vmax;
+  background: radial-gradient(circle, var(--d-pink), transparent 64%);
+  animation-duration: 47s;
+  animation-delay: -14s;
+  animation-direction: alternate-reverse;
+}
+.d-sky i:nth-child(3) {
+  bottom: -48vmax;
+  left: 4vw;
+  background: radial-gradient(circle, oklch(0.62 0.2 255), transparent 64%);
+  animation-duration: 53s;
+  animation-delay: -22s;
+}
+.d-sky i:nth-child(4) {
+  right: -30vmax;
+  bottom: -50vmax;
+  background: radial-gradient(circle, var(--d-gold), transparent 60%);
+  opacity: calc(0.12 * var(--d-glow));
+  animation-duration: 44s;
+  animation-delay: -30s;
+  animation-direction: alternate-reverse;
+}
+@keyframes d-sky-drift {
+  to {
+    transform: translate3d(10vmax, 7vmax, 0) scale(1.18);
+  }
+}
+.d-sky canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.dark .d-sky canvas {
+  mix-blend-mode: screen;
+}
+/* The corners fall away, so the eye stays in the middle of the window. */
+.d-sky::after {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 78% 70% at 50% 42%,
+    transparent 55%,
+    color-mix(in oklch, var(--d-page) 60%, black)
+  );
+  opacity: calc(0.75 * var(--d-glow));
+  content: "";
+}
+@media (prefers-reduced-motion: reduce) {
+  .d-sky i {
+    animation: none;
+  }
 }
 
 /* The bar is glass with a lit edge. */
@@ -2040,47 +2336,140 @@ body::after {
 .h-hero {
   position: relative;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   justify-items: center;
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: clamp(28px, 4vw, 56px) 20px 0;
+  padding: clamp(36px, 5.5vw, 84px) 20px 0;
   text-align: center;
 }
-/* The air around the hand of cards: lights that drift up through it. */
-.h-air {
+/*
+ * The hero's own light: one wide glow that rises behind the hand of cards, and a floor of the six rarity colours
+ * under it. It is part of the hero, not of the window, so it is left behind as the page scrolls.
+ */
+.h-glow {
   position: absolute;
-  inset: 0 0 -60px;
+  inset: calc(var(--d-bar) * -1 - 12px) 0 -80px;
   z-index: -1;
   overflow: hidden;
-  -webkit-mask-image: radial-gradient(ellipse 60% 62% at 50% 62%, black 40%, transparent 100%);
-  mask-image: radial-gradient(ellipse 60% 62% at 50% 62%, black 40%, transparent 100%);
+  pointer-events: none;
+  background:
+    radial-gradient(
+      44% 36% at 50% 76%,
+      color-mix(in oklch, var(--d-brand) calc(46% * var(--d-glow)), transparent),
+      transparent 100%
+    ),
+    radial-gradient(
+      30% 26% at 28% 82%,
+      color-mix(in oklch, oklch(0.62 0.2 255) calc(24% * var(--d-glow)), transparent),
+      transparent 100%
+    ),
+    radial-gradient(
+      30% 26% at 72% 82%,
+      color-mix(in oklch, var(--d-pink) calc(28% * var(--d-glow)), transparent),
+      transparent 100%
+    ),
+    radial-gradient(
+      80% 40% at 50% 0%,
+      color-mix(in oklch, var(--d-brand) calc(16% * var(--d-glow)), transparent),
+      transparent 100%
+    );
+  -webkit-mask-image: linear-gradient(180deg, black 70%, transparent);
+  mask-image: linear-gradient(180deg, black 70%, transparent);
+}
+/* The words arrive one after another, from a little below where they end up. */
+.h-copy {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  width: 100%;
+  max-width: 1100px;
+}
+.h-copy > * {
+  animation: h-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.h-copy > :nth-child(2) {
+  animation-delay: 0.08s;
+}
+.h-copy > :nth-child(3) {
+  animation-delay: 0.16s;
+}
+.h-copy > :nth-child(4) {
+  animation-delay: 0.24s;
+}
+@keyframes h-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
 }
 .h-kicker {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 7px 14px 7px 12px;
+  gap: 10px;
+  padding: 5px 16px 5px 5px;
   border-radius: 999px;
   background: color-mix(in oklch, var(--d-brand) 14%, transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--d-brand) 34%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--d-brand) 36%, transparent);
   color: var(--d-dim);
   font-size: 14px;
-  font-weight: 550;
+  font-weight: 520;
+  backdrop-filter: blur(10px);
+}
+.h-kicker b {
+  padding: 3px 11px;
+  border-radius: 999px;
+  background: linear-gradient(100deg, var(--d-brand), var(--d-pink));
+  box-shadow: 0 4px 16px -4px color-mix(in oklch, var(--d-pink) 80%, transparent);
+  color: oklch(0.99 0.01 300);
+  font-size: 12.5px;
+  font-weight: 650;
 }
 .h-hero .h-kicker a {
   color: var(--d-hype);
   font-weight: 650;
 }
 .h-hero h1 {
-  max-width: 13ch;
-  margin-top: 22px;
-  font-size: clamp(44px, 7.2vw, 96px);
+  margin-top: 28px;
+  font-size: clamp(46px, 7.6vw, 104px);
   font-weight: 700;
-  line-height: 0.96;
+  line-height: 0.98;
   letter-spacing: -0.055em;
   text-wrap: balance;
 }
-.h-hero h1 em,
+/*
+ * The second half of the headline is foil: violet into pink, with one warm glint that crosses it now and then, the
+ * way light crosses a holo card when it is tilted.
+ */
+.h-hero h1 span {
+  display: block;
+  padding-bottom: 0.1em;
+  background: linear-gradient(
+    100deg,
+    var(--d-brand-ink) 0%,
+    var(--d-pink) 38%,
+    var(--d-gold) 50%,
+    var(--d-pink) 62%,
+    var(--d-brand-ink) 100%
+  );
+  background-size: 260% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 34px color-mix(in oklch, var(--d-brand) calc(60% * var(--d-glow)), transparent));
+  animation:
+    h-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both,
+    h-foil 7s ease-in-out 1.2s infinite;
+}
+@keyframes h-foil {
+  0%,
+  55% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0% 0;
+  }
+}
 .h-section h2 em,
 .h-facts strong {
   background: linear-gradient(100deg, var(--d-brand-ink) 10%, var(--d-pink) 90%);
@@ -2090,10 +2479,10 @@ body::after {
   font-style: normal;
 }
 .h-lead {
-  max-width: 46ch;
-  margin-top: 18px;
+  max-width: 50ch;
+  margin-top: 26px;
   color: var(--d-dim);
-  font-size: clamp(17px, 1.5vw, 20px);
+  font-size: clamp(17px, 1.45vw, 20px);
   line-height: 1.5;
   text-wrap: balance;
 }
@@ -2102,73 +2491,218 @@ body::after {
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
-  margin-top: 24px;
+  margin-top: 32px;
 }
-.h-actions .d-pill {
-  height: 50px;
-  padding: 0 26px;
-  font-size: 16px;
-}
-.h-install {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  max-width: 100%;
-  margin-top: 16px;
-  padding: 10px 16px;
-  overflow-x: auto;
+.h-actions .d-pill-solid {
+  height: 52px;
+  padding: 0 28px;
   border-radius: 14px;
-  background: color-mix(in oklch, var(--d-code) 80%, transparent);
-  box-shadow: inset 0 0 0 1px var(--d-line);
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.3),
+    0 14px 40px -10px color-mix(in oklch, var(--d-brand) 90%, transparent),
+    0 0 0 1px color-mix(in oklch, var(--d-pink) 40%, transparent);
+  font-size: 16px;
+  font-weight: 620;
+  transition:
+    transform 0.2s,
+    filter 0.2s;
+}
+.h-actions .d-pill-solid:hover {
+  transform: translateY(-2px);
+}
+/* The install line, at the width of a button: the start of it is enough to know what it is, and a press copies it all. */
+.h-command {
+  display: inline-flex;
+  width: 330px;
+  max-width: 100%;
+  height: 52px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 14px;
+  /* A code box is dark in both of the site's modes, so what is written in it is light in both. */
+  background: color-mix(in oklch, var(--d-code) 90%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--d-brand) 40%, transparent);
   color: var(--d-code-ink);
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition: box-shadow 0.2s;
+}
+.h-command:hover {
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--d-brand) 70%, var(--d-line));
+}
+.h-command i {
+  flex: none;
+  color: oklch(0.8 0.15 298);
+  font: 500 14px var(--d-mono);
+}
+.h-command code {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
   font: 500 13.5px var(--d-mono);
+  text-align: left;
   white-space: nowrap;
+  -webkit-mask-image: linear-gradient(90deg, black 74%, transparent);
+  mask-image: linear-gradient(90deg, black 74%, transparent);
 }
-.h-install i {
-  color: var(--d-brand-ink);
-  font-style: normal;
-}
-.h-table {
-  width: 100%;
-  /* A fanned hand is wider than the cards in it: what swings past the page's edge is cut, not scrolled to. */
-  overflow-x: clip;
-  overflow-y: visible;
-  margin-top: clamp(8px, 1.5vw, 20px);
+.h-command span {
+  flex: none;
+  padding: 4px 9px;
+  border-radius: 8px;
+  background: color-mix(in oklch, var(--d-brand) 34%, transparent);
+  color: oklch(0.9 0.08 298);
+  font-size: 12.5px;
+  font-weight: 600;
 }
 .h-note {
-  margin-top: 26px;
+  margin-top: 8px;
   color: var(--d-faint);
   font-size: 14.5px;
 }
 
-/* A hand of cards: each a little further round than the last, and lower the further it is from the middle. */
-.d-fan {
+/* ---------- the hand of cards ---------- */
+
+.h-stage {
+  position: relative;
+  width: 100%;
+  /* The light behind the hand is wider than a narrow window: what falls outside is cut, never scrolled to. */
+  overflow-x: clip;
+  margin-top: clamp(28px, 4vw, 56px);
+}
+/* Light that fans out from behind the hand and turns, slowly: what a card game puts behind its best pull. */
+.h-stage::before {
+  position: absolute;
+  bottom: -46%;
+  left: 50%;
+  z-index: 0;
+  width: min(1500px, 130vw);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    color-mix(in oklch, var(--d-brand) 30%, transparent) 0deg 5deg,
+    transparent 5deg 13deg,
+    color-mix(in oklch, var(--d-pink) 22%, transparent) 13deg 16deg,
+    transparent 16deg 24deg
+  );
+  opacity: calc(0.5 * var(--d-glow));
+  pointer-events: none;
+  translate: -50% 0;
+  -webkit-mask-image: radial-gradient(circle, black 8%, transparent 62%);
+  mask-image: radial-gradient(circle, black 8%, transparent 62%);
+  animation: h-rays 90s linear infinite;
+  content: "";
+}
+@keyframes h-rays {
+  to {
+    rotate: 1turn;
+  }
+}
+/* Where the shows play: behind the cards, with room above them for whatever rises. Cut at the page's edges. */
+.h-air {
+  position: absolute;
+  inset: -200px 0 -40px;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* A show thins out as it climbs toward the words, and is gone before it reaches them. */
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 46%);
+  mask-image: linear-gradient(180deg, transparent 0%, black 46%);
+}
+/* A hand of cards: each a little further round than the last, lower and smaller the further it is from the middle. */
+.h-fan {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: center;
   margin: 0;
-  padding: 26px 0 40px;
+  padding: 30px 0 70px;
+  overflow-x: clip;
   list-style: none;
 }
-.d-fan li {
+/* The floor under the hand: the six rarities' colours, left to right, as light. */
+.h-fan::before {
+  position: absolute;
+  right: 12%;
+  bottom: 6px;
+  left: 12%;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #9aa4b2, #5fd66e, #4aa3ff, #b07cff, #ffa733, #ff4d5a);
+  filter: blur(54px);
+  opacity: calc(0.42 * var(--d-glow));
+  content: "";
+}
+.h-fan li {
+  --far: max(var(--i), calc(var(--i) * -1));
+  position: relative;
   flex: none;
-  width: clamp(92px, 13.5vw, 184px);
-  margin: 0 clamp(-22px, -1.2vw, -6px);
-  rotate: calc(var(--i) * 6.5deg);
-  translate: 0 calc(var(--i) * var(--i) * clamp(4px, 0.75vw, 10px));
+  width: calc(clamp(96px, 14.4vw, 208px) * (1 - var(--far) * 0.06));
+  margin: 0 clamp(-26px, -1.5vw, -8px);
+  rotate: calc(var(--i) * 6.2deg);
+  translate: 0 calc(var(--i) * var(--i) * clamp(4px, 0.8vw, 11px));
   transition:
-    translate 0.35s cubic-bezier(0.34, 1.4, 0.64, 1),
-    rotate 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
+    translate 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    rotate 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  /* Dealt: each card arrives from below, the middle ones first. */
+  animation: h-deal 0.9s cubic-bezier(0.22, 1, 0.36, 1) calc(0.35s + var(--far) * 0.09s) both;
 }
-.d-fan li:hover,
-.d-fan li:focus-within {
+@keyframes h-deal {
+  from {
+    opacity: 0;
+    transform: translateY(140px) rotate(calc(var(--i) * 6deg));
+  }
+}
+.h-fan li:hover,
+.h-fan li:focus-within {
+  z-index: 3;
+  rotate: calc(var(--i) * 2.4deg);
+  translate: 0 calc(var(--i) * var(--i) * clamp(4px, 0.8vw, 11px) - 30px);
+}
+/* A card that has turned stands a little forward of the ones that have not. */
+.h-fan li:has(.h-card[data-up]) {
   z-index: 2;
-  rotate: calc(var(--i) * 3deg);
-  translate: 0 calc(var(--i) * var(--i) * clamp(4px, 0.75vw, 10px) - 22px);
 }
-/* Each card stands in a pool of its tier's colour: the one hint of what is face down. */
-.d-fan .d-place {
-  filter: drop-shadow(0 22px 26px color-mix(in oklch, var(--tone) 50%, transparent))
-    drop-shadow(0 10px 14px oklch(0 0 0 / 0.5));
+.h-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 9.4% / 7%;
+  background: none;
+  cursor: pointer;
+  filter: drop-shadow(0 26px 30px color-mix(in oklch, var(--tone) 46%, transparent))
+    drop-shadow(0 12px 16px oklch(0 0 0 / 0.55));
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.h-card:hover {
+  transition-duration: 0.08s;
+}
+/* The light on a card's face that follows the pointer. */
+.h-card::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), oklch(1 0 0 / 0.34), transparent 55%);
+  mix-blend-mode: soft-light;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  content: "";
+}
+.h-card:hover::after {
+  opacity: 1;
+}
+/* In the air, on its way to the middle of the screen: its place in the hand is empty until it lands. */
+.h-card[data-away] {
+  opacity: 0;
+}
+.h-card:disabled {
+  cursor: default;
 }
 
 .h-facts {
@@ -2368,197 +2902,289 @@ body::after {
     width: 23vw;
     margin: 0 -5.6vw;
   }
+  .h-fan li {
+    width: calc(23.5vw * (1 - var(--far) * 0.05));
+    margin: 0 -5.8vw;
+  }
+  .h-command {
+    width: 100%;
+  }
+  .h-actions {
+    width: 100%;
+  }
+  .h-actions .d-pill-solid {
+    width: 100%;
+    justify-content: center;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .d-fan li {
+  .d-fan li,
+  .h-fan li,
+  .h-card {
     transition: none;
+  }
+  .h-copy > *,
+  .h-hero h1 span,
+  .h-stage::before,
+  .h-fan li {
+    animation: none;
   }
 }
 
 /* ---------- the card that sends a reader to Hype Stack ---------- */
 
-/* On a narrow screen it closes the page, above the footer. */
-.d-hype {
-  position: relative;
-  max-width: 440px;
-  margin: 56px auto 0;
-  padding: 0 20px;
+/*
+ * The one thing on a page that sells. It is laid out the way Hype Stack's own sidebar offer is: a small lit label, a
+ * headline that ends on the name in its colour, one line of why, three short points, the price, and a button the
+ * full width of the card.
+ */
+.d-ad {
+  --hs: oklch(0.68 0.2 50);
+  display: grid;
+  padding: 20px;
+  border: 1px solid color-mix(in oklch, var(--d-ink) 14%, transparent);
+  border-radius: 16px;
+  background: color-mix(in oklch, var(--d-panel) 55%, var(--d-page));
+  box-shadow: 0 26px 60px -34px color-mix(in oklch, var(--hs) 80%, transparent);
+  color: var(--d-ink);
+  text-decoration: none;
+  transition:
+    border-color 0.25s,
+    box-shadow 0.25s,
+    translate 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
-/* On a wide one it stands in the bottom right corner of every page, in the docs right under the list of headings. */
-@media (min-width: 1180px) {
-  :root {
-    --d-hype-room: 400px;
-  }
-  .d-hype {
-    position: fixed;
-    right: 28px;
-    bottom: 24px;
-    z-index: 30;
-    width: 264px;
-    max-width: none;
-    margin: 0;
-    padding: 0;
-    animation: d-hype-in 0.7s cubic-bezier(0.34, 1.3, 0.64, 1) 0.5s backwards;
-  }
+.d-ad:hover {
+  border-color: color-mix(in oklch, var(--hs) 60%, var(--d-line));
+  box-shadow: 0 30px 64px -30px color-mix(in oklch, var(--hs) 95%, transparent);
+  translate: 0 -2px;
 }
-@keyframes d-hype-in {
+.d-ad-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--hs);
+  font-size: 11.5px;
+  font-weight: 650;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.d-ad-label svg,
+.d-ad-points svg {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  fill: var(--hs);
+}
+.d-ad strong {
+  margin-top: 14px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+}
+.d-ad strong em {
+  font-style: italic;
+}
+.d-ad strong b {
+  display: block;
+  color: var(--hs);
+  font-weight: inherit;
+}
+.d-ad-text {
+  margin-top: 8px;
+  color: var(--d-dim);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.d-ad-points {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+  color: var(--d-dim);
+  font-size: 13.5px;
+  line-height: 1.35;
+}
+.d-ad-points > span {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.d-ad-points svg {
+  margin-top: 2px;
+}
+.d-ad-price {
+  margin-top: 20px;
+  color: var(--d-dim);
+  font-size: 13.5px;
+  text-align: center;
+}
+.d-ad-price b {
+  margin-right: 4px;
+  color: var(--d-ink);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.d-ad-go {
+  display: flex;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+  border-radius: 10px;
+  background: var(--hs);
+  color: oklch(0.99 0.01 60);
+  font-size: 14px;
+  font-weight: 650;
+  transition: filter 0.2s;
+}
+.d-ad:hover .d-ad-go {
+  filter: brightness(1.08);
+}
+.d-ad-go i {
+  font-style: normal;
+  transition: translate 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.d-ad:hover .d-ad-go i {
+  translate: 3px 0;
+}
+
+/*
+ * The same card in the corner of the window, on every page that has no column for it: the home page, the examples,
+ * and a docs page on a screen too narrow to keep the column beside the text. Shorter: the three points stay in the
+ * column.
+ */
+.d-float {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 30;
+  width: 280px;
+  border-radius: 16px;
+  box-shadow: 0 30px 70px -20px oklch(0 0 0 / 0.75);
+  animation: d-float-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
+}
+@keyframes d-float-in {
   from {
     opacity: 0;
-    translate: 0 28px;
+    translate: 0 24px;
   }
 }
-/* Its edge is Hype Stack's own orange, and the light behind it breathes: the one warm thing on a violet page. */
-.d-hype-card {
-  position: relative;
-  display: grid;
-  overflow: hidden;
-  padding: 0 16px 16px;
-  border-radius: 22px;
-  background:
-    radial-gradient(120% 70% at 50% 0%, color-mix(in oklch, var(--d-hype) 26%, transparent), transparent 70%),
-    color-mix(in oklch, var(--d-panel) 70%, black);
-  box-shadow:
-    inset 0 0 0 1.5px color-mix(in oklch, var(--d-hype) 70%, transparent),
-    0 0 0 4px color-mix(in oklch, var(--d-hype) 14%, transparent),
-    0 30px 70px -20px color-mix(in oklch, var(--d-hype) 70%, black),
-    0 0 60px -10px color-mix(in oklch, var(--d-hype) 45%, transparent);
-  color: oklch(0.97 0.012 300);
-  text-decoration: none;
-  transition: translate 0.2s;
-  animation: d-hype-glow 3.6s ease-in-out infinite;
+.d-float .d-ad-points {
+  display: none;
 }
-.d-hype-card:hover {
-  translate: 0 -3px;
-}
-@keyframes d-hype-glow {
-  50% {
-    box-shadow:
-      inset 0 0 0 1.5px var(--d-hype),
-      0 0 0 5px color-mix(in oklch, var(--d-hype) 24%, transparent),
-      0 30px 70px -20px color-mix(in oklch, var(--d-hype) 80%, black),
-      0 0 90px -6px color-mix(in oklch, var(--d-hype) 70%, transparent);
-  }
-}
-.d-hype-close {
+.d-float-close {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: -9px;
+  right: -9px;
   z-index: 2;
   display: grid;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   place-items: center;
   padding: 0;
   border: 0;
   border-radius: 999px;
-  background: oklch(0 0 0 / 0.55);
-  color: oklch(0.97 0.012 300 / 0.8);
+  background: var(--d-ink);
+  color: var(--d-page);
   cursor: pointer;
-  backdrop-filter: blur(6px);
 }
-.d-hype-close:hover {
-  color: oklch(1 0 0);
+.d-float-close:hover {
+  opacity: 0.8;
 }
-.d-hype-close svg {
-  width: 14px;
-  height: 14px;
+.d-float-close svg {
+  width: 13px;
+  height: 13px;
   fill: none;
   stroke: currentColor;
   stroke-width: 2.4;
   stroke-linecap: round;
 }
-/* On a narrow screen the card is part of the page, and there is nothing to put away. */
-@media (max-width: 1179px) {
-  .d-hype {
-    padding: 0 20px;
+/*
+ * Folded to a strip: the label, the headline and the way in. A phone always gets it, along the bottom. A gallery
+ * page gets it in the corner, so the card covers none of what the page is there to show.
+ */
+.d-float[data-strip] {
+  width: 372px;
+}
+.d-float[data-strip] .d-ad {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 2px 12px;
+  padding: 10px 10px 10px 14px;
+}
+.d-float[data-strip] .d-ad-text,
+.d-float[data-strip] .d-ad-price {
+  display: none;
+}
+.d-float[data-strip] .d-ad strong {
+  grid-column: 1;
+  margin: 0;
+  font-size: 15px;
+}
+.d-float[data-strip] .d-ad strong b {
+  display: inline;
+}
+.d-float[data-strip] .d-ad-go {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  font-size: 0;
+}
+.d-float[data-strip] .d-ad-go i {
+  font-size: 20px;
+}
+@media (max-width: 640px) {
+  .d-float,
+  .d-float[data-strip] {
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    width: auto;
   }
-  .d-hype-close {
+  .d-float .d-ad {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 2px 12px;
+    padding: 10px 10px 10px 14px;
+  }
+  .d-float .d-ad-text,
+  .d-float .d-ad-price {
     display: none;
   }
-}
-/* Three of its screens, leaning on each other and fading into the card. */
-.d-hype-shots {
-  position: relative;
-  display: block;
-  height: 128px;
-  margin: 0 -16px 12px;
-  -webkit-mask-image: linear-gradient(180deg, black 45%, transparent 100%);
-  mask-image: linear-gradient(180deg, black 45%, transparent 100%);
-}
-.d-hype-shots img {
-  position: absolute;
-  top: 18px;
-  left: 50%;
-  width: 70%;
-  height: auto;
-  border-radius: 8px;
-  box-shadow:
-    0 0 0 1px oklch(1 0 0 / 0.1),
-    0 14px 30px -10px oklch(0 0 0 / 0.8);
-  transition: translate 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
-}
-.d-hype-shots img:nth-child(1) {
-  translate: -104% 12px;
-  rotate: -8deg;
-  opacity: 0.8;
-}
-.d-hype-shots img:nth-child(2) {
-  z-index: 1;
-  translate: -50% 0;
-}
-.d-hype-shots img:nth-child(3) {
-  translate: 4% 12px;
-  rotate: 8deg;
-  opacity: 0.8;
-}
-.d-hype-card:hover .d-hype-shots img:nth-child(1) {
-  translate: -112% 8px;
-}
-.d-hype-card:hover .d-hype-shots img:nth-child(3) {
-  translate: 12% 8px;
-}
-.d-hype-card strong {
-  font-size: 16.5px;
-  font-weight: 650;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
-}
-.d-hype-text {
-  margin-top: 8px;
-  color: oklch(0.86 0.03 300);
-  font-size: 13.5px;
-  line-height: 1.5;
-}
-.d-hype-cta {
-  display: grid;
-  height: 44px;
-  place-items: center;
-  margin-top: 16px;
-  border-radius: 12px;
-  background: linear-gradient(180deg, oklch(0.76 0.19 58), oklch(0.66 0.22 46));
-  box-shadow:
-    inset 0 1px 0 oklch(1 0 0 / 0.35),
-    0 10px 24px -8px color-mix(in oklch, var(--d-hype) 90%, transparent);
-  color: oklch(0.99 0.01 60);
-  font-size: 15px;
-  font-weight: 700;
-}
-.d-hype-card:hover .d-hype-cta {
-  filter: brightness(1.08);
-}
-.d-hype-card small {
-  margin-top: 12px;
-  color: oklch(0.78 0.03 300);
-  font-size: 12px;
-  text-align: center;
+  .d-float .d-ad strong {
+    grid-column: 1;
+    margin: 0;
+    font-size: 15px;
+  }
+  .d-float .d-ad strong b {
+    display: inline;
+  }
+  .d-float .d-ad-go {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    font-size: 0;
+  }
+  .d-float .d-ad-go i {
+    font-size: 20px;
+  }
+  /* Room under the footer, so the strip never sits on its last line. */
+  .d-foot {
+    padding-bottom: 96px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .d-hype,
-  .d-hype-card {
+  .d-float {
     animation: none;
   }
-  .d-hype-card,
-  .d-hype-shots img {
+  .d-ad,
+  .d-ad-go i {
     transition: none;
   }
 }

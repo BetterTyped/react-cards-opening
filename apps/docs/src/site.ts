@@ -3,7 +3,7 @@
  * to a domain of its own is a change to `origin` and `base` and nothing else.
  */
 
-type Campaign = "docs-sidebar" | "docs-footer" | "docs-home" | "docs-page";
+type Campaign = "docs-sidebar" | "docs-float" | "docs-footer" | "docs-home" | "docs-page";
 
 export const SITE = {
   /** The package scope and the repository, as people type it. */

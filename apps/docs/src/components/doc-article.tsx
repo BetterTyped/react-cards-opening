@@ -2,6 +2,7 @@ import { anchorOf, type DocPage } from "../content/types";
 import { neighboursOf, SECTIONS, titleOf } from "../registry/pages";
 import { absoluteUrl } from "../site";
 import { Blocks } from "./blocks";
+import { HypeStackCard } from "./hype-card";
 import { Inline } from "./inline";
 import { SiteLink } from "./site-link";
 
@@ -28,7 +29,7 @@ export function DocArticle({ page }: { page: DocPage }) {
     return title ? [{ path, title }] : [];
   });
   return (
-    <div className="d-article-grid">
+    <div className="d-article-grid" data-wide={page.wide ? "" : undefined}>
       <article className="d-article">
         <nav aria-label="Breadcrumb" className="d-crumbs">
           <ol>
@@ -81,18 +82,23 @@ export function DocArticle({ page }: { page: DocPage }) {
           <a href={absoluteUrl(`${page.path}index.md`)}>Read this page as Markdown</a>.
         </p>
       </article>
-      {headings.length > 1 ? (
-        <aside className="d-toc" aria-label="On this page">
-          <h2>On this page</h2>
-          <ul>
-            {headings.map((heading) => (
-              <li key={heading}>
-                <a href={`#${anchorOf(heading)}`}>{heading}</a>
-              </li>
-            ))}
-          </ul>
-        </aside>
-      ) : null}
+      {page.wide ? null : (
+        <div className="d-rail">
+          {headings.length > 1 ? (
+            <aside className="d-toc" aria-label="On this page">
+              <h2>On this page</h2>
+              <ul>
+                {headings.map((heading) => (
+                  <li key={heading}>
+                    <a href={`#${anchorOf(heading)}`}>{heading}</a>
+                  </li>
+                ))}
+              </ul>
+            </aside>
+          ) : null}
+          <HypeStackCard />
+        </div>
+      )}
     </div>
   );
 }

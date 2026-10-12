@@ -33,5 +33,5 @@ export const Route = createFileRoute("/docs/$")({
 function DocsPage() {
   const { path } = Route.useLoaderData();
   const page = pageAt(path);
-  return <DocsFrame>{page ? <DocArticle key={page.path} page={page} /> : null}</DocsFrame>;
+  return <DocsFrame wide={page?.wide}>{page ? <DocArticle key={page.path} page={page} /> : null}</DocsFrame>;
 }

@@ -1,5 +1,6 @@
 import { anchorOf, type Block } from "../content/types";
 import { Code } from "./code";
+import { CombosGallery, ComponentsGallery, EffectsGallery, ShowsGallery } from "./galleries";
 import { Inline } from "./inline";
 import { Preview } from "./preview";
 import { SiteLink } from "./site-link";
@@ -79,6 +80,18 @@ function BlockView({ block }: { block: Block }) {
       );
     case "preview":
       return <Preview demo={block.demo} caption={block.caption} />;
+    case "gallery":
+      switch (block.show) {
+        case "shows":
+          return <ShowsGallery />;
+        case "combos":
+          return <CombosGallery />;
+        case "effects":
+          return <EffectsGallery />;
+        case "components":
+          return <ComponentsGallery />;
+      }
+    // oxlint-disable-next-line no-fallthrough -- every gallery returned above
     case "faq":
       return (
         <dl className="d-faq">

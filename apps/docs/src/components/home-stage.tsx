@@ -1,37 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 import { HuntDemo } from "../demos/hunt";
 import { CaseDemo, PackDemo, SpinDemo, WheelDemo } from "../demos/openers";
 import { SiteLink } from "./site-link";
-import { type CardTheme, EffectLayer, type EffectLayerHandle } from "@react-cards-opening/ui";
-
-/**
- * The air behind the hero's hand of cards: the library's own effects, played softly and for good. Lights drift up
- * through it, and now and then a few stars. Nothing plays for a reader who asked for less motion, or while the tab
- * is out of sight.
- */
-export function HeroAir({ theme }: { theme: CardTheme }) {
-  const layer = useRef<EffectLayerHandle>(null);
-  const tone = theme.levels[4];
-
-  useEffect(() => {
-    let round = 0;
-    const breathe = () => {
-      if (document.visibilityState !== "visible") return;
-      layer.current?.play(round % 3 === 2 ? "stardust" : "fireflies", { tone, size: 420 });
-      round += 1;
-    };
-    breathe();
-    const timer = setInterval(breathe, 3400);
-    return () => clearInterval(timer);
-  }, [tone]);
-
-  return (
-    <div className="h-air" aria-hidden>
-      <EffectLayer handle={layer} theme={theme} />
-    </div>
-  );
-}
+import type { CardTheme } from "@react-cards-opening/ui";
 
 const OPENERS = [
   {

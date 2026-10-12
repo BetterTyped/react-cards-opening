@@ -141,33 +141,47 @@ test.describe("the bar", () => {
     await expect(html).toHaveClass(/(^|\s)dark(\s|$)/);
   });
 
-  for (const path of ["/", "/docs/installation/", "/docs/examples/"]) {
-    test(`Hype Stack is a card in the corner of ${path}, not a button in the bar`, async ({ page }) => {
-      // Act
-      await page.goto(at(path));
-      const card = page.locator(".d-hype-card");
-
-      // Assert: one card with its pictures, pinned to the bottom right, and nothing about it in the bar.
-      await expect(card).toBeVisible();
-      await expect(card).toContainText("Build the rest with Hype Stack");
-      await expect(card.locator("img")).toHaveCount(3);
-      await expect(page.locator(".d-hype")).toHaveCSS("position", "fixed");
-      const box = await card.boundingBox();
-      const view = page.viewportSize();
-      expect((box?.x ?? 0) + (box?.width ?? 0)).toBeGreaterThan((view?.width ?? 0) - 60);
-      expect((box?.y ?? 0) + (box?.height ?? 0)).toBeGreaterThan((view?.height ?? 0) - 60);
-      await expect(page.locator("header").getByRole("link", { name: /Hype Stack/ })).toHaveCount(0);
-
-      // And it stays there when the page is scrolled.
-      await page.mouse.wheel(0, 1600);
-      await expect(card).toBeInViewport();
-    });
-  }
-
-  test("the card's link says where the visitor came from", async ({ page }) => {
+  test("beside a docs page, Hype Stack is a card in the column under the headings", async ({ page }) => {
     // Act
     await page.goto(at("/docs/installation/"));
-    const href = (await page.locator(".d-hype-card").getAttribute("href")) ?? "";
+    const card = page.locator(".d-rail .d-ad");
+
+    // Assert: the card, with its three points, in the column and not floating; nothing about it in the bar.
+    await expect(card).toBeVisible();
+    await expect(card).toContainText("Ship faster with Hype Stack");
+    await expect(card.locator(".d-ad-points > span")).toHaveCount(3);
+    await expect(card).toContainText("Explore the stack");
+    await expect(page.locator(".d-float")).toBeHidden();
+    await expect(page.locator("header").getByRole("link", { name: /Hype Stack/ })).toHaveCount(0);
+  });
+
+  test("on the home page, which has no column, the card floats in the corner and can be closed", async ({ page }) => {
+    // Act
+    await page.goto(at("/"));
+    await hydrated(page, ".d-bar");
+    const float = page.locator(".d-float");
+
+    // Assert: pinned to the bottom right, and still there after scrolling.
+    await expect(float).toBeVisible();
+    await expect(float).toHaveCSS("position", "fixed");
+    await expect(float).toContainText("Ship faster with Hype Stack");
+    await page.mouse.wheel(0, 1400);
+    await expect(float).toBeInViewport();
+
+    // Act: close it, and go somewhere else.
+    await page.getByRole("button", { name: "Close the Hype Stack card" }).click();
+    await expect(float).toHaveCount(0);
+    await page.goto(at("/docs/examples/collection/"));
+    await hydrated(page, ".d-bar");
+
+    // Assert: closed for the visit.
+    await expect(page.locator(".d-float")).toHaveCount(0);
+  });
+
+  test("the card's links say where the visitor came from", async ({ page }) => {
+    // Act
+    await page.goto(at("/docs/installation/"));
+    const href = (await page.locator(".d-rail .d-ad").getAttribute("href")) ?? "";
 
     // Assert
     expect(href.startsWith("https://www.hype-stack.dev/?"), `href is ${href}`).toBe(true);
@@ -177,46 +191,40 @@ test.describe("the bar", () => {
     expect(query.get("utm_campaign")).toBe("docs-sidebar");
   });
 
-  test("the card can be put away, and stays away on the next page", async ({ page }) => {
-    // Arrange
-    await page.goto(at("/docs/installation/"));
-    await hydrated(page, ".d-bar");
-
-    // Act
-    await page.getByRole("button", { name: "Put this card away" }).click();
-
-    // Assert
-    await expect(page.locator(".d-hype-card")).toHaveCount(0);
-    await page.goto(at("/"));
-    await hydrated(page, ".d-bar");
-    await expect(page.locator(".d-hype-card")).toHaveCount(0);
-  });
-
-  test("the list of headings never runs under the card", async ({ page }) => {
+  test("a long list of headings scrolls above the card, never under it", async ({ page }) => {
     // Arrange: a short window and a page with many headings.
     await page.setViewportSize({ width: 1440, height: 700 });
     await page.goto(at("/docs/effects/library/"));
 
     // Assert
-    const list = await page.locator(".d-toc").boundingBox();
-    const card = await page.locator(".d-hype").boundingBox();
+    const list = await page.locator(".d-rail .d-toc").boundingBox();
+    const card = await page.locator(".d-rail .d-ad").boundingBox();
     expect((list?.y ?? 0) + (list?.height ?? 0)).toBeLessThanOrEqual((card?.y ?? 0) + 1);
+    await expect(page.locator(".d-rail .d-ad")).toBeInViewport();
   });
 
-  test("on a phone the card closes the page", async ({ page }) => {
+  test("on a phone the card is a strip along the bottom of every page", async ({ page }) => {
     // Arrange
     await page.setViewportSize({ width: 390, height: 844 });
 
-    // Act
-    await page.goto(at("/docs/installation/"));
-    const card = page.locator(".d-hype-card");
-    await card.scrollIntoViewIfNeeded();
+    for (const path of ["/", "/docs/installation/"]) {
+      // Act
+      // oxlint-disable-next-line no-await-in-loop -- one page after another
+      await page.goto(at(path));
+      // oxlint-disable-next-line no-await-in-loop
+      await hydrated(page, ".d-bar");
+      const float = page.locator(".d-float");
 
-    // Assert: the card is part of the page, and nothing runs off the side.
-    await expect(card).toBeVisible();
-    await expect(page.locator(".d-hype")).toHaveCSS("position", "relative");
-    await expect(page.getByRole("button", { name: "Put this card away" })).toBeHidden();
-    const box = await card.boundingBox();
-    expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(390);
+      // Assert: across the bottom, inside the screen, one line of words and the way in.
+      // oxlint-disable-next-line no-await-in-loop
+      await expect(float).toBeVisible();
+      // oxlint-disable-next-line no-await-in-loop
+      const box = await float.boundingBox();
+      expect(box?.x ?? -1).toBeGreaterThanOrEqual(0);
+      expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(390);
+      expect(box?.height ?? 999).toBeLessThan(90);
+      // oxlint-disable-next-line no-await-in-loop
+      await expect(float.locator(".d-ad-text")).toBeHidden();
+    }
   });
 });

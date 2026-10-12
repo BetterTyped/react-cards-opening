@@ -6,6 +6,7 @@ import { EXAMPLES } from "./pages/examples";
 import { GET_STARTED } from "./pages/get-started";
 import { GUIDES } from "./pages/guides";
 import { EFFECT_LIBRARY } from "./pages/library";
+import { EFFECT_LIST } from "@react-cards-opening/ui";
 
 /*
  * Every page of the docs. The sidebar, the routes, the sitemap, the Markdown twins and llms.txt all read this one
@@ -58,19 +59,39 @@ const effectsOverview: DocPage = {
   path: "/docs/effects/",
   section: "effects",
   title: "Effects",
-  tagline: "what a reveal is made of",
-  nav: "Overview",
+  tagline: "a live gallery of all of them",
+  nav: "Gallery",
   description:
-    "Every effect in a card reveal, one page each: flight, hum, flip, burst, rays, flash, shockwaves, foil border, shine, sparkles and the scan's three.",
-  lead: "A reveal is thirteen small effects in a fixed order. Every card gets the first four. Loud tiers add rays. A legendary adds five more. The last three belong to the scan. Each has its own page with a live preview, the numbers behind it and what changes it.",
+    "A live gallery of every effect for card openings in React: six signature shows, two dozen combinations, and each effect on its own.",
+  lead: `${EFFECT_LIST.length} effects, and what they look like stacked. Every tile below is the library playing live, on a card of the tier it suits: press one to play it again.`,
+  wide: true,
   blocks: [
+    { kind: "h2", text: "Six signature shows" },
+    {
+      kind: "p",
+      text: "What every opener plays when told nothing: one show per tier, each built from different effects. They are a [plan](/docs/effects/plans/), and a plan can be swapped.",
+    },
+    { kind: "gallery", show: "shows" },
+    { kind: "h2", text: "Combinations" },
+    {
+      kind: "p",
+      text: "Stacks to take as they are or pull apart. The names under a tile are what to pass to `play`, or to put in a plan.",
+    },
+    { kind: "gallery", show: "combos" },
+    { kind: "h2", text: "Every effect" },
+    {
+      kind: "p",
+      text: "Each on its own, with the name that plays it. The [library page](/docs/effects/library/) has how to play, stack and write them.",
+    },
+    { kind: "gallery", show: "effects" },
+    { kind: "h2", text: "Go deeper" },
     {
       kind: "cards",
       items: [
         {
           path: "/docs/effects/library/",
           title: "Effects library",
-          text: "Dozens more to play on top: particles, light, shockwaves, screen effects.",
+          text: "Play one, stack several, write your own.",
           tier: "legendary",
         },
         {
@@ -79,14 +100,24 @@ const effectsOverview: DocPage = {
           text: "Which tier gets which of them, on any opener.",
           tier: "epic",
         },
+        {
+          path: "/docs/components/effect-layer/",
+          title: "EffectLayer",
+          text: "A place to play them, on anything.",
+          tier: "rare",
+        },
       ],
+    },
+    { kind: "h2", text: "The card's own effects" },
+    {
+      kind: "p",
+      text: "Under whatever a plan adds, a reveal has thirteen effects of its own, in a fixed order. Each has a page.",
     },
     {
       kind: "preview",
       demo: { type: "open", tier: "legendary" },
       caption: "All ten of the card's own effects in one reveal. Press it.",
     },
-    { kind: "h2", text: "On the card" },
     {
       kind: "cards",
       items: EFFECTS.filter((effect) => effect.tiers !== "the scan").map((effect) => ({
@@ -96,7 +127,6 @@ const effectsOverview: DocPage = {
         tier: effect.tier,
       })),
     },
-    { kind: "h2", text: "On the grid" },
     {
       kind: "cards",
       items: EFFECTS.filter((effect) => effect.tiers === "the scan").map((effect) => ({

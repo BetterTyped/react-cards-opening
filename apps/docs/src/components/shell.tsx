@@ -3,7 +3,8 @@ import { type ReactNode, useEffect, useId, useState } from "react";
 
 import { SECTIONS } from "../registry/pages";
 import { hypeStack, SITE } from "../site";
-import { HypeCard } from "./hype-card";
+import { Backdrop } from "./backdrop";
+import { HypeStackFloat } from "./hype-card";
 import { Search } from "./search";
 import { SiteLink } from "./site-link";
 
@@ -218,7 +219,17 @@ function Footer() {
 }
 
 /** The bar with the docs menu behind its button: on a phone that drawer is the only way around the site. */
-function Chrome({ children }: { children: ReactNode }) {
+function Chrome({
+  children,
+  docs = false,
+  wide = false,
+}: {
+  children: ReactNode;
+  /** A docs page: the sidebar beside it, and a quieter sky behind it. */
+  docs?: boolean;
+  /** A docs page that is a gallery: no column beside it for the Hype Stack card. */
+  wide?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const path = useSitePath();
   useEffect(() => setOpen(false), [path]);
@@ -232,12 +243,13 @@ function Chrome({ children }: { children: ReactNode }) {
   }, [open]);
   return (
     <>
+      <Backdrop lively={!docs} />
       <a className="d-skip" href="#content">
         Skip to content
       </a>
       <Navbar onMenu={() => setOpen(true)} />
       {children}
-      <HypeCard />
+      <HypeStackFloat as={wide ? "strip" : docs ? "beside" : "card"} />
       {open ? (
         <div className="d-drawer" role="dialog" aria-modal="true" aria-label="Docs menu">
           <button type="button" className="d-drawer-shade" aria-label="Close the menu" onClick={() => setOpen(false)} />
@@ -261,9 +273,9 @@ export function SiteFrame({ children }: { children: ReactNode }) {
 }
 
 /** A docs page: the same, with the sidebar beside it. On a phone the sidebar is the drawer behind the menu button. */
-export function DocsFrame({ children }: { children: ReactNode }) {
+export function DocsFrame({ children, wide = false }: { children: ReactNode; wide?: boolean }) {
   return (
-    <Chrome>
+    <Chrome docs wide={wide}>
       <div className="d-docs">
         <div className="d-side-rail">
           <Sidebar />

@@ -1,13 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 
 import { Code } from "../components/code";
-import { HeroAir, OpenerTabs } from "../components/home-stage";
+import { CombosGallery } from "../components/galleries";
+import { HeroFan } from "../components/hero-fan";
+import { OpenerTabs } from "../components/home-stage";
 import { LookControls, useLookTheme } from "../components/look";
 import { SiteFrame } from "../components/shell";
 import { SiteLink } from "../components/site-link";
-import { CardShelf } from "../demos/card-shelf";
 import { EffectsDemo } from "../demos/effects";
-import { TIER_CARDS } from "../registry/sample";
 import { seoHead, siteNodes } from "../seo/head";
 import { hypeStack, INSTALL, PACKAGES, SITE } from "../site";
 import { EFFECT_LIST } from "@react-cards-opening/ui";
@@ -26,41 +27,63 @@ export function Pack({ cards }) {
   return <CardPack cards={cards} opened={opened} onOpen={open} />;
 }`;
 
+/** The install line as a button: press it and it is on the clipboard. */
+function Command() {
+  const [copied, setCopied] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
+  const copy = async () => {
+    await navigator.clipboard.writeText(INSTALL);
+    setCopied(true);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => setCopied(false), 1600);
+  };
+  return (
+    <button type="button" className="h-command" onClick={() => void copy()} aria-label={`Copy: ${INSTALL}`}>
+      <i aria-hidden>$</i>
+      <code>{INSTALL}</code>
+      <span aria-live="polite">{copied ? "Copied" : "Copy"}</span>
+    </button>
+  );
+}
+
 function Home() {
   const theme = useLookTheme();
   return (
     <SiteFrame>
       <section className="h-hero">
-        <HeroAir theme={theme} />
-        <p className="h-kicker">
-          <i className="d-dot" aria-hidden />
-          A free tool from{" "}
-          <a href={hypeStack("docs-home")} target="_blank" rel="noopener">
-            Hype Stack
-          </a>
-        </p>
-        <h1>
-          Card <em>opening</em> for React
-        </h1>
-        <p className="h-lead">
-          Packs, wheels, reels, cases and hunts. Six rarities, each with a show of its own. One stylesheet.
-        </p>
-        <div className="h-actions">
-          <SiteLink path="/docs/" className="d-pill d-pill-solid">
-            Get started
-          </SiteLink>
-          <SiteLink path="/docs/effects/library/" className="d-pill">
-            Play all {EFFECT_LIST.length} effects
-          </SiteLink>
+        <div className="h-glow" aria-hidden />
+        <div className="h-copy">
+          <p className="h-kicker">
+            <b>Open source</b>
+            <span>
+              A free tool from{" "}
+              <a href={hypeStack("docs-home")} target="_blank" rel="noopener">
+                Hype Stack
+              </a>
+            </span>
+          </p>
+          <h1>
+            Card opening, <span>for React.</span>
+          </h1>
+          <p className="h-lead">
+            Packs, wheels, reels, cases and hunts. Six rarities, each arriving with a show of its own. One stylesheet,
+            no CSS framework.
+          </p>
+          <div className="h-actions">
+            <SiteLink path="/docs/" className="d-pill d-pill-solid">
+              Get started
+            </SiteLink>
+            <Command />
+          </div>
         </div>
-        <p className="h-install">
-          <i aria-hidden>$</i>
-          {INSTALL}
-        </p>
-        <div className="h-table">
-          <CardShelf cards={TIER_CARDS} theme={theme} layout="fan" />
-        </div>
-        <p className="h-note">Six rarities, common to mythic. Open one.</p>
+        <HeroFan theme={theme} />
+        <p className="h-note">Live in the page, not a recording. Hover a card, or open one.</p>
       </section>
 
       <ul className="h-facts">
@@ -93,6 +116,21 @@ function Home() {
           <LookControls />
         </div>
         <OpenerTabs theme={theme} />
+      </section>
+
+      <section className="h-section">
+        <div className="h-head">
+          <div>
+            <h2>
+              Stack them into a <em>show</em>
+            </h2>
+            <p>Each tile is a handful of effect names played together. Press one to play it again.</p>
+          </div>
+          <SiteLink path="/docs/effects/" className="d-pill">
+            The whole gallery
+          </SiteLink>
+        </div>
+        <CombosGallery first={8} />
       </section>
 
       <section className="h-section">

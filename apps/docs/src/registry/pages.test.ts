@@ -3,6 +3,7 @@ import type { Block, DocPage } from "../content/types";
 import { fullTitle } from "../seo/head";
 import { llmsTxt, sitemap, staticFiles } from "../static/files";
 import { EFFECTS } from "./effects";
+import { COMBOS, OPENER_PARTS, PIECE_PARTS } from "./gallery";
 import { PAGES, SECTIONS, titleOf } from "./pages";
 
 /** Words the house style bans, and the two dashes it bans with them. */
@@ -25,6 +26,12 @@ function proseOfBlock(block: Block): string[] {
       return [...block.head, ...block.rows.flat()];
     case "preview":
       return block.caption ? [block.caption] : [];
+    case "gallery":
+      return block.show === "combos"
+        ? COMBOS.map((combo) => combo.name)
+        : block.show === "components"
+          ? [...OPENER_PARTS, ...PIECE_PARTS].flatMap((part) => [part.name, part.line])
+          : [];
     case "faq":
       return block.items.flatMap((item) => [item.question, item.answer]);
     case "cards":
