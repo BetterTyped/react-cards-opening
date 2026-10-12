@@ -229,8 +229,29 @@ jobs:
               echo unknown
             fi
           }
+          # A package npm has never seen goes first. Its first publish is the one most likely to be refused: a
+          # trusted publisher is named in a package's own settings, and a package that is not there has none. If
+          # it is refused, nothing else has gone out yet, so no package is left on npm depending on a version of
+          # another that does not exist.
+          never_on_npm() {
+            local out
+            out="$(npm view "$1" name 2>&1)" && return 1
+            printf '%s' "$out" | grep -q "E404"
+          }
+          NEW=""
+          KNOWN=""
+          while IFS=$'\t' read -r DIR NAME REST <&3; do
+            LINE="$(printf '%s\t%s\t%s' "$DIR" "$NAME" "$REST")"
+            if never_on_npm "$NAME"; then
+              echo "${NAME} has never been on npm: it is published first."
+              NEW="${NEW}${LINE}"$'\n'
+            else
+              KNOWN="${KNOWN}${LINE}"$'\n'
+            fi
+          done 3< <(node .github/scripts/packages.mjs list)
           PUBLISHED=0
           while IFS=$'\t' read -r DIR NAME _ <&3; do
+            [ -n "$NAME" ] || continue
             case "$(on_npm "$NAME")" in
               yes)
                 echo "${NAME}@${VERSION} is already on npm; skipping."
@@ -244,9 +265,12 @@ jobs:
             echo "Publishing ${NAME}@${VERSION}"
             # nx's release-publish wrapper builds a --<scope>:registry flag pnpm's native CLI rejects, so pnpm is
             # called directly, from the package's own directory.
-            (cd "$DIR" && pnpm publish --access public --no-git-checks --tag latest)
+            if ! (cd "$DIR" && pnpm publish --access public --no-git-checks --tag latest); then
+              echo "::error::${NAME}@${VERSION} was not published. If npm has never seen this package, publish its first version by hand, name this workflow as its trusted publisher with 'Allow npm publish' ticked, and run this workflow again: it publishes what is missing."
+              exit 1
+            fi
             PUBLISHED=$((PUBLISHED + 1))
-          done 3< <(node .github/scripts/packages.mjs list)
+          done 3< <(printf '%s' "${NEW}${KNOWN}")
           echo "Published ${PUBLISHED} packages at ${VERSION}."
       # Reached only when every package of this version was published or was already on npm. Created once: a later
       # run for the same version (a `chore:` push that bumps nothing) finds the release and leaves it alone.
