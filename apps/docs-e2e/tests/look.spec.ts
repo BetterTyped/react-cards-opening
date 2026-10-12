@@ -141,24 +141,66 @@ test.describe("the bar", () => {
     await expect(html).toHaveClass(/(^|\s)dark(\s|$)/);
   });
 
-  test("Hype Stack is a card beside the page, not a button in the bar, and its link says where the visitor came from", async ({
-    page,
-  }) => {
+  for (const path of ["/", "/docs/installation/", "/docs/examples/"]) {
+    test(`Hype Stack is a card in the corner of ${path}, not a button in the bar`, async ({ page }) => {
+      // Act
+      await page.goto(at(path));
+      const card = page.locator(".d-hype-card");
+
+      // Assert: one card with its pictures, pinned to the bottom right, and nothing about it in the bar.
+      await expect(card).toBeVisible();
+      await expect(card).toContainText("Build the rest with Hype Stack");
+      await expect(card.locator("img")).toHaveCount(3);
+      await expect(page.locator(".d-hype")).toHaveCSS("position", "fixed");
+      const box = await card.boundingBox();
+      const view = page.viewportSize();
+      expect((box?.x ?? 0) + (box?.width ?? 0)).toBeGreaterThan((view?.width ?? 0) - 60);
+      expect((box?.y ?? 0) + (box?.height ?? 0)).toBeGreaterThan((view?.height ?? 0) - 60);
+      await expect(page.locator("header").getByRole("link", { name: /Hype Stack/ })).toHaveCount(0);
+
+      // And it stays there when the page is scrolled.
+      await page.mouse.wheel(0, 1600);
+      await expect(card).toBeInViewport();
+    });
+  }
+
+  test("the card's link says where the visitor came from", async ({ page }) => {
     // Act
     await page.goto(at("/docs/installation/"));
-    const card = page.locator(".d-toc .d-hype-card");
+    const href = (await page.locator(".d-hype-card").getAttribute("href")) ?? "";
 
-    // Assert: one card, with its pictures, and nothing about Hype Stack in the bar.
-    await expect(card).toBeVisible();
-    await expect(card).toContainText("Build the rest with Hype Stack");
-    await expect(card.locator("img")).toHaveCount(3);
-    await expect(page.locator("header").getByRole("link", { name: /Hype Stack/ })).toHaveCount(0);
-    const href = (await card.getAttribute("href")) ?? "";
+    // Assert
     expect(href.startsWith("https://www.hype-stack.dev/?"), `href is ${href}`).toBe(true);
     const query = new URL(href).searchParams;
     expect(query.get("ref")).toBe("react-cards-opening");
     expect(query.get("utm_source")).toBe("react-cards-opening");
     expect(query.get("utm_campaign")).toBe("docs-sidebar");
+  });
+
+  test("the card can be put away, and stays away on the next page", async ({ page }) => {
+    // Arrange
+    await page.goto(at("/docs/installation/"));
+    await hydrated(page, ".d-bar");
+
+    // Act
+    await page.getByRole("button", { name: "Put this card away" }).click();
+
+    // Assert
+    await expect(page.locator(".d-hype-card")).toHaveCount(0);
+    await page.goto(at("/"));
+    await hydrated(page, ".d-bar");
+    await expect(page.locator(".d-hype-card")).toHaveCount(0);
+  });
+
+  test("the list of headings never runs under the card", async ({ page }) => {
+    // Arrange: a short window and a page with many headings.
+    await page.setViewportSize({ width: 1440, height: 700 });
+    await page.goto(at("/docs/effects/library/"));
+
+    // Assert
+    const list = await page.locator(".d-toc").boundingBox();
+    const card = await page.locator(".d-hype").boundingBox();
+    expect((list?.y ?? 0) + (list?.height ?? 0)).toBeLessThanOrEqual((card?.y ?? 0) + 1);
   });
 
   test("on a phone the card closes the page", async ({ page }) => {
@@ -167,12 +209,13 @@ test.describe("the bar", () => {
 
     // Act
     await page.goto(at("/docs/installation/"));
-    const card = page.locator(".d-toc .d-hype-card");
+    const card = page.locator(".d-hype-card");
     await card.scrollIntoViewIfNeeded();
 
-    // Assert: the card is there, the list of headings is not, and nothing runs off the side.
+    // Assert: the card is part of the page, and nothing runs off the side.
     await expect(card).toBeVisible();
-    await expect(page.locator(".d-toc nav")).toBeHidden();
+    await expect(page.locator(".d-hype")).toHaveCSS("position", "relative");
+    await expect(page.getByRole("button", { name: "Put this card away" })).toBeHidden();
     const box = await card.boundingBox();
     expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(390);
   });

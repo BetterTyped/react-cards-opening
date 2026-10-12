@@ -3,6 +3,7 @@ import { type ReactNode, useEffect, useId, useState } from "react";
 
 import { SECTIONS } from "../registry/pages";
 import { hypeStack, SITE } from "../site";
+import { HypeCard } from "./hype-card";
 import { Search } from "./search";
 import { SiteLink } from "./site-link";
 
@@ -236,6 +237,7 @@ function Chrome({ children }: { children: ReactNode }) {
       </a>
       <Navbar onMenu={() => setOpen(true)} />
       {children}
+      <HypeCard />
       {open ? (
         <div className="d-drawer" role="dialog" aria-modal="true" aria-label="Docs menu">
           <button type="button" className="d-drawer-shade" aria-label="Close the menu" onClick={() => setOpen(false)} />
