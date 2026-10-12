@@ -3,7 +3,7 @@
  * to a domain of its own is a change to `origin` and `base` and nothing else.
  */
 
-type Campaign = "docs-navbar" | "docs-footer" | "docs-home" | "docs-page";
+type Campaign = "docs-sidebar" | "docs-footer" | "docs-home" | "docs-page";
 
 export const SITE = {
   /** The package scope and the repository, as people type it. */
@@ -25,9 +25,13 @@ export const SITE = {
   author: { name: "Maciej Pyrc", url: "https://github.com/prc5" },
 } as const;
 
-/** A link to Hype Stack that says which part of this site sent the visitor. */
+/**
+ * A link to Hype Stack that says where the visitor came from: `ref` names this library, and the campaign names the
+ * part of this site that sent them. To www, never the bare domain, which redirects and drops everything after the
+ * question mark.
+ */
 export const hypeStack = (campaign: Campaign, path = "/") =>
-  `https://www.hype-stack.dev${path}?utm_source=react-cards-opening&utm_medium=referral&utm_campaign=${campaign}`;
+  `https://www.hype-stack.dev${path}?ref=react-cards-opening&utm_source=react-cards-opening&utm_medium=referral&utm_campaign=${campaign}`;
 
 /** The full address of a page, from its path on the site ("/docs/effects/burst/"). */
 export const absoluteUrl = (path: string) => `${SITE.origin}${SITE.base}${path.replace(/^\/+/, "")}`;
